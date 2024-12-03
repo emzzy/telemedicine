@@ -2,3 +2,9 @@ asgiref==3.8.1
 Django==5.0.9
 sqlparse==0.5.2
 tzdata==2024.2
+gunicorn
+python-decouple
+psycopg[binary]
+psycopg2-binary # check
+dj-database-url
+django-environ # check
