@@ -13,9 +13,9 @@ import environ
 from decouple import config
 from pathlib import Path
 
-env = environ.Env()
-# reading .env file
-environ.Env.read_env()
+# env = environ.Env()
+# # reading .env file
+# environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("DJANGO_SECRET_KEY", default="unsafe-secret-key")
+SECRET_KEY = config("DJANGO_SECRET_KEY", default="unsafe-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = str(os.environ.get("DEBUG")).lower() == True
@@ -53,16 +53,19 @@ INSTALLED_APPS = [
     
     # my apps
     'visits',
+    'commando',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    #'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'teleapp.urls'
@@ -90,21 +93,22 @@ WSGI_APPLICATION = 'teleapp.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int, default=30)
+DATABASE_URL = config("DATABASE_URL", default=None)
 
-# if DATABASE_URL is not None:
-#     import dj_database_url
-#     DATABASES = {
-#         'default': dj_database_url.config(
-#             default=DATABASE_URL,
-#             conn_health_checks=True,
-#             conn_max_age=30,
-#         )
-#     }
+if DATABASE_URL is not None:
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_health_checks=True,
+            conn_max_age=30,
+        )
+    }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("DATABASE_NAME"), 
+        'NAME': config("DATABASE_NAME"),
         'USER': config("DATABASE_USER"),
         'PASSWORD': config("DATABASE_PASSWORD"),
         'HOST': config("DATABASE_HOST"),
@@ -130,7 +134,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -142,21 +145,30 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_URL = 'static/'
-STATIC_FILES_BASE_DIR = BASE_DIR / "staticfiles"
-STATIC_FILES_VENDOR_DIR = STATIC_FILES_BASE_DIR / "vendors"
+STATIC_URL = "static/"
+STATICFILES_BASE_DIR = BASE_DIR / "staticfiles"
+STATICFILES_BASE_DIR.mkdir(exist_ok=True, parents=True)
+STATICFILES_VENDOR_DIR = STATICFILES_BASE_DIR / "vendors"
 
 # source(s) for python manage.py collectstatic
 STATICFILES_DIRS = [
-    STATIC_FILES_BASE_DIR
+    STATICFILES_BASE_DIR
 ]
 
 # output for python manage.py collectstatic
 # local cdn 
 STATIC_ROOT = BASE_DIR.parent / "local-cdn"
+if not DEBUG:
+    STATIC_ROOT = BASE_DIR / "prod-cdn"
+
+# STORAGES = {
+#     # ...
+#     "staticfiles": {
+#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+#     },
+# }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

@@ -13,9 +13,13 @@
 <body>
 
     {% include 'nav/navbar.html' %}
+    
     <h1> {{ page_title }} </h1>
+    
     {% block content %}
+    
     <p>content exclusive to base html </p>
+    
     {% endblock content %}
 
     {% include 'base/js.html' %}

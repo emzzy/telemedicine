@@ -8,3 +8,4 @@ psycopg[binary]
 psycopg2-binary # check
 dj-database-url
 django-environ # check
+requests

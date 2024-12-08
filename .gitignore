@@ -1,7 +1,7 @@
 # ignore vendor static files
 src\staticfiles\vendors
 
-# ignore local-cdn
+# ignore local static file root, or "local cdn"
 local-cdn/
 
 # Byte-compiled / optimized / DLL files
