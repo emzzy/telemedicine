@@ -47,6 +47,7 @@ SECRET_KEY = config("DJANGO_SECRET_KEY")
 #DEBUG = str(os.environ.get("DEBUG")).lower() == True
 DEBUG = config("DJANGO_DEBUG", cast=bool)
 
+
 ALLOWED_HOSTS = [
     #"railway.app"
 ]
@@ -105,6 +106,9 @@ SOCIALACCOUNT_PROVIDERS = {
             'secret': '456',
             'key': ''
         }
+    },
+    'github': {
+        "VERIFIED_EMAIL": True
     }
 }
 
@@ -114,7 +118,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True, 
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -125,6 +129,8 @@ TEMPLATES = [
         },
     },
 ]
+
+#TEMPLATES[0]['OPTIONS']['debug'] = True
 
 WSGI_APPLICATION = 'teleapp.wsgi.application'
 
