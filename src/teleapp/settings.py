@@ -73,6 +73,8 @@ INSTALLED_APPS = [
     # my apps
     'commando',
     'visits',
+    'profiles',
+    'subscriptions',
     # allauth
     'allauth_ui',
     'allauth',
@@ -97,6 +99,9 @@ MIDDLEWARE = [
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
+    'github': {
+        "VERIFIED_EMAIL": True
+    },
     'google': {
         # For each OAuth based provider, either add a ``SocialApp``
         # (``socialaccount`` app) containing the required client
@@ -106,10 +111,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'secret': '456',
             'key': ''
         }
-    },
-    'github': {
-        "VERIFIED_EMAIL": True
-    }
+    }    
 }
 
 ROOT_URLCONF = 'teleapp.urls'

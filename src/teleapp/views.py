@@ -2,6 +2,8 @@ import pathlib
 from django.http import HttpResponse
 from django.shortcuts import render
 from visits.models import PageVisit
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 this_dir = pathlib.Path(__file__).resolve().parent
 
@@ -53,3 +55,23 @@ def my_old_home_page_view(requests, *args, **kwargs):
     # html_ = html_file_path.read_text()
 
     return HttpResponse(html_)
+
+
+def pw_protected_view(request, *args, **kwargs):
+    if request.method == "POST":
+        user_pw_sent = request.POST.get("code") or None
+    
+    is_allowed = False
+    if is_allowed:
+        return render(request, "protected/view.html", {})
+    return render(request, "protected/entry.html", {})
+
+
+@login_required
+def user_only_view(request, *args, **kwargs):
+    print(request.user.is_staff)
+    return render(request, "protected/user-only.html", {})
+
+@login_required
+def staff_only_view(request, *args, **kwargs):
+    return render(request, "protected/user-only.html")
