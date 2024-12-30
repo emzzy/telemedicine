@@ -1,9 +1,12 @@
 from django.urls import path
-from .views import get_user, create_user, get_all_users, user_details
+from .views import get_user, PatientDetail, PatientList, MedicalProList, MedicalProDetail
+from rest_framework.urlpatterns import format_suffix_patterns
+
 
 urlpatterns = [
-    path('user/', get_user, name='get_user'), # one user
-    path('users/', get_all_users, name='get_all_users'), # all users
-    path('user/create/', create_user, name='create_user'),
-    path('users/<int:pk>', user_details, name='user_details')
+    #path('user/', get_user, name='get_user'), # one user
+    path('patients/', PatientList.as_view(), name='get-all-patients'), # all patients
+    path('patients/<int:pk>/', PatientDetail.as_view(), name='patient-details'),
+    path('doctors/', MedicalProList.as_view(), name='get-all-doctors'),
+    path('doctors/<int:pk>', MedicalProDetail.as_view(), name='doctor-details')
 ]

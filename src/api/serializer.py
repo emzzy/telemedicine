@@ -10,4 +10,4 @@ class PatientSerializer(serializers.ModelSerializer):
 class MedicalProfessionalSerializer(serializers.ModelSerializer):
     class Meta:
         model = MedicalProfessional
-        fields = ["first_name", "last_name"] #'__all__'
+        fields = '__all__'
