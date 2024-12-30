@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 from decouple import config
 from pathlib import Path
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -75,6 +76,7 @@ INSTALLED_APPS = [
     'visits',
     'profiles',
     'subscriptions',
+    'api',
     # allauth
     'allauth_ui',
     'allauth',
@@ -83,6 +85,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     'widget_tweaks',
     'slippers',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -236,6 +239,9 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+# File uploads
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

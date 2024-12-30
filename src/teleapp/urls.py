@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import (
     home_view, 
     about_view, 
@@ -35,6 +37,8 @@ urlpatterns = [
     path('protected/user-only/', user_only_view),
     path('protected/staff-only/', staff_only_view),
     path('profiles/', include('profiles.urls')),
-    #path('accounts/', include('django.contrib.auth.urls')),
+    path('api-auth/', include('rest_framework.urls')), # Django rest framework login/logout views
+    path('api/', include('api.urls')),
+    #path('account/', include('django.contrib.auth.urls')), # default/custom django auth
     path('admin/', admin.site.urls),
-]
+] #+ static(settings.MEDIAURL, document_root=settings.MEDIA_ROOT)
