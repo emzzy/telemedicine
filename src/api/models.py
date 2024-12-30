@@ -20,7 +20,6 @@ class Patient(models.Model):
         return self.first_name
     
 class MedicalProfessional(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=50)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)

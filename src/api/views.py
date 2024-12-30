@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
-from rest_framework import status
+from rest_framework import status, mixins, generics
 from rest_framework.response import Response
 from .models import Patient, MedicalProfessional
 from .serializer  import PatientSerializer, MedicalProfessionalSerializer
@@ -8,94 +8,55 @@ from rest_framework.views import APIView
 from django.http import Http404
 
 
-def get_user(request):
-    """get one specific user from db"""
-    return Response(PatientSerializer(
-        {
-            "first_name": "Mustarrrrrdd!!!", 
-            "last_name": "GNX", 
-        }
-    ).data)
-
-class PatientList(APIView):
+class PatientList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     """List all patients or create a new patient."""
-    def get_all_patients(self, request, format=None):
-        patients = Patient.objects.all()
-        serializer = PatientSerializer(patients, many=True)
-        return Response(serializer.data)
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
 
-    def post(request):
-        serializer = PatientSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
-class PatientDetail(APIView):
+class PatientDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
     """Retrieve, update, or delete a patient instance."""
-    def get_object(self, pk):
-        try:
-            return Patient.objects.get(pk=pk)
-        except Patient.DoesNotExist:
-            raise Http404  
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
     
-    def get(self, request, pk, format=None):
-        patient = self.object.get(pk)
-        serializer = PatientSerializer(patient)
-        return Response(serializer.data)
-    
-    def put(self, request, pk, format=None):
-        patient = self.get_object(pk)
-        serializer = PatientSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def delete(self, request, pk, format=None):
-        patient = self.get_object(pk)
-        patient.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
-class MedicalProList(APIView):
+class MedicalProList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     """List all Professionals, or create new professional."""
-    def get(self, request, format=None):
-        mp = MedicalProfessional.objects.all()
-        serializer = MedicalProfessionalSerializer(mp, many=True)
-        return Response(serializer.data)
-    
-    def post(self, request, format=None):
-        serializer = MedicalProfessionalSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = MedicalProfessional.objects.all()
+    serializer_class = MedicalProfessionalSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
-class MedicalProDetail(APIView):
+class MedicalProDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
     """Retrieve, update, or delete a medical professional instance"""
-    def get_objects(self, pk):
-        try:
-            return MedicalProfessional.objects.get(pk=pk)
-        except MedicalProfessional.DoesNotExist:
-            raise Http404
-    
-    def get(self, request, pk, format=None):
-        mp = self.get_object(pk)
-        serializer = MedicalProfessionalSerializer(mp)
-        return Response(serializer.data)
-    
-    def put(self, request, pk, format=None):
-        mp = self.get_object(pk)
-        serializer = MedicalProfessionalSerializer(mp, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def delete(self, request, pk, format=None):
-        mp = self.get_object(pk)
-        mp.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    queryset = MedicalProfessional.objects.all()
+    serializer_class = MedicalProfessionalSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
