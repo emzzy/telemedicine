@@ -1,0 +1,17 @@
+###
+curl --request GET http://localhost:8000/api/token/
+
+###
+curl --request POST http://127.0.0.1:8000/api/token/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "ifeoma",
+    "last_name": "Ezeh"
+}
+###
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "engremma", "password": "Manuel771442_"}' \
+  http://localhost:8000/api/token/

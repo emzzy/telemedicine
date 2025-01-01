@@ -14,6 +14,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from django.contrib import admin
 from django.urls import path, include
 from auth import views as auth_views
@@ -37,8 +41,10 @@ urlpatterns = [
     path('protected/user-only/', user_only_view),
     path('protected/staff-only/', staff_only_view),
     path('profiles/', include('profiles.urls')),
-    path('api-auth/', include('rest_framework.urls')), # Django rest framework login/logout views
-    path('api/', include('api.urls')),
+    #path('api-auth/', include('rest_framework.urls')), # Django rest framework login/logout views
+    #path('api/', include('api.urls')),
     #path('account/', include('django.contrib.auth.urls')), # default/custom django auth
     path('admin/', admin.site.urls),
-] #+ static(settings.MEDIAURL, document_root=settings.MEDIA_ROOT)
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+]
