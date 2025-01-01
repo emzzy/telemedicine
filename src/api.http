@@ -1,14 +1,29 @@
 ###
-curl --request GET http://localhost:8000/api/token/
+POST http://127.0.0.1:8000/doctors/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM1NzM3OTcxLCJpYXQiOjE3MzU3Mzc2NzEsImp0aSI6ImRiMGRkNGE0YmRjYjRkMzY4YTE2MjAxYmRmNGU5YTMyIiwidXNlcl9pZCI6MX0.tysBFcj9G_UiF0GySoSWuk0EGWCdA0x87WMhUFuNSXg
+
+{
+    "title": "mr",
+    "first_name": "house",
+    "last_name": "dolittle",
+    "email": "house@gmail.com",
+    "phone_number": "0751426582",
+    "gender": "male",
+    "medical_license": "51352547889",
+    "specialty": "doctor",
+    "years_of_experience": 25,
+}
 
 ###
-curl --request POST http://127.0.0.1:8000/api/token/ HTTP/1.1
+POST http://127.0.0.1:8000/api/token/ HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "ifeoma",
-    "last_name": "Ezeh"
+    "username": "engremma",
+    "password": "Manuel771442_"
 }
+
 ###
 curl \
   -X POST \

@@ -42,9 +42,9 @@ urlpatterns = [
     path('protected/staff-only/', staff_only_view),
     path('profiles/', include('profiles.urls')),
     #path('api-auth/', include('rest_framework.urls')), # Django rest framework login/logout views
-    #path('api/', include('api.urls')),
-    #path('account/', include('django.contrib.auth.urls')), # default/custom django auth
+    path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('silk/', include('silk.urls', namespace='silk')), # for api optimization during development
 ]

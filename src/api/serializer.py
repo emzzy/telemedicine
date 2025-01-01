@@ -10,4 +10,14 @@ class PatientSerializer(serializers.ModelSerializer):
 class MedicalProfessionalSerializer(serializers.ModelSerializer):
     class Meta:
         model = MedicalProfessional
-        fields = '__all__'
+        fields = [
+            "title",
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "gender",
+            "specialty",
+            "years_of_experience",
+            "date_registered"
+        ]

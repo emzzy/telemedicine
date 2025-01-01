@@ -14,6 +14,7 @@ class Patient(models.Model):
     age = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(120)])
     emergency_contact = models.TextField()
     #medical_information = models.FileField(upload_to='src/uploads/patient', null=True)
+    #date_registered = models.DateTimeField(auto_now_add=True)
     is_active = True
     
     def __str__(self):
