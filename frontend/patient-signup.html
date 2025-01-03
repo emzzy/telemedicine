@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="C:\dev\saas\frontend\css\style.css">
+    <link rel="stylesheet" href="C:\dev\saas\frontend\css\bootstrap.min.css">
+</head>
+<body>
+    <div class="createAccountHeader">
+        <h1>Create Account</h1>
+    </div>
+    <div class="form-container">
+        <h2 class="text-center">Register as a Patient</h2>
+        <form id="registerForm">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter your name" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter your Last Name" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your Email" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your contact number" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Enter password again" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="gender" class="form-label">Gender</label>
+                    <input type="text" class="form-control" id="gender" name="gender" placeholder="Enter your gender" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" name="location" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="birthday" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" id="birthday" name="birthday" placeholder="Enter your Date of Birth" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="age" class="form-label">Age</label>
+                    <input type="number" class="form-control" id="age" name="age" max=120 placeholder="Enter your Age" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="energencyContactInfo" class="form-label">Emergency Contact Information</label>
+                    <input type="tel" class="form-control" id="energencyContactInfo" name="energencyContactInfo" placeholder="Emergency Contact Imformation" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="medicalInformation" class="form-label">Medical Information</label>
+                    <input type="file" class="form-control" id="medicalInformation" name="medicalInformation" placeholder="Drop your file here to upload" required>
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+        <p class="text-center mt-3">
+            Already have an account? <a href="login.html">Login</a>
+        </p>
+        <p>
+            <input type="checkbox" name="checkbox" id="checkbox">
+            By joining, you agree to our Terms & Condition and Privary Policy
+        </p>
+    </div>
+</body>
+</html>

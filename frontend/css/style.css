@@ -1,0 +1,26 @@
+.createAccountHeader {
+    width: 300px;
+    margin: auto;
+    color: blue;
+    margin-top: 15px;
+}
+
+.form-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #f9f9f9;
+}
+
+.btn {
+    width: 200px;
+    align-items: center;
+    margin: 4px 2px;
+}
+
+#title {
+    width: 80px;
+    margin-left: 15px;
+}
