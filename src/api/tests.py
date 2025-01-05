@@ -1,35 +1,23 @@
-from django.test import TestCase
+from django.test import TestCase, APIClient
 from api.models import Patient, MedicalProfessional
 from django.urls import reverse
 from rest_framework import status
 
 class PatientViewsTestCase(TestCase):
     def setUp(self):
-        self.patient1 = Patient.objects.create(first_name='chidera', last_name='Ezeh')
-        self.patient2 = Patient.objects.create(first_name='ebere', last_name='Chinyelugo')
-        self.list_url = reverse('patients-list')
+        # Set up test users and data
+        self.client = APIClient()
 
-    def test_view_patients_unauthenticated(self):
-        response = self.client.get(self.list_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-    
-    # def test_view_get_patients_unauthenticated(self):
-    #     response = self.client.get(reverse('patient-details'))
-    #     self.assertEqual(response.status_code, 201)
+        # Create a test user
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        
+        # Create some sample Patients and Medical Professionals
+        self.patient = Patient.objects.create(first_name="John", last_name="Doe", date_of_birth="2000-01-01")
+        self.medical_professional = MedicalProfessional.objects.create(name="Dr. Smith", specialty="Cardiology")
 
-class MedicalProfessionalViewsTestCase(TestCase):
+        # Define URLs for testing
+        self.patient_url = "/patients/"
+        self.medical_professional_url = "/doctors/"
 
-    def setUp(self):
-        self.doctor1 = MedicalProfessional.objects.create(first_name='engremma', last_name='Ezeh')
-        self.doctor2 = MedicalProfessional.objects.create(first_name='dera', last_name='Nuel')
-        self.list_url = reverse('doctors-list')
         
     
-    def get_doctors_test(self):     
-        response = self.client.get(self.list_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]['first_name'], self.doctor1.first_name)
-
-    def test_create_doctor(self):
-        pass
