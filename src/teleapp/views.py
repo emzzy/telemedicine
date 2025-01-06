@@ -75,3 +75,10 @@ def user_only_view(request, *args, **kwargs):
 @login_required
 def staff_only_view(request, *args, **kwargs):
     return render(request, "protected/user-only.html")
+
+def patient_register_view(request, *args, **kwargs):
+    return render(request, 'patient-signup.html')
+
+
+def doctor_register_view(request, *args, **kwargs):
+    return render(request, 'doctor-signup.html')
