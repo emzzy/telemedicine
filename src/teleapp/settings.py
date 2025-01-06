@@ -15,7 +15,8 @@ import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent # cfe
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Email Config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -124,7 +125,10 @@ ROOT_URLCONF = 'teleapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'frontend',
+            #os.path.join(BASE_DIR, 'frontend')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -220,6 +224,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_URL = "static/"
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'frontend', 'css'),
+#     os.path.join(BASE_DIR, 'frontend', 'images'),
+#     os.path.join(BASE_DIR, 'frontend', 'js'),
+#     os.path.join(BASE_DIR, 'frontend', 'nav'),
+# ]
+
 STATICFILES_BASE_DIR = BASE_DIR / "staticfiles"
 STATICFILES_BASE_DIR.mkdir(exist_ok=True)
 STATICFILES_VENDOR_DIR = STATICFILES_BASE_DIR / "vendors"
