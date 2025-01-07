@@ -15,7 +15,7 @@
     </div>
     <div class="form-container">
         <h2 class="text-center">Register as a Healthcare Provider</h2>
-        <form action="{% url 'register_user' %}" id="registerForm" method="POST">
+        <form action="{% url 'doctor_signup' %}" id="registerForm" method="POST">
             {% csrf_token %}
             <div class="row mb-3">
                 <label for="title" class="form-label title-label">Title</label>
@@ -23,8 +23,8 @@
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    <label for="userName" class="form-label">User Name</label>
+                    <input type="text" class="form-control" id="userName" name="userName" required>
                 </div>
                 <div class="col-md-6">
                     <label for="lastName" class="form-label">Last Name</label>
