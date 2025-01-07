@@ -15,6 +15,7 @@
     </div>
     <div class="form-container">
         <h2 class="text-center">Register as a Healthcare Provider</h2>
+
         <form action="{% url 'doctor_signup' %}" id="registerForm" method="POST">
             {% csrf_token %}
             <div class="row mb-3">
@@ -78,13 +79,14 @@
                 </div>
                 <div class="col-md-6">
                     <label for="professionalCertification" class="form-label">Professional certification</label>
-                    <input type="file" class="form-control" id="professionalCertification" name="professionalCertification" required>
+                    <input type="file" class="form-control" id="professionalCertification" name="professionalCertification">
                 </div>
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
+
         <p class="text-center mt-3">
             Already have an account? <a href="login.html">Login</a>
         </p>
