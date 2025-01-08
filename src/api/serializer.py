@@ -1,20 +1,37 @@
 from rest_framework import serializers
-from .models import Patient, MedicalProfessional, Appointments
+from .models import Patient, MedicalProfessional, BaseUser
 
 class PatientSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
     class Meta:
         model = Patient
         fields = [
-            "username",
+            "email"
+            "first_name",
             "last_name",
             "password",
-            "email",
+            "confirm_password",
             "phone_number",
             "gender",
             "location",
             "date_of_birth",
             "age"
         ]
+
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError('passwords do not match')
+        return data
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = BaseUser.objects.create_user(**validated_data)
+        user.is_patient = True
+        user.save()
+        patient = Patient.objects.create(user=user, **validated_data)
+        return patient
 
 
 class MedicalProfessionalSerializer(serializers.ModelSerializer):
@@ -34,18 +51,15 @@ class MedicalProfessionalSerializer(serializers.ModelSerializer):
             "is_active"
         ]
 
-class AppointmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Appointments
-        fields = [
-            "id",
-            "patient",
-            "medical_professional",
-            "date_time",
-            "duration_minutes",
-            "status",
-            "notes",
-            "created_at",
-            "updated_at",
-        ]
-        read_only_fields = ["created_at", "updated_at"]
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError('passwords do not match')
+        return data
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = BaseUser.objects.create_user(**validated_data)
+        user.is_medical_professional = True
+        user.save()
+        medical_professional = MedicalProfessional.objects.create(user=user, **validated_data)
+        return medical_professional
