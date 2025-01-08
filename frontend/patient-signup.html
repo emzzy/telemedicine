@@ -15,26 +15,27 @@
     </div>
     <div class="form-container">
         <h2 class="text-center">Register as a Patient</h2>
+        
         <form id="registerForm" method="post" action="{% url 'patient-register' %}">
             {% csrf_token %}
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="userName" class="form-label">User Name</label>
-                    <input type="text" class="form-control" id="userName" name="userName" placeholder="Enter your name" required>
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" required>
                 </div>
                 <div class="col-md-6">
                     <label for="lastName" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter your Last Name" required>
+                    <input type="text" class="form-control" id="lastName" name="lastName" required>
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your Email" required>
+                    <input type="email" class="form-control" id="email" name="email" required>
                 </div>
                 <div class="col-md-6">
                     <label for="phone" class="form-label">Phone</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your contact number" required>
+                    <input type="tel" class="form-control" id="phone" name="phone" required>
                 </div>
             </div>
             <div class="row mb-3">
@@ -50,7 +51,7 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="gender" class="form-label">Gender</label>
-                    <input type="text" class="form-control" id="gender" name="gender" placeholder="Enter your gender" required>
+                    <input type="text" class="form-control" id="gender" name="gender" required>
                 </div>
                 <div class="col-md-6">
                     <label for="location" class="form-label">Location</label>
@@ -70,18 +71,18 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="energencyContactInfo" class="form-label">Emergency Contact Information</label>
-                    <input type="tel" class="form-control" id="energencyContactInfo" name="energencyContactInfo" placeholder="Emergency Contact Imformation" required>
+                    <input type="tel" class="form-control" id="energencyContactInfo" name="energencyContactInfo" required>
                 </div>
                 <div class="col-md-6">
                     <label for="medicalInformation" class="form-label">Medical Information</label>
-                    <input type="file" class="form-control" id="medicalInformation" name="medicalInformation" placeholder="Drop your file here to upload">
+                    <input type="file" class="form-control" id="medicalInformation" name="medicalInformation">
                 </div>
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
-        
+
         <p class="text-center mt-3">
             Already have an account? <a href="login.html">Login</a>
         </p>
