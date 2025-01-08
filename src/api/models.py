@@ -1,32 +1,92 @@
 from django.db import models
-import uuid
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Permission
 
-class Patient(models.Model):
-    username = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.EmailField(unique=True, null=False)
-    password = models.CharField(max_length=255)
+class BaseUserManager(BaseUserManager):
+    """
+    If you need custom user creation logic, define a BaseUserManager. 
+    For example, you might want to handle user creation for Patient and MedicalProfessional
+    """
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("You have not provided an email address")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self.db)
+        
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        user = self.create_user(email, password, **extra_fields)
+        user.is_staff = True
+        user.is_active = True
+        user.save(using=self.db)
+
+        return user
+
+class BaseUser(AbstractUser):
+    """
+    allows you to handle multiple user types (e.g., Patient and MedicalProfessional) 
+    while maintaining Django's built-in authentication features.
+    """
+    is_patient = models.BooleanField(default=False)
+    is_medical_professional = models.BooleanField(default=False)
+
+    objects = BaseUserManager()
+
+    groups = models.ManyToManyField(
+        Group,
+        related_name='baseuser_set',  # Custom reverse relation name
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='baseuser_permissions',  # Custom reverse relation name
+        blank=True
+    )
+
+    def __str__(self):
+        return self.username
+
+class Patient(AbstractUser):
+    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, related_name='patient_profile', default=None)
     phone_number = models.CharField(max_length=15, blank=False)
     gender = models.CharField(max_length=15)
     location = models.TextField()
     date_of_birth = models.DateField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_patient = models.BooleanField(default=True)
     age = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(120)], null=True, blank=True)
     #emergency_contact = models.TextField(max_length=200)
     #medical_information = models.FileField(upload_to='src/uploads/patient', null=True)
-    #date_registered = models.DateTimeField(auto_now_add=True)
-    is_active = True
+
+    # Add related_name to groups and user_permissions
+    groups = models.ManyToManyField(
+        Group,
+        related_name='patient_set',  # Custom reverse relation name
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='patient_permissions',  # Custom reverse relation name
+        blank=True
+    )
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name']
+
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'
     
     def __str__(self):
-        return self.first_name
+        return self.username
 
-class MedicalProfessional(models.Model):
+class MedicalProfessional(AbstractUser):
+    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, related_name='medical_profile', default=None)
     title = models.CharField(max_length=50)
-    username = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    password = models.CharField(max_length=128)
-    email = models.EmailField()
     phone_number = models.CharField(max_length=15)
     gender = models.CharField(max_length=15)
     # medical_license = models.CharField(
@@ -42,65 +102,44 @@ class MedicalProfessional(models.Model):
     specialty = models.CharField(max_length=100, default="Emergency Responder", null=True, blank=True)
     years_of_experience = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
     #professional_certificate = models.FileField(upload_to='', null=True)
-    date_registered = models.DateTimeField(auto_now_add=True)
-    is_active = True
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_medical_professional = models.BooleanField(default=True)
+
+    groups = models.ManyToManyField(
+        Group,
+        related_name='medicalprofessional_set',  # Custom reverse relation name
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='medicalprofessional_permissions',  # Custom reverse relation name
+        blank=True
+    )
+
+    objects = BaseUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name']
+
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'
 
     def __str__(self):
-        return self.first_name
-
+        return self.username
 
 class Appointments(models.Model):
-    status_choices = [
-        ('pending', 'Pending'),
-        ('confirmed', 'Confirmed'),
-        ('completed', 'Completed'),
-        ('canceled', 'Canceled'),
-    ]
-
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='patient', null=True, blank=True)
-    medical_professional = models.ForeignKey(MedicalProfessional, on_delete=models.CASCADE)
-    date_time = models.DateTimeField(auto_now_add=True)
-    duration = models.IntegerField(null=True, blank=True)
-    status = models.CharField(choices=status_choices, null=True, blank=True, default=None)
-    notes = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"Your Appointment is on {self.date_time} with {self.medical_professional} for {self.patient.first_name} {self.patient.last_name}"
-
+    pass
 
 class VideoCallSession(models.Model):
-    CALL_STATUS_CHOICES = [
-        ('scheduled', 'Scheduled'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
-    ]
-
-    session_id = models.CharField(unique=True)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    medical_professional = models.ForeignKey(MedicalProfessional, on_delete=models.CASCADE)
-    start_time = models.DateTimeField(auto_now_add=True)
-    end_time = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20, choices=CALL_STATUS_CHOICES, default=None)
-    notes = models.TextField(null=True, blank=True)
+   pass
 
 class Prescriptions(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    MedicalProfessional = models.ForeignKey(MedicalProfessional, on_delete=models.CASCADE)
-    medication_name = models.CharField()
-    dosage = models.CharField(null=True, blank=True)
-    instructions = models.TextField(null=True, blank=True)
-    date_issued = models.DateTimeField(auto_now_add=True)
-    valid_until = models.DateField(null=True, blank=True)
+    pass
 
 class MedicalRecords(models.Model):
-    patients = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    record_type = models.CharField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    date_added = models.DateTimeField(auto_now_add=True)
-    attachments = models.FileField(blank=True, null=True)
+    pass
 
 class Messages(models.Model):
     pass
