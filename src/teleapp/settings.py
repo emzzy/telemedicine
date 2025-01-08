@@ -205,6 +205,7 @@ AUTHENTICATION_BACKENDS = [
 
 # Django-allauth Config
 LOGIN_REDIRECT_URL = "/"
+ACCOUNT_USER_MODEL = "api.BaseUser"
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_VERIFICATION="mandatory"
 ACCOUNT_EMAIL_SUBJECT_PREFIX="[Site]"
@@ -223,28 +224,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_URL = "static/"
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'frontend', 'css'),
-#     os.path.join(BASE_DIR, 'frontend', 'images'),
-#     os.path.join(BASE_DIR, 'frontend', 'js'),
-#     os.path.join(BASE_DIR, 'frontend', 'nav'),
-# ]
-
-STATICFILES_BASE_DIR = BASE_DIR / "staticfiles"
-STATICFILES_BASE_DIR.mkdir(exist_ok=True)
-STATICFILES_VENDOR_DIR = STATICFILES_BASE_DIR / "vendors"
-
-# source(s) for python manage.py collectstatic
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [
-    STATICFILES_BASE_DIR
+   BASE_DIR / 'frontend' / 'static',
 ]
-
-# output for python manage.py collectstatic
-# local cdn
-STATIC_ROOT = BASE_DIR / "local-cdn"
-# if not DEBUG:
-#     STATIC_ROOT = BASE_DIR / "prod-cdn"
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # compression and caching support for Whitenoise
 STORAGES = {
@@ -272,3 +256,13 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated', # Restrict access to authenticated users by default
     ]
 }
+
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
+]
+
+AUTH_USER_MODEL = "api.BaseUser"
