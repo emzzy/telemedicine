@@ -16,7 +16,7 @@
     <div class="form-container">
         <h2 class="text-center">Register as a Healthcare Provider</h2>
 
-        <form action="{% url 'doctor_signup' %}" id="registerForm" method="post">
+        <form action="{% url 'doctor_signup' %}" id="registerForm" method="POST">
             {% csrf_token %}
             <div class="row mb-3">
                 <label for="title" class="form-label title-label">Title</label>

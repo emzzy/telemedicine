@@ -9,7 +9,7 @@ class PatientViewsTestCase(TestCase):
         self.client = APIClient()
 
         # Create a test user
-        self.user = User.objects.create_user(username="testuser", password="testpass")
+        self.user = Patient.objects.create_user(username="testuser", password="testpass")
         
         # Create some sample Patients and Medical Professionals
         self.patient = Patient.objects.create(first_name="John", last_name="Doe", date_of_birth="2000-01-01")
@@ -19,5 +19,4 @@ class PatientViewsTestCase(TestCase):
         self.patient_url = "/patients/"
         self.medical_professional_url = "/doctors/"
 
-        
-    
+

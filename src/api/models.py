@@ -60,8 +60,8 @@ class Patient(AbstractUser):
     is_superuser = models.BooleanField(default=False)
     is_patient = models.BooleanField(default=True)
     age = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(120)], null=True, blank=True)
-    #emergency_contact = models.TextField(max_length=200)
-    #medical_information = models.FileField(upload_to='src/uploads/patient', null=True)
+    emergency_contact = models.TextField(max_length=200, null=True, blank=True)
+    medical_information = models.FileField(upload_to='src/uploads/patient', null=True)
 
     # Add related_name to groups and user_permissions
     groups = models.ManyToManyField(

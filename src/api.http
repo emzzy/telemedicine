@@ -1,7 +1,23 @@
 ###
+POST http://127.0.0.1:8000/api/signup-patient/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "tusha",
+  "last_name": "Jaken",
+  "password": "Miami2_",
+  "email": "tyson@tu.ge",
+  "phone_number": "(486) 611-7431",
+  "gender": "Male",
+  "location": "USA",
+  "date_of_birth": "1985-03-17",
+  "age": 41
+}
+
+###
 GET http://127.0.0.1:8000/api/patients/2 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM1Nzg0MTczLCJpYXQiOjE3MzU3ODM4NzMsImp0aSI6ImIwZTVkMDQ3NTdlNDQ2MThhNzFjNjU4YWQ4NjU2YjEzIiwidXNlcl9pZCI6OH0.UGphszjIYGGoRsCiXyuS0lfD2JhtapNgDP5cwD6gS14
+Authorization: Bearer 
 
 # {
 #     "title": "mr",
@@ -30,3 +46,4 @@ curl \
   -H "Content-Type: application/json" \
   -d '{"username": "dera", "password": "Manuel771442_"}' \
   http://localhost:8000/api/token/
+

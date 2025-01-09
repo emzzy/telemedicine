@@ -16,66 +16,66 @@
     <div class="form-container">
         <h2 class="text-center">Register as a Patient</h2>
         
-        <form id="registerForm" method="post" action="{% url 'patient-register' %}">
+        <form id="registerForm" method="POST" action="{% url 'patient-register' %}">
             {% csrf_token %}
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    <input type="text" class="form-control" id="firstName" name="first_name" required />
                 </div>
                 <div class="col-md-6">
                     <label for="lastName" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                    <input type="text" class="form-control" id="lastName" name="last_name" required />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email" class="form-control" id="email" name="email" required />
                 </div>
                 <div class="col-md-6">
                     <label for="phone" class="form-label">Phone</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                    <input type="tel" class="form-control" id="phone" name="phone_number" required />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required />
                 </div>
                 <div class="col-md-6">
                     <label for="confirmPassword" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Enter password again" required>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirm_Password" placeholder="Enter password again" required />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="gender" class="form-label">Gender</label>
-                    <input type="text" class="form-control" id="gender" name="gender" required>
+                    <input type="text" class="form-control" id="gender" name="gender" required />
                 </div>
                 <div class="col-md-6">
                     <label for="location" class="form-label">Location</label>
-                    <input type="text" class="form-control" id="location" name="location" required>
+                    <input type="text" class="form-control" id="location" name="location" required />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="birthday" class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control" id="birthday" name="birthday" placeholder="Enter your Date of Birth" required>
+                    <input type="date" class="form-control" id="birthday" name="date_of_birth" placeholder="Enter your Date of Birth" required />
                 </div>
                 <div class="col-md-6">
                     <label for="age" class="form-label">Age</label>
-                    <input type="number" class="form-control" id="age" name="age" max=120 placeholder="Enter your Age" required>
+                    <input type="number" class="form-control" id="age" name="age" max=120 placeholder="Enter your Age" required />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="energencyContactInfo" class="form-label">Emergency Contact Information</label>
-                    <input type="tel" class="form-control" id="energencyContactInfo" name="energencyContactInfo" required>
+                    <input type="tel" class="form-control" id="energencyContactInfo" name="emergency_" required />
                 </div>
                 <div class="col-md-6">
                     <label for="medicalInformation" class="form-label">Medical Information</label>
-                    <input type="file" class="form-control" id="medicalInformation" name="medicalInformation">
+                    <input type="file" class="form-control" id="medicalInformation" name="medicalInformation" />
                 </div>
             </div>
             <div class="text-center">

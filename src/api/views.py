@@ -67,18 +67,12 @@ class PatientSignupView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        print(request.data)
         serializer = PatientSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response()
-        
-        # to check if record exists
-        if Patient.objects.filter(email=email).exists():
-            return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # proceed to create the user if above passes
-        return Response({"Message": "User registered successfully"}, status=status.HTTP_201_CREATED)
-    
+            return Response({"Message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def patient_login(request):

@@ -8,7 +8,7 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = [
-            "email"
+            "email",
             "first_name",
             "last_name",
             "password",

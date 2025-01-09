@@ -1,9 +1,0 @@
-[builder]
-builder = "DOCKERFILE"
-dockerfilepath = "./Dockerfile"
-watchPatterns = [
-    "requirements.txt",
-    "src/**",
-    "railway.toml"
-    "Dockerfile",
-]

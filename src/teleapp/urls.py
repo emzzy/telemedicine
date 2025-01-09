@@ -20,12 +20,10 @@ from rest_framework_simplejwt.views import (
 )
 from django.contrib import admin
 from django.urls import path, include
-from auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import (
     home_view, 
-    about_view, 
     user_only_view,
     staff_only_view,
     doctor_register_view,
@@ -34,22 +32,11 @@ from .views import (
 
 urlpatterns = [
     path("", home_view, name="home"), # index page -> root page
-    path("login/", auth_views.login_view, name="login"),
-    path("register/", auth_views.register_view, name="register"),
-    path("about/", about_view),
-    path("hello-world/", home_view),
-    path("hello-world.html/", home_view),
-    path('accounts/', include('allauth.urls')),
-    path('protected/user-only/', user_only_view),
-    path('protected/staff-only/', staff_only_view),
-    path('profiles/', include('profiles.urls')),
-    #path('api-auth/', include('rest_framework.urls')), # Django rest framework login/logout views
     path('api/', include('api.urls')),
-    path('doctor-register/', doctor_register_view, name='doctor_register'),
-    path('patient-register/', patient_register_view, name='patient_register'),
-    
+    path('doctor-signup/', doctor_register_view, name='doctor_signup'),
+    path('patient-signup/', patient_register_view, name='patient_signup'),
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('silk/', include('silk.urls', namespace='silk')), # for api optimization during development
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
