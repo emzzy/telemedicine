@@ -39,7 +39,7 @@ if all([ADMIN_USER_NAME, ADMIN_USER_EMAIL]):
     ]
     MANAGERS=ADMINS
 
-AUTH_USER_MODEL = "api.BaseUser"
+AUTH_USER_MODEL = "api.UserAccount"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
