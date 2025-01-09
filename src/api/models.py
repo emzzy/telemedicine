@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Permission
 
-class BaseUserManager(BaseUserManager):
+class UserAccountManager(BaseUserManager):
     """
     If you need custom user creation logic, define a BaseUserManager. 
     For example, you might want to handle user creation for Patient and MedicalProfessional
@@ -25,7 +25,7 @@ class BaseUserManager(BaseUserManager):
 
         return user
 
-class BaseUser(AbstractUser):
+class UserAccount(AbstractUser):
     """
     allows you to handle multiple user types (e.g., Patient and MedicalProfessional) 
     while maintaining Django's built-in authentication features.
@@ -33,24 +33,27 @@ class BaseUser(AbstractUser):
     is_patient = models.BooleanField(default=False)
     is_medical_professional = models.BooleanField(default=False)
 
-    objects = BaseUserManager()
+    objects = UserAccountManager()
 
     groups = models.ManyToManyField(
         Group,
-        related_name='baseuser_set',  # Custom reverse relation name
+        related_name='useraccount_set',  # Custom reverse relation name
         blank=True
     )
     user_permissions = models.ManyToManyField(
         Permission,
-        related_name='baseuser_permissions',  # Custom reverse relation name
+        related_name='useraccount_permissions',  # Custom reverse relation name
         blank=True
     )
+
+    class Meta:
+        db_table = 'api_useraccount'
 
     def __str__(self):
         return self.username
 
 class Patient(AbstractUser):
-    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, related_name='patient_profile', default=None)
+    user = models.OneToOneField(UserAccount, on_delete=models.CASCADE, related_name='patient_profile', default=None)
     phone_number = models.CharField(max_length=15, blank=False)
     gender = models.CharField(max_length=15)
     location = models.TextField()
@@ -76,7 +79,7 @@ class Patient(AbstractUser):
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = []
 
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
@@ -85,7 +88,7 @@ class Patient(AbstractUser):
         return self.username
 
 class MedicalProfessional(AbstractUser):
-    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE, related_name='medical_profile', default=None)
+    user = models.OneToOneField(UserAccount, on_delete=models.CASCADE, related_name='medical_profile', default=None)
     title = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=15)
     gender = models.CharField(max_length=15)
@@ -118,7 +121,7 @@ class MedicalProfessional(AbstractUser):
         blank=True
     )
 
-    objects = BaseUserManager()
+    #objects = UserAccountManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
