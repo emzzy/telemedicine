@@ -16,70 +16,60 @@
     <div class="form-container">
         <h2 class="text-center">Register as a Healthcare Provider</h2>
 
-        <form action="{% url 'doctor_signup' %}" id="registerForm" method="POST">
+        <form action="{% url 'doctor-register' %}" id="registerForm" method="POST">
             {% csrf_token %}
             <div class="row mb-3">
                 <label for="title" class="form-label title-label">Title</label>
-                <input type="text" class="form-control" id="title" name="title" >
+                <input type="text" class="form-control" id="title" name="title" />
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    <input type="text" class="form-control" id="firstName" name="first_name" required />
                 </div>
                 <div class="col-md-6">
                     <label for="lastName" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                    <input type="text" class="form-control" id="lastName" name="last_name" required />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email" class="form-control" id="email" name="email" required />
                 </div>
                 <div class="col-md-6">
                     <label for="phone" class="form-label">Phone</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                    <input type="tel" class="form-control" id="phone" name="phone_number" required />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <input type="password" class="form-control" id="password" name="password" required />
                 </div>
                 <div class="col-md-6">
                     <label for="confirmPassword" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="gender" class="form-label">Gender</label>
-                    <input type="text" class="form-control" id="gender" name="gender" required>
+                    <input type="text" class="form-control" id="gender" name="gender" required />
                 </div>
                 <div class="col-md-6">
                     <label for="medicalLicenseNumber" class="form-label">Medical license number</label>
-                    <input type="text" class="form-control" id="medicalLicenseNumber" name="medicalLicenseNumber" required>
+                    <input type="text" class="form-control" id="medicalLicenseNumber" name="medical_license" required />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="experience" class="form-label">Experience</label>
-                    <input type="number" class="form-control" id="experience" name="experience" max=50 required>
+                    <input type="number" class="form-control" id="experience" name="years_of_experience" max=50 required />
                 </div>
                 <div class="col-md-6">
-                    <label for="age" class="form-label">Age</label>
-                    <input type="number" class="form-control" id="age" name="age" max=120 required>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="energencyContactInfo" class="form-label">Emergency Contact Information</label>
-                    <input type="tel" class="form-control" id="energencyContactInfo" name="energencyContactInfo" required>
-                </div>
-                <div class="col-md-6">
-                    <label for="professionalCertification" class="form-label">Professional certification</label>
-                    <input type="file" class="form-control" id="professionalCertification" name="professionalCertification">
+                    <label for="age" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" id="birthday" name="date_of_birth" max=120 required />
                 </div>
             </div>
             <div class="text-center">

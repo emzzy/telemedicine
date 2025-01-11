@@ -58,11 +58,6 @@ class MedicalProfessionalDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
     #permission_classes = [IsAuthenticated]
     
 
-class IsDoctorAPIView(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'doctor'
-
-
 class PatientSignupView(APIView):
     permission_classes = [AllowAny]
 
@@ -72,7 +67,19 @@ class PatientSignupView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({"Message": "User registered successfully"}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+class MedProfessionalSignupview(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        print(request.data)
+        serializer = MedicalProfessionalSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def patient_login(request):
