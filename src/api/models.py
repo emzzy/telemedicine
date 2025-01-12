@@ -4,64 +4,122 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager, AbstractBa
 
 
 class UserAccountManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email, first_name, last_name, password=None, **extra_fields):
         if not email:
             raise ValueError("You have not provided an email address")
-            
-        email = self.normalize_email(email).lower()
-
-        user = self.model(email=email, **extra_fields)
+        email = self.normalize_email(email).lower(),
+        user = self.model(email=email,
+            first_name=first_name, 
+            last_name=last_name, 
+            password=None, 
+            **extra_fields
+        )
         user.set_password(password)
         user.save(using=self._db)
         return user
     
-    def create_admin(self, email, password=None):
-        user = self.create_user(
+    def create_admin(self, email, first_name, last_name, password=None, **extra_fields):
+        user = self.create_user( 
             email=self.normalize_email(email),
-            password = password
+            first_name=first_name,
+            last_name=last_name,
+            password = password,
+            **extra_fields
         )
         user.is_admin = True
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        user = self.create_user(email, password, **extra_fields)
+    def create_superuser(self, email, first_name, last_name, password=None, **extra_fields):
+        user = self.create_user(
+            email=self.normalize_email(email), 
+            first_name = first_name, 
+            last_name = last_name, 
+            password=None, **extra_fields
+        )
         user.is_staff = True
         user.is_active = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
-    """
-    allows you to handle multiple user types (e.g., Patient and MedicalProfessional) 
-    while maintaining Django's built-in authentication features.
-    """
+    class Types(models.TextChoices):
+        PATIENT = "PATIENT", "patient"
+        MEDICALPROFESSIONAL = "MEDICALPROFESSIONAL", "medicalprofessional"
+
+    type = models.CharField(max_length=8, choices = Types.choices, default=Types.PATIENT)
+
     email = models.EmailField(unique=True, max_length=255)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=120)
+    last_name = models.CharField(max_length=120)
+    phone_number = models.CharField(max_length=15)
+    gender = models.CharField(max_length=15)
+    date_of_birth = models.DateField(null=True, blank=True, auto_now_add=True)
+    location = models.TextField(max_length=255)
+
     is_active = models.BooleanField(default=True)
-    is_patient = models.BooleanField(default=False)
-    is_medical_professional = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-
-    objects = UserAccountManager()
-
+    
+    # special permission which define the patient and medical professional
+    is_patient = models.BooleanField(default=False)
+    is_medical_professional = models.BooleanField(default=False)
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
+
+    # defining the manager for UserAccount
+    objects = UserAccountManager()
+
+    def __str__(self):
+        return str(self.email)
+    
+    def has_perm(self, perm, obj = None):
+        return self.is_admin
+    
+    def has_module_perms(self, app_label):
+        return True
+    
+    def save(self, *args, **kwargs):
+        if not self.type or self.type == None:
+            self.type = UserAccount.Types.PATIENT
+        return super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'api_useraccount'
 
-    def __str__(self):
-        return self.username
 
-class Patient(AbstractUser):
-    pass
+class Patient(models.Model):
+    user = models.OneToOneField(UserAccount, on_delete=models.CASCADE)
+    location = models.TextField()
+    is_patient = models.BooleanField(default=True)
+    age = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(120)], null=True, blank=True)
+    emergency_contact = models.TextField(max_length=200, null=True, blank=True)
+    medical_information = models.FileField(upload_to='src/uploads/patient', null=True)
+    
 
-class MedicalProfessional(AbstractUser):
-    pass
+class MedicalProfessional(models.Model):
+    user = models.OneToOneField(UserAccount, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50)
+    medical_license = models.CharField(
+        max_length=20,
+        validators=[
+            RegexValidator(
+                regex=r'^[A-Z0-9-]+$', # allows numbers, letters, and alphabets
+                message="Medical license must contain only uppercase letters, numbers, or hyphens."
+            )
+        ],
+        unique=True, null=True, blank=True
+    )
+    specialty = models.CharField(max_length=100, default="Emergency Responder", null=True, blank=True)
+    years_of_experience = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
+    professional_certificate = models.FileField(upload_to='', null=True, blank=True)
+    is_medical_professional = models.BooleanField(default=True)
+    
 
 class Appointments(models.Model):
     pass
