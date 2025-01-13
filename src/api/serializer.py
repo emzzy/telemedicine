@@ -8,19 +8,6 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = [
-            "first_name",
-            "last_name",
-            "email",
-            "phone_number",
-            "password",
-            "confirm_password",
-            "gender",
-            "location",
-            "date_of_birth",
-            "age",
-            "emergency_contact",
-            "medical_information",
-            "is_active"
         ]
         extra_kwargs = {"medical_information": {"required": False}}
 
@@ -86,6 +73,6 @@ class MedicalProfessionalSerializer(serializers.ModelSerializer):
         user = UserAccount.objects.create_user(**user_data, password=password)
         user.is_medical_professional = True
         user.save()
-        
+
         medical_professional = MedicalProfessional.objects.create(user=user, **validated_data)
         return medical_professional

@@ -50,15 +50,15 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         PATIENT = "PATIENT", "patient"
         MEDICALPROFESSIONAL = "MEDICALPROFESSIONAL", "medicalprofessional"
 
-    type = models.CharField(max_length=8, choices = Types.choices, default=Types.PATIENT)
+    type = models.CharField(max_length=25, choices = Types.choices, default=Types.PATIENT)
 
     email = models.EmailField(unique=True, max_length=255)
     first_name = models.CharField(max_length=120)
     last_name = models.CharField(max_length=120)
-    phone_number = models.CharField(max_length=15)
-    gender = models.CharField(max_length=15)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    gender = models.CharField(max_length=15, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True, auto_now_add=True)
-    location = models.TextField(max_length=255)
+    location = models.TextField(max_length=255, null=True, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -85,7 +85,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         return True
     
     def save(self, *args, **kwargs):
-        if not self.type or self.type == None:
+        if not self.type and not self.is_superuser:
             self.type = UserAccount.Types.PATIENT
         return super().save(*args, **kwargs)
 
@@ -96,7 +96,6 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 class Patient(models.Model):
     user = models.OneToOneField(UserAccount, on_delete=models.CASCADE)
     location = models.TextField()
-    is_patient = models.BooleanField(default=True)
     age = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(120)], null=True, blank=True)
     emergency_contact = models.TextField(max_length=200, null=True, blank=True)
     medical_information = models.FileField(upload_to='src/uploads/patient', null=True)
@@ -118,7 +117,6 @@ class MedicalProfessional(models.Model):
     specialty = models.CharField(max_length=100, default="Emergency Responder", null=True, blank=True)
     years_of_experience = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
     professional_certificate = models.FileField(upload_to='', null=True, blank=True)
-    is_medical_professional = models.BooleanField(default=True)
     
 
 class Appointments(models.Model):
