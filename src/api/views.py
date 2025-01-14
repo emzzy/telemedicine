@@ -11,7 +11,17 @@ from .serializer  import PatientSerializer, MedicalProfessionalSerializer
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
 
+class SelectedRole(APIView):
+    def post(self, request):
+        role = request.data.get('role')
+        if role not in ['patient', 'medical_professional']:
+            return Response({'error': 'invalid_role'}, status=status.HTTP_400_BAD_REQUEST)
+        request.session['role'] = role
+        return Response({'message': f'{role} selected successfully'})
 
+
+class RegisterView(APIView):
+    pass
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -27,37 +37,6 @@ def signup_patient(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PatientListAPIView(generics.ListCreateAPIView):
-    """List all patients, or create new patient"""
-    queryset = Patient.objects.all()
-    serializer_class = PatientSerializer
-
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
-    #permission_classes = [IsAdminUser, IsAuthenticated] # admin, and authenticated can access this view
-
-
-class PatientDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
-    """Retrieve, update, or delete a patient instance"""
-    queryset = Patient.objects.all()
-    serializer_class = PatientSerializer
-    authentication_classes = [TokenAuthentication]
-    #permission_classes = [IsAuthenticated]
-    
-
-class MedicalProfessionalListAPIView(generics.ListCreateAPIView):
-    """List all medical professionals, or create new"""
-    queryset = MedicalProfessional.objects.all()
-    serializer_class = MedicalProfessionalSerializer
-    #permission_classes = [IsAuthenticated]
-
-
-class MedicalProfessionalDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
-    """Retrieve, update, or delete a patient instance"""
-    queryset = MedicalProfessional.objects.all()
-    serializer_class = MedicalProfessionalSerializer
-    #permission_classes = [IsAuthenticated]
-    
-
 class PatientSignupView(APIView):
     permission_classes = [AllowAny]
 
@@ -68,24 +47,3 @@ class PatientSignupView(APIView):
             serializer.save()
             return Response({"Message": "User registered successfully"}, status=status.HTTP_201_CREATED)
         return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-class MedProfessionalSignupview(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        print(request.data)
-        serializer = MedicalProfessionalSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"Message": "User registered successfully"}, status=status.HTTP_201_CREATED)
-        return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-def patient_login(request):
-    patient = get_object_or_404(Patient, username=request.data['username'])
-    if not patient.check_password(request.data['password']):
-        return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-    token = Token.objects.get_or_create(patient=patient)
-    serializer = PatientSerializer(instance=patient)
-    return Response({"token": token.key, "patient": serializer.data})
