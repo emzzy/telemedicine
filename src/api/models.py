@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.contrib.auth.models import AbstractUser, BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.utils.timezone import now
 
 
 class UserAccountManager(BaseUserManager):
@@ -15,7 +16,7 @@ class UserAccountManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-    
+
     def create_admin(self, email, first_name, last_name, password=None, **extra_fields):
         user = self.create_user( 
             email=email, first_name=first_name, last_name=last_name, password=password, **extra_fields
@@ -41,6 +42,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     class Types(models.TextChoices):
         PATIENT = "PATIENT", "patient"
         MEDICALPROFESSIONAL = "MEDICALPROFESSIONAL", "medicalprofessional"
+        ADMIN = "ADMIN", "admin"
 
     type = models.CharField(max_length=25, choices = Types.choices, null=True)
 
@@ -49,8 +51,9 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=120)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     gender = models.CharField(max_length=15, null=True, blank=True)
-    date_of_birth = models.DateField(null=True, blank=True, auto_now_add=True)
+    date_of_birth = models.DateField(null=True, blank=True)
     location = models.TextField(max_length=255, null=True, blank=True)
+    date_joined = models.DateField(default=now)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -77,7 +80,10 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         return True
     
     def save(self, *args, **kwargs):
-        if not self.type and not self.is_superuser:
+        if self.is_superuser or self.is_admin:
+            self.type = UserAccount.Types.ADMIN
+        
+        elif not self.type:
             self.type = UserAccount.Types.PATIENT
         return super().save(*args, **kwargs)
 
@@ -109,7 +115,7 @@ class MedicalProfessional(models.Model):
     specialty = models.CharField(max_length=100, default="Emergency Responder", null=True, blank=True)
     years_of_experience = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
     professional_certificate = models.FileField(upload_to='', null=True, blank=True)
-    
+
 
 class Appointments(models.Model):
     pass
