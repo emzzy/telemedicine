@@ -31,5 +31,16 @@
             <img src="{% static 'images\doctor2.png' %}" alt="doctor">
         </section>
     </div>
+    <hr>
+    <br>
+    {% if request.user.is_authenticated %}
+    Welcome {{request.user.email}}
+    <br>
+    <br>
+    The type of user is {{request.user.type}}
+    {% endif %}
+    <br />
+    <br />
+    <a href="{% url'user-login' %}">Login</a>
 </body>
 </html>
