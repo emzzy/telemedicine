@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import UserAccountManager
 from django.utils.timezone import now
 
+
 class UserAccount(AbstractBaseUser, PermissionsMixin):
     class Types(models.TextChoices):
         PATIENT = "PATIENT", "patient"
