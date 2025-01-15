@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     
     # my apps
     'api',
+    'users',
     'rest_framework',
     'silk',
 ]
@@ -211,4 +212,4 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
 
-AUTH_USER_MODEL = "api.UserAccount"
+AUTH_USER_MODEL = "users.UserAccount"
