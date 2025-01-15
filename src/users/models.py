@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
-from django.contrib.auth.models import AbstractUser, AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from .managers import UserAccountManager
 from django.utils.timezone import now
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
