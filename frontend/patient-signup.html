@@ -14,7 +14,7 @@
         <h1>Create Account</h1>
     </div>
     <div class="form-container">
-        <h2 class="text-center">Register as a Patient</h2>
+        <h2 class="text-center">Register</h2>
         
         <form id="registerForm" method="POST" action="{% url 'patient-register' %}">
             {% csrf_token %}
@@ -62,20 +62,6 @@
                 <div class="col-md-6">
                     <label for="birthday" class="form-label">Date of Birth</label>
                     <input type="date" class="form-control" id="birthday" name="date_of_birth" placeholder="Enter your Date of Birth" required />
-                </div>
-                <div class="col-md-6">
-                    <label for="age" class="form-label">Age</label>
-                    <input type="number" class="form-control" id="age" name="age" max=120 placeholder="Enter your Age" required />
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="energencyContactInfo" class="form-label">Emergency Contact Information</label>
-                    <input type="tel" class="form-control" id="emergencyContactInfo" name="emergency_contact" required />
-                </div>
-                <div class="col-md-6">
-                    <label for="medicalInformation" class="form-label">Medical Information</label>
-                    <input type="file" class="form-control" id="medicalInformation" name="medical_information" />
                 </div>
             </div>
             <div class="text-center">
