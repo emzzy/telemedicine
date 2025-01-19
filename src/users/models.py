@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import UserAccountManager
 from django.utils.timezone import now
-from .managers import PatientManager, MedicalProfessionalManager
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
@@ -54,18 +53,3 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'users_useraccount'
-
-
-class Patient(UserAccount):
-    base_role = UserAccount.Role.PATIENT
-    patient = PatientManager()
-
-    class Meta:
-        proxy = True
-
-class MedicalProfessional(UserAccount):
-    base_role = UserAccount.Role.MEDICALPROFESSIONAL
-    medical_professional = MedicalProfessionalManager()
-
-    class Meta:
-        proxy = True
