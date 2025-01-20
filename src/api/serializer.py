@@ -1,16 +1,30 @@
 from rest_framework import serializers
-from .models import Patient, MedicalProfessional, UserAccount
+from users.models import UserAccount
+from profiles.models import Patient, MedicalProfessional
+
+
+class UserAccountSerializer(serializers.ModelSerializer):
+    # password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = UserAccount
+        fields = (
+            'id', 'email', 'first_name', 'last_name', 'password', 'phone_number', 'gender', 'date_of_birth', 'location',
+            'is_patient', 'is_medical_professional'
+        )
+
+
 
 class PatientSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = Patient
-        fields = [
-        ]
+        fields = (
+            'location', 'age', 'emergency_contact', 'medical_information', 'user_type'
+        )
         extra_kwargs = {"medical_information": {"required": False}}
-
+        
     def validate(self, data):
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError({'password': 'passwords do not match'})
@@ -35,24 +49,12 @@ class PatientSerializer(serializers.ModelSerializer):
 
 class MedicalProfessionalSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = MedicalProfessional
-        fields = [
-            "title",
-            "first_name",
-            "last_name",
-            "email",
-            "phone_number",
-            "password",
-            "confirm_password",
-            "gender",
-            "medical_license",
-            "years_of_experience",
-            "date_of_birth",
-            "is_active"
-        ]
+        fields = (
+            'title', 'medical_license', 'specialty', 'years_of_experience'
+        )
 
     def validate(self, data):
         user_data = data.get("user", {})
