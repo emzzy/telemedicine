@@ -72,11 +72,16 @@ INSTALLED_APPS = [
     # my apps
     'api',
     'users',
+    'profiles',
     'rest_framework',
     'silk',
+    'corsheaders',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True # Not recommended for prod
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
