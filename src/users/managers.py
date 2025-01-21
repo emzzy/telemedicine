@@ -34,15 +34,3 @@ class UserAccountManager(BaseUserManager):
         user.is_admin = True
         user.save(using=self._db)
         return user
-
-class PatientManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        from .models import UserAccount
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=UserAccount.Role.PATIENT)
-
-class MedicalProfessionalManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        from .models import UserAccount
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=UserAccount.Role.MEDICALPROFESSIONAL)
