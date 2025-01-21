@@ -1,15 +1,16 @@
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission, AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
-from .models import Patient, MedicalProfessional
-from .serializer  import PatientSerializer, MedicalProfessionalSerializer
+from .serializer  import UserAccountSerializer, PatientSerializer
+from profiles.models import Patient
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.hashers import make_password
+from users.models import UserAccount
+
 
 class SelectedRole(APIView):
     def post(self, request):
@@ -19,13 +20,12 @@ class SelectedRole(APIView):
         request.session['role'] = role
         return Response({'message': f'{role} selected successfully'})
 
-
-class RegisterView(APIView):
+class UserSignupView(APIView):
     pass
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def signup_patient(request):
+def user_signup(request):
     serializer = PatientSerializer(data=request.data)
     if serializer.is_valid():
         patient = serializer.save()
@@ -47,3 +47,34 @@ class PatientSignupView(APIView):
             serializer.save()
             return Response({"Message": "User registered successfully"}, status=status.HTTP_201_CREATED)
         return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
+@api_view(['GET'])
+def list_users(request):
+    """Return all users in the database"""
+    users = UserAccount.objects.all()
+    serializer = UserAccountSerializer(users, many=True)
+    return Response({'data': serializer.data})
+
+@csrf_exempt
+@api_view(['GET'])
+def get_user(request, pk):
+    """Get one user from database"""
+    users = get_object_or_404(UserAccount, pk=pk)
+    serializer = UserAccountSerializer(users)
+    return Response(serializer.data)
+
+class IsPatientView(APIView):
+    def get(self, request):
+        """returns all patients in database"""
+        patients = UserAccount.objects.filter(is_patient=True).select_related('patient')
+        serializer = UserAccountSerializer(patients, many=True)
+        return Response(serializer.data)
+
+class IsMedicalProfessional(APIView):
+    def get(self, request):
+        """Returns all medical professsionals in database"""
+        is_med_pro = UserAccount.objects.filter(is_medical_professional=True).select_related('medicalprofessional')
+        serializer = UserAccountSerializer(is_med_pro, many=True)
+        return Response(serializer.data)
+    
