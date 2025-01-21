@@ -9,7 +9,7 @@ class Patient(models.Model):
     age = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(120)], null=True, blank=True)
     emergency_contact = models.TextField(max_length=200, null=True, blank=True)
     medical_information = models.FileField(upload_to='src/uploads/patient', null=True)
-    user_type = UserAccount.Role.PATIENT
+    #user_type = UserAccount.Role.PATIENT
 
 
 class MedicalProfessional(models.Model):
@@ -28,4 +28,4 @@ class MedicalProfessional(models.Model):
     specialty = models.CharField(max_length=100, default="Emergency Responder", null=True, blank=True)
     years_of_experience = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
     professional_certificate = models.FileField(upload_to='', null=True, blank=True)
-    user_type = UserAccount.Role.MEDICALPROFESSIONAL
+    #user_type = UserAccount.Role.MEDICALPROFESSIONAL
