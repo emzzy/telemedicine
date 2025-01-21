@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
-from .models import Patient, MedicalProfessional, UserAccount
+from profiles.models import Patient, MedicalProfessional, UserAccount
 from .forms import UserAccountChangeForm, UserAccountCreationForm
 
 #User = get_user_model()
