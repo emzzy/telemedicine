@@ -31,10 +31,16 @@ def user_only_view(request, *args, **kwargs):
 def staff_only_view(request, *args, **kwargs):
     return render(request, "protected/user-only.html")
 
+def user_register_view(request, *args, **kwargs):
+    return render(request, 'signup.html')
 
-def doctor_register_view(request, *args, **kwargs):
-    return render(request, 'doctor-signup.html')
+def role_selector(request, *args, **kwargs):
+    return render(request, 'role_selection.html')
 
-def patient_register_view(request, *args, **kwargs):
-    return render(request, 'patient-signup.html')
+# success page 
+def success(request, *args, **kwargs):
+    return render(request, 'success-page.html')
 
+# dashboard after auth
+def user_dashboard(request, *args, **kwargs):
+    return render(request, 'profils/patient-dashboard', {})
