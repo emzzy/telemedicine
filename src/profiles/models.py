@@ -29,25 +29,3 @@ class MedicalProfessional(models.Model):
     years_of_experience = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
     professional_certificate = models.FileField(upload_to='', null=True, blank=True)
     user_type = UserAccount.Role.MEDICALPROFESSIONAL
-
-
-class Appointments(models.Model):
-    pass
-
-class VideoCallSession(models.Model):
-   pass
-
-class Prescriptions(models.Model):
-    pass
-
-class MedicalRecords(models.Model):
-    pass
-
-class Messages(models.Model):
-    pass
-
-class Notifications(models.Model):
-    pass
-
-class Payments(models.Model):
-    pass
