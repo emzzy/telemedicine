@@ -3,18 +3,6 @@ from users.models import UserAccount
 from profiles.models import Patient, MedicalProfessional
 
 
-class UserAccountSerializer(serializers.ModelSerializer):
-    # password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = UserAccount
-        fields = (
-            'id', 'email', 'first_name', 'last_name', 'password', 'phone_number', 'gender', 'date_of_birth', 'location',
-            'is_patient', 'is_medical_professional'
-        )
-
-
-
 class PatientSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -24,27 +12,6 @@ class PatientSerializer(serializers.ModelSerializer):
             'location', 'age', 'emergency_contact', 'medical_information', 'user_type'
         )
         extra_kwargs = {"medical_information": {"required": False}}
-        
-    def validate(self, data):
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({'password': 'passwords do not match'})
-        return data
-    
-    def create(self, validated_data):
-        validated_data.pop('confirm_password')
-        password = validated_data.pop('password')
-
-        user = UserAccount.objects.create_user(
-            email=validated_data.pop('email'),
-            password=password,
-            first_name=validated_data.pop('first_name'),
-            last_name=validated_data.pop('last_name')
-        )
-        user.is_patient = True
-        user.save()
-        # create patient data
-        patient = Patient.objects.create(user=user, **validated_data)
-        return patient
 
 
 class MedicalProfessionalSerializer(serializers.ModelSerializer):
@@ -56,25 +23,15 @@ class MedicalProfessionalSerializer(serializers.ModelSerializer):
             'title', 'medical_license', 'specialty', 'years_of_experience'
         )
 
-    def validate(self, data):
-        user_data = data.get("user", {})
-        if user_data.get('password') != data.get('confirm_password'):
-            raise serializers.ValidationError('passwords do not match')
-        return data
-    
-    def create(self, validated_data):
-        user_data = validated_data.pop('user')
-        password = user_data.pop('password')
-        
-        # user = UserAccount.objects.create_user(
-        #     email=validated_data.pop('email'),
-        #     password=password,
-        #     first_name=validated_data.pop('first_name'),
-        #     last_name=validated_data.pop('last_name')
-        # )
-        user = UserAccount.objects.create_user(**user_data, password=password)
-        user.is_medical_professional = True
-        user.save()
 
-        medical_professional = MedicalProfessional.objects.create(user=user, **validated_data)
-        return medical_professional
+class UserAccountSerializer(serializers.ModelSerializer):
+    patient = PatientSerializer(read_only=True)
+    medical_professional = MedicalProfessionalSerializer(read_only=True)
+    # password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = UserAccount
+        fields = (
+            'id', 'email', 'first_name', 'last_name', 'password', 'phone_number', 'gender', 'date_of_birth', 'location',
+            'is_patient', 'is_medical_professional'
+        )
