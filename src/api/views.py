@@ -4,19 +4,24 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializer  import UserAccountSerializer, UserRegistrationSerializer
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from users.models import UserAccount
+import logging
 
 
 class SelectedRole(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
-        role = request.data.get('role')
+        role = request.POST.get('role')
+        
         if role not in ['patient', 'medical_professional']:
             return Response({'error': 'invalid_role'}, status=status.HTTP_400_BAD_REQUEST)
-        request.session['role'] = role
-        return Response({'message': f'{role} selected successfully'})
+        
+        request.session['selected_role'] = role # save the role in a session
+        print(f'selected role before signup: {role}')
+        print(f'redirecting to: {reverse('signup')}')
+        return redirect(reverse('signup'))
 
 class SignUpView(APIView):
     """Retrieves the selected role from session, validates input, and creates a user"""
@@ -24,7 +29,7 @@ class SignUpView(APIView):
         """handles GET request to show role-specific signup data. Redirects to the select-role view if no role is in session"""
         role = request.session.get('selected_role', None)
         if not role:
-            return redirect('select-role')
+            return redirect(reverse('select-role'))
         return Response({'message': f'Signing up as: {role}'}, status=status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
@@ -35,16 +40,29 @@ class SignUpView(APIView):
                 {'error': 'Role not specified. Please select a role first.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
+        logging.info(f'Selected role before signup: {role}')
 
-            if role == 'PATIENT':
-                user.is_patient = True
-            elif role == 'MEDICALPROFESSIONAL':
-                user.is_medical_professional = True
-            user.save()
-            
+        serializer = UserRegistrationSerializer(data=request.data, context={'role': role})
+
+        logging.info(f"Serializer context: {serializer.context}")
+
+        if serializer.is_valid():
+            serializer.save()
+
+            # if role == 'patient':
+            #     user.is_patient = True
+            # elif role == 'medical_professional':
+            #     user.is_medical_professional = True
+            # user.save()
+            print(f'selected role after signup: {role}')
+            # clear session
+            request.session.pop('selected_role', None)
+            return redirect(reverse('user-login'))
+        logging.info(f"Serializer errors: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class LoginView(APIView):
+    pass
 
 class UserRegistrationView(APIView):
     permission_classes = [AllowAny]
