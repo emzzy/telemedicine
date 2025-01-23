@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import UserAccount
 from profiles.models import Patient, MedicalProfessional
+import logging
 
 
 class PatientSerializer(serializers.ModelSerializer):
@@ -62,6 +63,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         validated_data.pop('confirm_password')
+        role = self.context.get('role', None) # selected user role patient or medpro
+
+        if role is None:
+            raise serializers.ValidationError({'role': 'Role is not specified in the context.'})
+        
+        logging.info(f"Role in serializer context: {role}")
 
         # create user with selected fields
         user = UserAccount.objects.create_user(
@@ -73,7 +80,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             gender=validated_data.get('gender'),
             date_of_birth=validated_data.get('date_of_birth', None),
             location=validated_data.get('location', ''),
-            is_patient=validated_data.get('is_patient', False),
-            is_medical_professional=validated_data.get('is_medical_professional', False),
         )
+        if role == 'patient':
+            user.is_patient = True
+        elif role == 'medical_professional':
+            user.is_medical_professional = True
+        else:
+            raise serializers.ValidationError({'role': 'Invalid role selected'})
+        user.save()
         return user
