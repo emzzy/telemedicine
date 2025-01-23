@@ -9,15 +9,15 @@
 </head>
 <body>
     <h1>Select Your Role</h1>
-    <form method="GET" action="{% url 'select-role' %}">
+    <form method="POST" action="{% url 'api-select-role' %}">
         {% csrf_token %}
-        <input type="hidden" name="type" value="PATIENT">
-        <button type="submit" name="role" value="patient">Sign up as Patient</button>
+        <input type="hidden" name="role" value="patient">
+        <button type="submit">Sign up as Patient</button>
     </form>
-    <form method="GET" action="{% url 'select-role' %}">
+    <form method="POST" action="{% url 'api-select-role' %}">
         {% csrf_token %}
-        <input type="hidden" name="type" value="MEDICALPROFESSIONAL">
-        <button type="submit" name="role" value="medical_professional">Sign up as Medical Professional</button>
+        <input type="hidden" name="role" value="medical_professional">
+        <button type="submit">Sign up as Medical Professional</button>
     </form>
 </body>
 </html>
