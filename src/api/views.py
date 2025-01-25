@@ -12,6 +12,7 @@ import logging
 
 class SelectedRole(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         role = request.POST.get('role')
         
@@ -19,12 +20,14 @@ class SelectedRole(APIView):
             return Response({'error': 'invalid_role'}, status=status.HTTP_400_BAD_REQUEST)
         
         request.session['selected_role'] = role # save the role in a session
-        print(f'selected role before signup: {role}')
-        print(f'redirecting to: {reverse('signup')}')
+
+        print(f'selected role before signup: {role}') # debuging
+        print(f'redirecting to: {reverse('signup')}') # debuging
+
         return redirect(reverse('signup'))
 
 class SignUpView(APIView):
-    """Retrieves the selected role from session, validates input, and creates a user"""
+
     def get(self, request, *args, **kwargs):
         """handles GET request to show role-specific signup data. Redirects to the select-role view if no role is in session"""
         role = request.session.get('selected_role', None)
@@ -33,7 +36,8 @@ class SignUpView(APIView):
         return Response({'message': f'Signing up as: {role}'}, status=status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
-        """handles POST request to register a user. Attaches the is_patient or is_medical_professional flag based on the selected role"""
+        """handles POST request to register a user. Attaches the is_patient or is_medical_professional 
+        flag based on the selected role"""
         role = request.session.get('selected_role', None)
         if not role:
             return Response(
@@ -49,18 +53,14 @@ class SignUpView(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            # if role == 'patient':
-            #     user.is_patient = True
-            # elif role == 'medical_professional':
-            #     user.is_medical_professional = True
-            # user.save()
             print(f'selected role after signup: {role}')
             # clear session
             request.session.pop('selected_role', None)
+            
             return redirect(reverse('user-login'))
         logging.info(f"Serializer errors: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class LoginView(APIView):
     pass
 
