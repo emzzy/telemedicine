@@ -38,37 +38,37 @@ class UserAccountSerializer(serializers.ModelSerializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     confirm_password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    role = serializers.ChoiceField(choices=['patient', 'medical_professional'], required=True)
 
     class Meta:
         model = UserAccount
         fields = (
-            'id', 'email', 'first_name', 'last_name', 'password', 'confirm_password', 'phone_number', 'gender', 
-            'date_of_birth', 'location', 'is_patient', 'is_medical_professional'
+            'id', 'email', 'first_name', 'last_name', 'password', 'confirm_password', 'phone_number', 'gender',
+            'date_of_birth', 'location', 'is_patient', 'is_medical_professional', 'role'
         )
         extra_kwargs = {
             'password': {'write_only': True},
             'confirm_password': {'write_only': True}
         }
-    
+
     def validate(self, attrs):
         # check if password and confirm password data match
         if attrs['password'] != attrs['confirm_password']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
-        
+
         # check if user is not both patient and medical professional
         if attrs.get('is_patient') and attrs.get('is_medical_professional'):
             raise serializers.ValidationError({'role': 'A user cannot be both patient and medical professional'})
         
+        role = attrs.get('role')
+        if role not in ['patient', 'medical_professional']:
+            raise serializers.ValidationError({'role': 'invalid role selected.'})
+
         return attrs
-    
+
     def create(self, validated_data):
         validated_data.pop('confirm_password')
-        role = self.context.get('role', None) # selected user role patient or medpro
-
-        if role is None:
-            raise serializers.ValidationError({'role': 'Role is not specified in the context.'})
-        
-        logging.info(f"Role in serializer context: {role}")
+        role = self.data.pop('role', None) # selected user role patient or medpro
 
         # create user with selected fields
         user = UserAccount.objects.create_user(
@@ -85,7 +85,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             user.is_patient = True
         elif role == 'medical_professional':
             user.is_medical_professional = True
-        else:
-            raise serializers.ValidationError({'role': 'Invalid role selected'})
+        
         user.save()
         return user
