@@ -1,14 +1,14 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializer  import UserAccountSerializer, UserRegistrationSerializer
-from django.shortcuts import get_object_or_404, render, redirect
+from .serializer  import UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from users.models import UserAccount
 import logging
-
+from django.contrib import messages
 
 class SelectedRole(APIView):
     permission_classes = [AllowAny]
@@ -26,7 +26,7 @@ class SelectedRole(APIView):
 
         return redirect(reverse('signup'))
 
-class SignUpView(APIView):
+class UserRegistrationView(APIView):
 
     def get(self, request, *args, **kwargs):
         """handles GET request to show role-specific signup data. Redirects to the select-role view if no role is in session"""
@@ -36,7 +36,7 @@ class SignUpView(APIView):
         return Response({'message': f'Signing up as: {role}'}, status=status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
-        """handles POST request to register a user. Attaches the is_patient or is_medical_professional 
+        """handles POST request to register a user. Attaches the is_patient or is_medical_professional
         flag based on the selected role"""
         role = request.session.get('selected_role', None)
         if not role:
@@ -52,29 +52,47 @@ class SignUpView(APIView):
 
         if serializer.is_valid():
             serializer.save()
+            user = UserAccount.objects.get(email=request.data['email'])
+            token = Token.objects.create(user=user)
+            
 
-            print(f'selected role after signup: {role}')
+            messages.success(request, "Account has been created successfully. Please Login")
+
             # clear session
             request.session.pop('selected_role', None)
             
-            return redirect(reverse('user-login'))
+            return redirect(reverse('login'))
+        
+        messages.error(request, "There was an error duing registration")
+
         logging.info(f"Serializer errors: {serializer.errors}")
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class LoginView(APIView):
-    pass
+class LoginAPIView(APIView):
+    serializer_class = UserLoginSerializer
 
-class UserRegistrationView(APIView):
-    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = UserLoginSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = authenticate(email=serializer.data['email'], password=serializer.data['password'])
+            if user:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({'token': [token.key], 'Success': 'Login successful'}, status=status.HTTP_201_CREATED)
+            return Response({'Message': 'Invalid email and password'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    def post(self, request, *args, **kwargs):
-        """To register new user(s)"""
-        serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            print(request)
-            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class UserRegistrationView(APIView):
+#     permission_classes = [AllowAny]
+
+#     def post(self, request, *args, **kwargs):
+#         """To register new user(s)"""
+#         serializer = UserRegistrationSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             print(request)
+#             return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListUsersAPIView(APIView):
     permission_classes = [IsAuthenticated]
