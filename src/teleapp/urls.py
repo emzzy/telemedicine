@@ -25,13 +25,15 @@ from django.conf.urls.static import static
 from .views import (
     home_view,
     user_register_view,
+    user_login,
     role_selector
 )
 
 urlpatterns = [
     path("", home_view, name="home"), # index page -> root page
     path('api/', include('api.urls')),
-    path('user-signup/', user_register_view, name='user-signup'),
+    path('signup/', user_register_view, name='signup'),
+    path('login/', user_login, name='login'),
     path('select-role/', role_selector, name='select-role'),
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
