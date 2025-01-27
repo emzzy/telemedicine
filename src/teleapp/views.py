@@ -11,17 +11,6 @@ def home_view(request, *args, **kwargs):
     #     print(request.user.first_name)
     return HttpResponse("<h1> Currently building.......</h1>")
 
-
-def pw_protected_view(request, *args, **kwargs):
-    if request.method == "POST":
-        user_pw_sent = request.POST.get("code") or None
-    
-    is_allowed = False
-    if is_allowed:
-        return render(request, "protected/view.html", {})
-    return render(request, "protected/entry.html", {})
-
-
 @login_required
 def user_only_view(request, *args, **kwargs):
     print(request.user.is_staff)
@@ -34,6 +23,9 @@ def staff_only_view(request, *args, **kwargs):
 def user_register_view(request, *args, **kwargs):
     return render(request, 'signup.html')
 
+def user_login(request, *args, **kwargs):
+    return render(request, 'login.html')
+
 def role_selector(request, *args, **kwargs):
     return render(request, 'role_selection.html')
 
@@ -42,5 +34,8 @@ def success(request, *args, **kwargs):
     return render(request, 'success-page.html')
 
 # dashboard after auth
-def user_dashboard(request, *args, **kwargs):
+def patient_dashboard(request, *args, **kwargs):
     return render(request, 'profils/patient-dashboard', {})
+
+def med_pro_dashboard(request, *args, **kwargs):
+    return render(request, 'profiles/doctor-dashboard', {})
