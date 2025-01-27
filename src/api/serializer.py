@@ -8,7 +8,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super(MyTokenObtainPairSerializer, cls).get_token(user)
-        
+
         token['email'] = user.email
 
         return token
@@ -99,7 +99,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
-class UserLoginSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserAccount
-        fields = ('email', 'password')
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
