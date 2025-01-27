@@ -27,10 +27,10 @@ class SelectedRole(APIView):
         return redirect(reverse('signup'))
 
 class UserRegistrationView(APIView):
-
+    permission_classes = [AllowAny]
     def get(self, request, *args, **kwargs):
         """handles GET request to show role-specific signup data. Redirects to the select-role view if no role is in session"""
-        role = request.session.get('selected_role', None)
+        role = request.session.get('selected_role', None) or request.data.get('role')
         if not role:
             return redirect(reverse('select-role'))
         return Response({'message': f'Signing up as: {role}'}, status=status.HTTP_200_OK)
@@ -38,7 +38,7 @@ class UserRegistrationView(APIView):
     def post(self, request, *args, **kwargs):
         """handles POST request to register a user. Attaches the is_patient or is_medical_professional
         flag based on the selected role"""
-        role = request.session.get('selected_role', None)
+        role = request.session.get('selected_role', None) or request.data.get('role')
         if not role:
             return Response(
                 {'error': 'Role not specified. Please select a role first.'},
@@ -55,13 +55,10 @@ class UserRegistrationView(APIView):
             user = UserAccount.objects.get(email=request.data['email'])
             token = Token.objects.create(user=user)
             
-
             messages.success(request, "Account has been created successfully. Please Login")
-
-            # clear session
             request.session.pop('selected_role', None)
-            
-            return redirect(reverse('login'))
+
+            return Response({"token": token.key, "User": serializer.data}, status=status.HTTP_201_CREATED)
         
         messages.error(request, "There was an error duing registration")
 
@@ -70,6 +67,7 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginAPIView(APIView):
+    permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
 
     def post(self, request):
