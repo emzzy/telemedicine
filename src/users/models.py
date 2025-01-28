@@ -38,7 +38,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     objects = UserAccountManager()
 
     def __str__(self):
-        return str(self.email)
+        return str(self.first_name)
     
     def has_perm(self, perm, obj = None):
         return self.is_admin
@@ -47,8 +47,6 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         return True
     
     def save(self, *args, **kwargs):
-        if not self.pk:
-            self.role = self.base_role
         return super().save(*args, **kwargs)
 
     class Meta:
