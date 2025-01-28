@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'profiles',
     'silk',
     'corsheaders',
+    'agora'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True # Not recommended for prod
