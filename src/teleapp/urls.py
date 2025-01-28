@@ -14,10 +14,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from rest_framework_simplejwt.views import TokenRefreshView
+from api.views import MyObtainTokenPairView
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -26,18 +24,20 @@ from .views import (
     home_view,
     user_register_view,
     user_login,
-    role_selector
+    role_selector, patient_dashboard, med_pro_dashboard,
 )
 
 urlpatterns = [
-    path("", home_view, name="home"), # index page -> root page
+    path("", home_view, name="home"),
+    path('agora/', include('agora.urls')),
     path('api/', include('api.urls')),
+    path('admin/', admin.site.urls),
+    path('token/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('signup/', user_register_view, name='signup'),
     path('login/', user_login, name='login'),
     path('select-role/', role_selector, name='select-role'),
-    path('admin/', admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('patient-dashboard/', patient_dashboard, name='patient-dashboard'),
+    path('medical-professional-dashboard/', med_pro_dashboard, name='medical-professional-dashboard'),
     path('silk/', include('silk.urls', namespace='silk')) # for api optimization during development
-    
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
