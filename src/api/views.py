@@ -2,13 +2,20 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializer  import UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializer  import UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, MyTokenObtainPairSerializer
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from users.models import UserAccount
 import logging
 from django.contrib import messages
+from django.contrib.auth import authenticate
+
+class MyObtainTokenPairView(TokenObtainPairView):
+    permission_classes = [AllowAny]
+    serializer_class = MyTokenObtainPairSerializer
 
 class SelectedRole(APIView):
     permission_classes = [AllowAny]
@@ -70,30 +77,39 @@ class LoginAPIView(APIView):
     permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            user = authenticate(email=serializer.data['email'], password=serializer.data['password'])
+        if serializer.is_valid():
+            email = serializer.validated_data.get('email')
+            password = serializer.validated_data.get('password')
+
+            user = authenticate(request, email=email, password=password)
+
             if user:
-                token, created = Token.objects.get_or_create(user=user)
-                return Response({'token': [token.key], 'Success': 'Login successful'}, status=status.HTTP_201_CREATED)
-            return Response({'Message': 'Invalid email and password'}, status=status.HTTP_401_UNAUTHORIZED)
+                if user.is_patient:
+                    dahsboard_view = '/patient-dashboard/'
+                elif user.is_medical_professional:
+                    dashboard_view = '/medical-professional-dashboard/'
+                else:
+                    return Response({'error': "user has not been assigned a role"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
 
+                logging.info(f'User {user.email} logged in successfully')
 
-# class UserRegistrationView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def post(self, request, *args, **kwargs):
-#         """To register new user(s)"""
-#         serializer = UserRegistrationSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             print(request)
-#             return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response({
+                    "message": "Login successful",
+                    "token": access_token,
+                    "redirect_to": dashboard_view
+                }, status=status.HTTP_200_OK)
+                
+            return Response({'error': 'Invalid login details'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListUsersAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get(self, request):
         """Return all users in the database"""
