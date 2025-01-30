@@ -33,6 +33,14 @@ EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False) # use MAIL_POR
 ADMIN_USER_NAME=config("ADMIN_USER_NAME", default="Admin user")
 ADMIN_USER_EMAIL=config("ADMIN_USER_EMAIL", default=None)
 
+# agora settings
+PUSHER_APP_ID = config("PUSHER_APP_ID")
+PUSHER_KEY = config("PUSHER_KEY")
+PUSHER_SECRET = config("PUSHER_SECRET")
+PUSHER_CLUSTER = config("PUSHER_CLUSTER")
+AGORA_APP_ID = config("AGORA_APP_ID")
+AGORA_APP_CERTIFICATE = config("AGORA_APP_CERTIFICATE")
+
 MANAGERS=[]
 ADMINS=[]
 if all([ADMIN_USER_NAME, ADMIN_USER_EMAIL]):
@@ -180,6 +188,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
    BASE_DIR / 'frontend' / 'static',
+   BASE_DIR / 'frontend' / 'agora'
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
