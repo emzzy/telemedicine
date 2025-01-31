@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 
-class PatientMiddleware:
+class UserMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         # one time configuration and initialization
