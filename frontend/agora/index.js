@@ -19,17 +19,21 @@ const app = new Vue({
   
     methods: {
       initUserOnlineChannel() {
+        console.log("🟡 Attempting to subscribe to presence online channel....");
         const userOnlineChannel = pusher.subscribe("presence-online-channel");
-  
+        
         // Start Pusher Presence Channel Event Listeners
-  
+        
         userOnlineChannel.bind("pusher:subscription_succeeded", (data) => {
           // From Laravel Echo, wrapper for Pusher Js Client
+          console.log("✅ Subscription succeeded:", data);
           let members = Object.keys(data.members).map((k) => data.members[k]);
           this.onlineUsers = members;
+          console.log("🟢 Online Users:", this.onlineUsers);
         });
   
         userOnlineChannel.bind("pusher:member_added", (data) => {
+          console.log("🔹User joined:", data);
           let user = data.info;
           // check user availability
           const joiningUserIndex = this.onlineUsers.findIndex(
@@ -38,19 +42,25 @@ const app = new Vue({
           if (joiningUserIndex < 0) {
             this.onlineUsers.push(user);
           }
+          console.log("🟢 Updated Online Users:", this.onlineUsers);
         });
   
         userOnlineChannel.bind("pusher:member_removed", (data) => {
+          console.log("❌ User left:", data);
           let user = data.info;
           const leavingUserIndex = this.onlineUsers.findIndex(
             (data) => data.id === user.id
           );
-          this.onlineUsers.splice(leavingUserIndex, 1);
+          if (leavingUserIndex >= 0) {
+            this.onlineUsers.splice(leavingUserIndex, 1);
+          }
+          console.log("🔴 Updated Online Users:", this.onlineUsers);
         });
   
         userOnlineChannel.bind("pusher:subscription_error", (err) => {
           console.log("Subscription Error", err);
         });
+        console.log("🟢 Presence channel initialized.");
   
         userOnlineChannel.bind("an_event", (data) => {
           console.log("a_channel: ", data);
