@@ -4,10 +4,10 @@ import sys
 from collections import OrderedDict
 
 
-Role_Attendee = 0  # depreated, same as publisher
-Role_Publisher = 1  # for live broadcaster
-Role_Subscriber = 2  # default, for live audience
-Role_Admin = 101  # deprecated, same as publisher
+Role_Attendee = 0 # depreated, same as publisher
+Role_Publisher = 1 # for live broadcaster
+Role_Subscriber = 2 # default, for live audience
+Role_Admin = 101 # deprecated, same as publisher
 
 
 class RtcTokenBuilder:
@@ -17,7 +17,7 @@ class RtcTokenBuilder:
     #                  the Agora Dashboard. See Get an App Certificate.
     # channelName:Unique channel name for the AgoraRTC session in the string format
     # uid: User ID. A 32-bit unsigned integer with a value ranging from
-    #      1 to (232-1). optionalUid must be unique.
+    #      1 to (2^32-1). uid must be unique.
     # role: Role_Publisher = 1: A broadcaster (host) in a live-broadcast profile.
     #       Role_Subscriber = 2: (Default) A audience in a live-broadcast profile.
     # privilegeExpireTs: represented by the number of seconds elapsed since
