@@ -31,7 +31,7 @@
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     {{ singleUser.first_name }}
                     <button type="button" class="btn btn-primary"
-                      @click="placeCall('{{singleUser.id}}','{{singleUser.email}}')"> Call
+                      @click="placeCall('{{singleUser.id}}','{{singleUser.first_name}}')"> Call
                       <span class="badge badge-light">${ getUserOnlineStatus({{singleUser.id}})}</span>
                     </button>
                   </li>
