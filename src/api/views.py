@@ -5,7 +5,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializer  import UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, MyTokenObtainPairSerializer
+from .serializer  import (
+    UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, 
+    UserLogoutSerializer, MyTokenObtainPairSerializer
+)
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from users.models import UserAccount
@@ -107,6 +110,19 @@ class LoginAPIView(APIView):
             return Response({'error': 'Invalid login details'}, status=status.HTTP_400_BAD_REQUEST)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LogoutAPIView(APIView):
+    serializer = UserLogoutSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = UserLogoutSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        token = RefreshToken(base64_encoded_token_string)
+        token.blacklist()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 
 class ListUsersAPIView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
