@@ -6,10 +6,7 @@ from django.contrib.auth.decorators import login_required
 this_dir = pathlib.Path(__file__).resolve().parent
 
 def home_view(request, *args, **kwargs):
-
-    # if request.user.is_authenticated:
-    #     print(request.user.first_name)
-    return HttpResponse("<h1> Currently building.......</h1>")
+    return render(request, 'index.html', {})
 
 @login_required
 def user_only_view(request, *args, **kwargs):
@@ -23,8 +20,11 @@ def staff_only_view(request, *args, **kwargs):
 def user_register_view(request, *args, **kwargs):
     return render(request, 'signup.html')
 
-def user_login(request, *args, **kwargs):
+def user_login(request):
     return render(request, 'login.html')
+
+def user_logout(request):
+    return render(request, 'logout.html', {})
 
 def role_selector(request, *args, **kwargs):
     return render(request, 'role_selection.html')

@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import home_view, user_register_view, user_login, role_selector, patient_dashboard, med_pro_dashboard
+from .views import home_view, user_register_view, user_login, role_selector, patient_dashboard, med_pro_dashboard, user_logout
 
 from django.urls import re_path
 from rest_framework import permissions
@@ -50,6 +50,7 @@ urlpatterns = [
     path('api/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
     path('signup/', user_register_view, name='signup'),
     path('login/', user_login, name='login'),
+    path('logout/', user_logout, name='logout'),
     path('select-role/', role_selector, name='select-role'),
     path('patient-dashboard/', patient_dashboard, name='patient-dashboard'),
     path('medical-professional-dashboard/', med_pro_dashboard, name='medical-professional-dashboard'),
