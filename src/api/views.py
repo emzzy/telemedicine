@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -111,16 +111,16 @@ class LoginAPIView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class LogoutAPIView(APIView):
-    serializer = UserLogoutSerializer
-    permission_classes = [IsAuthenticated]
+class LogoutAPIView(generics.GenericAPIView):
+    serializer_class = UserLogoutSerializer
+    permission_classes = (permissions.IsAuthenticated)
 
     def post(self, request):
-        serializer = UserLogoutSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        token = RefreshToken(base64_encoded_token_string)
-        token.blacklist()
+        
+
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
