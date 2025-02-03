@@ -1,10 +1,14 @@
 from django.urls import path
-from .views import SelectedRole, ListUsersAPIView, ListMedicalProfessionalView, ListMedicalProfessionalView, UserRegistrationView, GetUserView, LoginAPIView
+from .views import (
+    SelectedRole, ListUsersAPIView, ListMedicalProfessionalView, ListMedicalProfessionalView, 
+    UserRegistrationView, GetUserView, LoginAPIView, UserLogoutSerializer
+)
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
     path('user-signup/', UserRegistrationView.as_view(), name='api-user-signup'),
     path('user-login/', LoginAPIView.as_view(), name='api-user-login'),
+    path('user-logout/', UserLogoutSerializer.as_view(), name='api-user-logout'),
     path('select-role/', SelectedRole.as_view(), name='api-select-role'),
     path('users/', ListUsersAPIView.as_view(), name='users'), # returns all users from table
     path('users/get-user/<int:pk>', GetUserView.as_view(), name='get-user'), # returns one user with their pk
