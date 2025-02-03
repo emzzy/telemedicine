@@ -41,12 +41,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-  
-   ...
-]
-
-urlpatterns = [
-    #path("", home_view, name="home"),
+    path("", home_view, name="home"),
     path('agora/', include('agora.urls')),
     path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
