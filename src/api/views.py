@@ -9,12 +9,16 @@ from .serializer  import (
     UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, 
     UserLogoutSerializer, MyTokenObtainPairSerializer
 )
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from users.models import UserAccount
 import logging
 from django.contrib import messages
 from django.contrib.auth import authenticate
+from django.contrib.sites.shortcuts import get_current_site
+from .utils import Util
+
 
 class MyObtainTokenPairView(TokenObtainPairView):
     permission_classes = [AllowAny]
@@ -63,8 +67,16 @@ class UserRegistrationView(APIView):
         if serializer.is_valid():
             serializer.save()
             user = UserAccount.objects.get(email=request.data['email'])
-            token = Token.objects.create(user=user)
-            
+            token = Token.objects.create(user=user).access_token
+
+            current_site = get_current_site(request).domain()
+            relative_link = reverse('verify-email')
+
+            absurl = 'http://'+current_site+relative_link+"?token="+token.access
+            email_body = 'Hi '+user.first_name+',\nUse the link below to verify your email\n' + absurl
+            data = {'email_body': email_body, 'subject': 'Verify your email'}
+            Util.send_email(data)
+
             messages.success(request, "Account has been created successfully. Please Login")
             request.session.pop('selected_role', None)
 
@@ -122,7 +134,10 @@ class LogoutAPIView(generics.GenericAPIView):
         
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+class VerifyEmail(generics.GenericAPIView):
+    def get(self, request):
+        pass
 
 class ListUsersAPIView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
@@ -147,7 +162,7 @@ class ListPatientView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """returns all patients in database"""
+        """returns all patients in db"""
         patients = UserAccount.objects.filter(is_patient=True).select_related('patient')
         serializer = UserAccountSerializer(patients, many=True)
         return Response(serializer.data)
@@ -156,7 +171,22 @@ class ListMedicalProfessionalView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """Returns all medical professsionals in database"""
+        """Returns all medical professsionals in db"""
         is_med_pro = UserAccount.objects.filter(is_medical_professional=True).select_related('medicalprofessional')
         serializer = UserAccountSerializer(is_med_pro, many=True)
         return Response(serializer.data)
+    
+class DeleteUserAccount(APIView):
+    """ Delete user from db"""
+    permission_classes = [IsAdminUser, IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return UserAccount.objects.get(pk=pk)
+        except UserAccount.DoesNotExist:
+            raise Http404
+        
+    def delete(self, request, pk, format=None):
+        user = self.get_object(pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
