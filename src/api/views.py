@@ -72,7 +72,7 @@ class UserRegistrationView(APIView):
             current_site = get_current_site(request).domain()
             relative_link = reverse('verify-email')
 
-            absurl = 'http://'+current_site+relative_link+"?token="+token.access
+            absurl = 'http://'+current_site+relative_link+"?token="+str(token)
             email_body = 'Hi '+user.first_name+',\nUse the link below to verify your email\n' + absurl
             data = {'email_body': email_body, 'subject': 'Verify your email'}
             Util.send_email(data)
