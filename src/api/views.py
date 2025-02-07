@@ -42,6 +42,7 @@ class SelectedRole(APIView):
 
 class UserRegistrationView(APIView):
     permission_classes = [AllowAny]
+    
     def get(self, request, *args, **kwargs):
         """handles GET request to show role-specific signup data. Redirects to the select-role view if no role is in session"""
         role = request.session.get('selected_role', None) or request.data.get('role')
@@ -67,20 +68,24 @@ class UserRegistrationView(APIView):
         if serializer.is_valid():
             serializer.save()
             user = UserAccount.objects.get(email=request.data['email'])
-            token = Token.objects.create(user=user).access_token
 
-            current_site = get_current_site(request).domain()
-            relative_link = reverse('verify-email')
+            token = RefreshToken.for_user(user).access_token
 
-            absurl = 'http://'+current_site+relative_link+"?token="+str(token)
-            email_body = 'Hi '+user.first_name+',\nUse the link below to verify your email\n' + absurl
-            data = {'email_body': email_body, 'subject': 'Verify your email'}
+            current_site = get_current_site(request).domain
+            relativeLink = reverse('api-verify-email')
+
+            absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+            email_body = 'Hi '+user.first_name+' Use the link below to verify your email\n' + absurl
+            data = {'email_body': email_body,
+                    'to_email': user.email, 
+                    'email_subject': 'Verify your email'
+                }
             Util.send_email(data)
 
             messages.success(request, "Account has been created successfully. Please Login")
             request.session.pop('selected_role', None)
 
-            return Response({"token": token.key, "User": serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({"token": str(token), "User": serializer.data}, status=status.HTTP_201_CREATED)
         
         messages.error(request, "There was an error duing registration")
 
@@ -140,7 +145,7 @@ class VerifyEmail(generics.GenericAPIView):
         pass
 
 class ListUsersAPIView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         """Return all users in the database"""
