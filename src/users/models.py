@@ -26,6 +26,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     
     # special permission which define the patient and medical professional
     is_patient = models.BooleanField(default=False)
