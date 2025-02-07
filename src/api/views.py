@@ -13,11 +13,13 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from users.models import UserAccount
-import logging
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.sites.shortcuts import get_current_site
 from .utils import Util
+import logging
+import jwt
+from decouple import config
 
 
 class MyObtainTokenPairView(TokenObtainPairView):
@@ -141,8 +143,21 @@ class LogoutAPIView(generics.GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class VerifyEmail(generics.GenericAPIView):
+    """Email verification"""
     def get(self, request):
-        pass
+        token = request.GET.get('token')
+        try:
+            payload = jwt.decode(token, config("DJANGO_SECRET_KEY"))
+            user = UserAccount.objects.get(id=payload['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError as identifier:
+            return Response({'error': 'Activation Link Expired!'}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.DecodeError as identifier:
+            return Response({'error': 'Invalid token!'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ListUsersAPIView(APIView):
     permission_classes = [IsAuthenticated]
