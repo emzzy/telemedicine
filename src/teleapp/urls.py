@@ -45,7 +45,7 @@ urlpatterns = [
     path('agora/', include('agora.urls')),
     path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
-    path('api/token/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'), # custom api view obtain token
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
     path('signup/', user_register_view, name='signup'),
