@@ -5,10 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializer  import (
-    UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, 
-    UserLogoutSerializer, MyTokenObtainPairSerializer
-)
+from .serializer  import ( UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, 
+    UserLogoutSerializer, MyTokenObtainPairSerializer, EmailVerificationSerializer)
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -20,6 +18,9 @@ from .utils import Util
 import logging
 import jwt
 from decouple import config
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from django.conf import settings
 
 
 class MyObtainTokenPairView(TokenObtainPairView):
@@ -52,6 +53,11 @@ class UserRegistrationView(APIView):
             return redirect(reverse('select-role'))
         return Response({'message': f'Signing up as: {role}'}, status=status.HTTP_200_OK)
     
+    @swagger_auto_schema(
+            operation_description="Register new user",
+            request_body=UserRegistrationSerializer,
+            responses={201: "User created succesfully", 400: "Validation error"}
+    )
     def post(self, request, *args, **kwargs):
         """handles POST request to register a user. Attaches the is_patient or is_medical_professional
         flag based on the selected role"""
@@ -142,12 +148,16 @@ class LogoutAPIView(generics.GenericAPIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class VerifyEmail(generics.GenericAPIView):
+class VerifyEmail(APIView):
     """Email verification"""
+    serializer_class = EmailVerificationSerializer
+    token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
         try:
-            payload = jwt.decode(token, config("DJANGO_SECRET_KEY"))
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
             user = UserAccount.objects.get(id=payload['user_id'])
             if not user.is_verified:
                 user.is_verified = True
