@@ -105,6 +105,10 @@ class UserLoginSerializer(serializers.Serializer):
 
 class UserLogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
+
+    default_error_messages = {
+        'bad_token': ('Token is expired or invalid')
+    }
     
     def validate(self, attrs):
         self.token = attrs['refresh']
@@ -115,4 +119,12 @@ class UserLogoutSerializer(serializers.Serializer):
         try:
             RefreshToken(self.token).blacklist()
         except TokenError:
-            self.fail('Bad token')
+            self.fail('bad_token')
+
+class EmailVerificationSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(max_length=555)
+    
+    class Meta:
+        model = UserAccount
+        fields = ['token']
+        
