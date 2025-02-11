@@ -1,12 +1,11 @@
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializer  import ( UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, 
-    UserLogoutSerializer, MyTokenObtainPairSerializer, EmailVerificationSerializer)
+    UserLogoutSerializer, EmailVerificationSerializer)
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -22,10 +21,6 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.conf import settings
 
-
-class MyObtainTokenPairView(TokenObtainPairView):
-    permission_classes = [AllowAny]
-    serializer_class = MyTokenObtainPairSerializer
 
 class SelectedRole(APIView):
     permission_classes = [AllowAny]
@@ -136,17 +131,19 @@ class LoginAPIView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class LogoutAPIView(generics.GenericAPIView):
-    serializer_class = UserLogoutSerializer
+class LogoutAPIView(APIView):
+    """Logout view"""
     permission_classes = (permissions.IsAuthenticated)
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        
+        try:
+            refresh_token = request.data['refresh_token']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyEmail(APIView):
     """Email verification"""

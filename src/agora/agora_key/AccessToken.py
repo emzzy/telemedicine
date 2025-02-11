@@ -11,15 +11,6 @@ kJoinChannel = 1
 kPublishAudioStream = 2
 kPublishVideoStream = 3
 kPublishDataStream = 4
-kPublishAudiocdn = 5
-kPublishVideoCdn = 6
-kRequestPublishAudioStream = 7
-kRequestPublishVideoStream = 8
-kRequestPublishDataStream = 9
-kInvitePublishAudioStream = 10
-kInvitePublishVideoStream = 11
-kInvitePublishDataStream = 12
-kAdministrateChannel = 101
 kRtmLogin = 1000
 
 VERSION_LENGTH = 3
@@ -141,13 +132,11 @@ class AccessToken:
             if (originVersion != dk6version):
                 return False
 
-            originAppID = originToken[VERSION_LENGTH:(
-                VERSION_LENGTH + APP_ID_LENGTH)]
+            originAppID = originToken[VERSION_LENGTH:(VERSION_LENGTH + APP_ID_LENGTH)]
             originContent = originToken[(VERSION_LENGTH + APP_ID_LENGTH):]
             originContentDecoded = base64.b64decode(originContent)
 
-            signature, crc_channel_name, crc_uid, m = unPackContent(
-                originContentDecoded)
+            signature, crc_channel_name, crc_uid, m = unPackContent(originContentDecoded)
             self.salt, self.ts, self.messages = unPackMessages(m)
 
         except Exception as e:
@@ -158,24 +147,21 @@ class AccessToken:
 
     def build(self):
 
-        self.messages = OrderedDict(
-            sorted(iter(self.messages.items()), key=lambda x: int(x[0])))
+        self.messages = OrderedDict(sorted(iter(self.messages.items()), key=lambda x: int(x[0])))
 
         m = packUint32(self.salt) + packUint32(self.ts) \
             + packMapUint32(self.messages)
 
-        val = self.appID.encode(
-            'utf-8') + self.channelName.encode('utf-8') + self.uidStr.encode('utf-8') + m
+        val = self.appID.encode('utf-8') + self.channelName.encode('utf-8') + self.uidStr.encode('utf-8') + m
 
-        signature = hmac.new(self.appCertificate.encode(
-            'utf-8'), val, sha256).digest()
+        signature = hmac.new(self.appCertificate.encode('utf-8'), val, sha256).digest()
         crc_channel_name = crc32(self.channelName.encode('utf-8')) & 0xffffffff
         crc_uid = crc32(self.uidStr.encode('utf-8')) & 0xffffffff
 
         content = packString(signature) \
-            + packUint32(crc_channel_name) \
-            + packUint32(crc_uid) \
-            + packString(m)
+                  + packUint32(crc_channel_name) \
+                  + packUint32(crc_uid) \
+                  + packString(m)
 
         version = getVersion()
         ret = version + self.appID + base64.b64encode(content).decode('utf-8')

@@ -4,15 +4,6 @@ from profiles.models import Patient, MedicalProfessional
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super(MyTokenObtainPairSerializer, cls).get_token(user)
-
-        token['email'] = user.email
-
-        return token
-
 
 class PatientSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -102,24 +93,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
-
-class UserLogoutSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
-
-    default_error_messages = {
-        'bad_token': ('Token is expired or invalid')
-    }
-    
-    def validate(self, attrs):
-        self.token = attrs['refresh']
-
-        return attrs
-    
-    def save(self, **kwargs):
-        try:
-            RefreshToken(self.token).blacklist()
-        except TokenError:
-            self.fail('bad_token')
 
 class EmailVerificationSerializer(serializers.ModelSerializer):
     token = serializers.CharField(max_length=555)

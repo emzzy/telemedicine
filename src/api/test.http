@@ -50,3 +50,8 @@ curl \
   -d '{"username": "dera", "password": "Manuel771442_"}' \
   http://localhost:8000/api/token/
 
+###
+curl -X POST http://127.0.0.1:8000/token/ \
+     -H "Content-Type: application/json" \
+     -H "X-CSRFToken: your_csrf_token_here" \
+     -d '{"channelName": "test_channel"}'

@@ -1,10 +1,13 @@
 import os
 import time
 import json
+
 from django.http.response import JsonResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+
 from django.shortcuts import render
+
 from .agora_key.RtcTokenBuilder import RtcTokenBuilder, Role_Attendee
 from pusher import Pusher
 from users.models import UserAccount
@@ -55,6 +58,7 @@ def generate_agora_token(request):
         # Extract Agora credentials
         appID = os.environ.get('AGORA_APP_ID')
         appCertificate = os.environ.get('AGORA_APP_CERTIFICATE')
+        print(f"********Agora appID: {appID}********************************")
 
         if not appID or not appCertificate:
             print("❌ Missing Agora credentials")
