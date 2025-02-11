@@ -35,7 +35,7 @@ def success(request, *args, **kwargs):
 
 # dashboard after auth
 def patient_dashboard(request, *args, **kwargs):
-    return render(request, 'profils/patient-dashboard', {})
+    return render(request, 'profiles/patient-dashboard', {})
 
 def med_pro_dashboard(request, *args, **kwargs):
     return render(request, 'profiles/doctor-dashboard', {})
