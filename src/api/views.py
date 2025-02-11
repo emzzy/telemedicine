@@ -110,7 +110,7 @@ class LoginAPIView(APIView):
 
             if user:
                 if user.is_patient:
-                    dahsboard_view = '/patient-dashboard/'
+                    dashboard_view = '/patient-dashboard/'
                 elif user.is_medical_professional:
                     dashboard_view = '/medical-professional-dashboard/'
                 else:
