@@ -1,11 +1,10 @@
-from rest_framework import status, generics, permissions
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializer  import ( UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, 
-    UserLogoutSerializer, EmailVerificationSerializer)
+from .serializer  import ( UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer)
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -30,11 +29,7 @@ class SelectedRole(APIView):
         
         if role not in ['patient', 'medical_professional']:
             return Response({'error': 'invalid_role'}, status=status.HTTP_400_BAD_REQUEST)
-        
         request.session['selected_role'] = role # save the role in a session
-
-        print(f'selected role before signup: {role}') # debuging
-        print(f'redirecting to: {reverse('signup')}') # debuging
 
         return redirect(reverse('signup'))
 
@@ -62,11 +57,7 @@ class UserRegistrationView(APIView):
                 {'error': 'Role not specified. Please select a role first.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        logging.info(f'Selected role before signup: {role}')
-
         serializer = UserRegistrationSerializer(data=request.data, context={'role': role})
-
-        logging.info(f"Serializer context: {serializer.context}")
 
         if serializer.is_valid():
             serializer.save()
@@ -92,14 +83,16 @@ class UserRegistrationView(APIView):
         
         messages.error(request, "There was an error duing registration")
 
-        logging.info(f"Serializer errors: {serializer.errors}")
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
 
+    @swagger_auto_schema(
+        request_body=UserLoginSerializer,
+        operation_description="User login"
+    )
     def post(self, request, *args, **kwargs):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -109,10 +102,8 @@ class LoginAPIView(APIView):
             user = authenticate(request, email=email, password=password)
 
             if user:
-                if user.is_patient:
-                    dashboard_view = '/patient-dashboard/'
-                elif user.is_medical_professional:
-                    dashboard_view = '/medical-professional-dashboard/'
+                if user.is_patient or user.is_medical_professional:
+                    dashboard_url = reverse('home') #'/patient-dashboard/'
                 else:
                     return Response({'error': "user has not been assigned a role"}, status=status.HTTP_400_BAD_REQUEST)
                 
@@ -124,23 +115,21 @@ class LoginAPIView(APIView):
                 return Response({
                     "message": "Login successful",
                     "token": access_token,
-                    "redirect_to": dashboard_view
+                    "redirect_to": dashboard_url
                 }, status=status.HTTP_200_OK)
                 
             return Response({'error': 'Invalid login details'}, status=status.HTTP_400_BAD_REQUEST)
-        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutAPIView(APIView):
     """Logout view"""
-    permission_classes = (permissions.IsAuthenticated)
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
             refresh_token = request.data['refresh_token']
             token = RefreshToken(refresh_token)
             token.blacklist()
-
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
