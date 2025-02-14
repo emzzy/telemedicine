@@ -1,10 +1,10 @@
-from rest_framework import status
+from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializer  import ( UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer)
+from .serializer  import ( 
+    UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer)
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -109,30 +109,53 @@ class LoginAPIView(APIView):
                 
                 refresh = RefreshToken.for_user(user)
                 access_token = str(refresh.access_token)
+                refresh_token = str(refresh)
 
                 logging.info(f'User {user.email} logged in successfully')
 
                 return Response({
                     "message": "Login successful",
-                    "token": access_token,
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
                     "redirect_to": dashboard_url
                 }, status=status.HTTP_200_OK)
                 
             return Response({'error': 'Invalid login details'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class LogoutAPIView(APIView):
+class LogoutAPIView(generics.GenericAPIView):
     """Logout view"""
-    permission_classes = [IsAuthenticated]
+    serializer_class = UserLogoutSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'Authorization',
+                openapi.IN_HEADER,
+                description="JWT Access Token. Format: Bearer <token>",
+                type=openapi.TYPE_STRING,
+                required=True,
+            )
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'refresh_token': openapi.Schema(type=openapi.TYPE_STRING, description="Refresh token to be blacklisted")
+            },
+            required=['refresh_token']
+        ),
+        responses={
+            205: "Logged out successfully",
+            400: "Bad Request (Invalid token)",
+        }
+    )
     def post(self, request):
-        try:
-            refresh_token = request.data['refresh_token']
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class VerifyEmail(APIView):
     """Email verification"""
