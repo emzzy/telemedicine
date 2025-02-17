@@ -178,19 +178,27 @@ class VerifyEmail(APIView):
             return Response({'error': 'Invalid token!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ListUsersAPIView(APIView):
+class ListUsersAPIView(generics.ListCreateAPIView):
+    """Display list of users in db"""
+    queryset = UserAccount.objects.all()
+    serializer_class = UserAccountSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        """Return all users in the database"""
-        users = UserAccount.objects.all()
-        serializer = UserAccountSerializer(users, many=True)
-        print(request)
-        return Response({'data': serializer.data})
+    @swagger_auto_schema(
+        security=[{'Bearer': []}],    
+        responses={200: "Success", 401: "Unauthorized"}
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class GetUserView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        security=[{'Bearer': []}],
+        responses={200: "Success", 401: "Unauthorized"}
+    )
     def get(self, request, pk):
         """Get one user from database"""
         users = get_object_or_404(UserAccount, pk=pk)
