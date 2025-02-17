@@ -6,21 +6,21 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 
 class PatientSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    #password = serializers.CharField(write_only=True)
 
     class Meta:
         model = Patient
         fields = [
-            'location', 'age', 'emergency_contact', 'medical_information', 'user_type'
+            'location', 'age', 'emergency_contact', 'medical_information'
         ]
 
 class MedicalProfessionalSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    #password = serializers.CharField(write_only=True)
 
     class Meta:
         model = MedicalProfessional
         fields = [
-            'title', 'medical_license', 'specialty', 'years_of_experience', 'user_type'
+            'title', 'medical_license', 'specialty', 'years_of_experience'
         ]
 
 
