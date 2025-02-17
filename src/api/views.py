@@ -19,6 +19,7 @@ from decouple import config
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.conf import settings
+from .renderers import UserRenderers
 
 
 class SelectedRole(APIView):
@@ -35,6 +36,7 @@ class SelectedRole(APIView):
 
 class UserRegistrationView(APIView):
     permission_classes = [AllowAny]
+    renderer_classes = (UserRenderers,)
     
     def get(self, request, *args, **kwargs):
         """handles GET request to show role-specific signup data. Redirects to the select-role view if no role is in session"""
