@@ -2,12 +2,7 @@ from rest_framework import serializers
 from users.models import UserAccount
 from profiles.models import Patient, MedicalProfessional
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
-from .utils import Util
+
 
 class PatientSerializer(serializers.ModelSerializer):
     #password = serializers.CharField(write_only=True)
@@ -128,25 +123,3 @@ class RequestPasswordResetEmailSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['email']
-
-    def validate(self, attrs):
-        """this function validates a user"""
-        
-        email = attrs['data'].get('email', '')
-        if UserAccount.objects.filter(email=email).exists():
-            user = UserAccount.objects.get(email=email)
-            uidb64 = urlsafe_base64_encode(user.id)
-            token = PasswordResetTokenGenerator().make_token(user) #changes assigned token after password reset to prevent reuse by another user
-            
-            current_site = get_current_site(request=attrs['data'].get('request')).domain # parsed request as data from UserRegistraation view
-            relativeLink = reverse('password-reset-confirm', kwargs={'uidb64', uidb64, 'token', token})
-
-            absurl = 'http://'+current_site + relativeLink
-            email_body = 'Hello,\nUse the link below to reset your password. \n' + absurl
-            data = {'email_body': email_body,
-                'to_email': user.email, 
-                'email_subject': 'Reset your password'
-            }
-            Util.send_email(data)
-            
-        return super().validate(attrs)
