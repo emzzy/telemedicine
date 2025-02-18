@@ -7,8 +7,9 @@ urlpatterns = [
     path('user-login/', views.LoginAPIView.as_view(), name='api-user-login'),
     path('user-logout/', views.LogoutAPIView.as_view(), name='api-user-logout'),
     path('verify-email/', views.VerifyEmail.as_view(), name='api-verify-email'),
-    path('password-reset/<uidb64>/token/', views.PAsswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
-
+    path('request-reset-email/', views.RequestPasswordResetEmail.as_view(), name='request-reset-email'),
+    path('password-reset/<uidb64>/<token>/', views.PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
+    
     path('select-role/', views.SelectedRole.as_view(), name='api-select-role'),
     path('users/', views.ListUsersAPIView.as_view(), name='users'), # returns all users from table
     path('users/get-user/<int:pk>', views.GetUserView.as_view(), name='get-user'), # returns one user with their pk
