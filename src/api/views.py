@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializer  import ( 
-    UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer)
+    UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, RequestPasswordResetEmailSerializer)
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -125,6 +125,7 @@ class LoginAPIView(APIView):
             return Response({'error': 'Invalid login details'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class LogoutAPIView(generics.GenericAPIView):
     """Logout view"""
     serializer_class = UserLogoutSerializer
@@ -179,6 +180,13 @@ class VerifyEmail(APIView):
         except jwt.DecodeError as identifier:
             return Response({'error': 'Invalid token!'}, status=status.HTTP_400_BAD_REQUEST)
 
+class RequestPasswordResetEmail(generics.GenericAPIView):
+    serializer_class = RequestPasswordResetEmailSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
 class ListUsersAPIView(generics.ListCreateAPIView):
     """Display list of users in db"""
