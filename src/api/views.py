@@ -185,8 +185,18 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        data = {'request': request, 'data': request.data} # parsed  
+        serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
+        return Response({'success': 'We have sent you link to reset your password'}, status=status.HTTP_200_OK)
+
+class PAsswordTokenCheckAPI(generics.GenericAPIView):
+    """this view takes user request and validates the token"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, uidb64, token):
+        pass
+
 
 class ListUsersAPIView(generics.ListCreateAPIView):
     """Display list of users in db"""
