@@ -134,10 +134,9 @@ class RequestPasswordResetEmailSerializer(serializers.Serializer):
     class Meta:
         fields = ['email']
 
-    
-
 
 class SetNewPasswordSerializer(serializers.Serializer):
+    """Validate and process request for password reset"""
     password = serializers.CharField(min_length=6, max_length=68, write_only=True)
     token = serializers.CharField(min_length=1, write_only=True)
     uidb64 = serializers.CharField(min_length=1, write_only=True)
@@ -163,9 +162,3 @@ class SetNewPasswordSerializer(serializers.Serializer):
             return {'user': user}
         except Exception as e:
             raise AuthenticationFailed('The reset link is invalid', 401)
-        
-    
-class ResetPasswordSerializer(serializers.Serializer):
-    password = serializers.CharField(style={'input_type': 'password'})
-    password2 = serializers.CharField(style={'input_type': 'password'})
-    token = serializers.CharField()
