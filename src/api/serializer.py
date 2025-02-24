@@ -129,19 +129,21 @@ class RequestPasswordResetEmailSerializer(serializers.Serializer):
     """this class handles user password reset"""
     email = serializers.EmailField(min_length=2)
 
-    redirect_url = serializers.CharField(max_length = 500, required=False)
+    #redirect_url = serializers.CharField(max_length = 500, required=False)
 
     class Meta:
         fields = ['email']
+
+    
 
 
 class SetNewPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=6, max_length=68, write_only=True)
     token = serializers.CharField(min_length=1, write_only=True)
-    uid164 = serializers.CharField(min_length=1, write_only=True)
+    uidb64 = serializers.CharField(min_length=1, write_only=True)
 
-    class Meta:
-        fields = ['password', 'token', 'uidb64']
+    # class Meta:
+    #     fields = ['password', 'token', 'uidb64']
 
     def validate(self, attrs):
         try:
@@ -151,13 +153,19 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
             id = force_str(urlsafe_base64_decode(uidb64))
             user = UserAccount.objects.get(id=id)
-            
+
             if not PasswordResetTokenGenerator().check_token(user, token):
                 raise AuthenticationFailed('The reset link is invalid', 401)
+            
             user.set_password(password)
             user.save()
             
-            return (user)
+            return {'user': user}
         except Exception as e:
             raise AuthenticationFailed('The reset link is invalid', 401)
-        return super().validate(attrs)
+        
+    
+class ResetPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(style={'input_type': 'password'})
+    password2 = serializers.CharField(style={'input_type': 'password'})
+    token = serializers.CharField()
