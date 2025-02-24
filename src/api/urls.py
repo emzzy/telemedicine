@@ -1,6 +1,7 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
+
 
 urlpatterns = [
     path('user-signup/', views.UserRegistrationView.as_view(), name='api-user-signup'),
@@ -10,7 +11,6 @@ urlpatterns = [
     path('request-reset-email/', views.RequestPasswordResetEmail.as_view(), name='request-reset-email'),
     path('password-reset/<uidb64>/<token>/', views.PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
     path('password-reset-complete/', views.SetNewPassword.as_view(), name='password-reset-complete'),
-    
     path('select-role/', views.SelectedRole.as_view(), name='api-select-role'),
     path('users/', views.ListUsersAPIView.as_view(), name='users'), # returns all users from table
     path('users/get-user/<int:pk>', views.GetUserView.as_view(), name='get-user'), # returns one user with their pk
