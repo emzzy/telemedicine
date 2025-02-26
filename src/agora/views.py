@@ -1,16 +1,15 @@
 import os
 import time
 import json
-
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from django.http.response import JsonResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-
 from django.shortcuts import render
-
 from .agora_key.RtcTokenBuilder import RtcTokenBuilder, Role_Attendee
 from pusher import Pusher
-from users.models import UserAccount
+
 
 # instantiate a Pusher Client
 pusher_client = Pusher(
@@ -22,11 +21,14 @@ pusher_client = Pusher(
 )
 
 @login_required(login_url='/login/')
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def index(request):
-    #User = get_user_model()
-    all_users = UserAccount.objects.exclude(id=request.user.id).only('id', 'first_name')
+    User = get_user_model()
+    all_users = User.objects.exclude(id=request.user.id).only('id', 'first_name')
     return render(request, 'agora/index.html', {'allUsers': all_users})
 
+@login_required(login_url='/login/')
 def pusher_auth(request):
     print("🔹 Pusher authentication request received")
     print("🔹 Channel:", request.POST.get('channel_name'))
@@ -50,66 +52,66 @@ def pusher_auth(request):
     print("🔹 Authentication successful:", json.dumps(payload, indent=2))
     return JsonResponse(payload)
 
-def generate_agora_token(request):
-    try:
-        print("🔹 Received token request")
-        print("🔹 Request body:", request.body)
-
-        # Extract Agora credentials
-        appID = os.environ.get('AGORA_APP_ID')
-        appCertificate = os.environ.get('AGORA_APP_CERTIFICATE')
-        print(f"********Agora appID: {appID}********************************")
-
-        if not appID or not appCertificate:
-            print("❌ Missing Agora credentials")
-            return JsonResponse({'error': 'Agora credentials not set'}, status=500)
-
-        # Parse request body
-        body = json.loads(request.body.decode('utf-8'))
-        if 'channelName' not in body:
-            print("❌ Missing channelName in request")
-            return JsonResponse({'error': 'channelName is required'}, status=400)
-
-        channelName = body['channelName']
-        userAccount = request.user.first_name if request.user.is_authenticated else None
-        if not userAccount:
-            print("❌ User not authenticated")
-            return JsonResponse({'error': 'User not authenticated'}, status=403)
-
-        expireTimeInSeconds = 3600
-        currentTimestamp = int(time.time())
-        privilegeExpiredTs = currentTimestamp + expireTimeInSeconds
-
-        print(f"🔹 Generating token for {userAccount} on channel {channelName}")
-
-        token = RtcTokenBuilder.buildTokenWithAccount(
-            appID, appCertificate, channelName, userAccount, Role_Attendee, privilegeExpiredTs
-        )
-
-        print("✅ Token generated successfully")
-        return JsonResponse({'token': token, 'appID': appID})
-
-    except json.JSONDecodeError:
-        print("❌ Invalid JSON in request body")
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    except Exception as e:
-        print(f"🚨 Unexpected error: {e}")
-        return JsonResponse({'error': str(e)}, status=500)
-
 # def generate_agora_token(request):
-#     appID = os.environ.get('AGORA_APP_ID')
-#     appCertificate = os.environ.get('AGORA_APP_CERTIFICATE')
-#     channelName = json.loads(request.body.decode(
-#         'utf-8'))['channelName']
-#     userAccount = request.user.first_name
-#     expireTimeInSeconds = 3600
-#     currentTimestamp = int(time.time())
-#     priviledgeExpiredTs = currentTimestamp + expireTimeInSeconds
+#     try:
+#         print("🔹 Received token request")
+#         print("🔹 Request body:", request.body)
 
-#     token = RtcTokenBuilder.buildTokenWithAccount(
-#         appID, appCertificate, channelName, userAccount, Role_Attendee, priviledgeExpiredTs
-#     )
-#     return JsonResponse({'token': token, 'appID': appID})
+#         # Extract Agora credentials
+#         appID = os.environ.get('AGORA_APP_ID')
+#         appCertificate = os.environ.get('AGORA_APP_CERTIFICATE')
+#         print(f"********Agora appID: {appID}********************************")
+
+#         if not appID or not appCertificate:
+#             print("❌ Missing Agora credentials")
+#             return JsonResponse({'error': 'Agora credentials not set'}, status=500)
+
+#         # Parse request body
+#         body = json.loads(request.body.decode('utf-8'))
+#         if 'channelName' not in body:
+#             print("❌ Missing channelName in request")
+#             return JsonResponse({'error': 'channelName is required'}, status=400)
+
+#         channelName = body['channelName']
+#         userAccount = request.user.first_name if request.user.is_authenticated else None
+#         if not userAccount:
+#             print("❌ User not authenticated")
+#             return JsonResponse({'error': 'User not authenticated'}, status=403)
+
+#         expireTimeInSeconds = 3600
+#         currentTimestamp = int(time.time())
+#         privilegeExpiredTs = currentTimestamp + expireTimeInSeconds
+
+#         print(f"🔹 Generating token for {userAccount} on channel {channelName}")
+
+#         token = RtcTokenBuilder.buildTokenWithAccount(
+#             appID, appCertificate, channelName, userAccount, Role_Attendee, privilegeExpiredTs
+#         )
+
+#         print("✅ Token generated successfully")
+#         return JsonResponse({'token': token, 'appID': appID})
+
+#     except json.JSONDecodeError:
+#         print("❌ Invalid JSON in request body")
+#         return JsonResponse({'error': 'Invalid JSON'}, status=400)
+#     except Exception as e:
+#         print(f"🚨 Unexpected error: {e}")
+#         return JsonResponse({'error': str(e)}, status=500)
+
+def generate_agora_token(request):
+    appID = os.environ.get('AGORA_APP_ID')
+    appCertificate = os.environ.get('AGORA_APP_CERTIFICATE')
+    channelName = json.loads(request.body.decode(
+        'utf-8'))['channelName']
+    userAccount = request.user.first_name
+    expireTimeInSeconds = 3600
+    currentTimestamp = int(time.time())
+    priviledgeExpiredTs = currentTimestamp + expireTimeInSeconds
+
+    token = RtcTokenBuilder.buildTokenWithAccount(
+        appID, appCertificate, channelName, userAccount, Role_Attendee, priviledgeExpiredTs
+    )
+    return JsonResponse({'token': token, 'appID': appID})
 
 def call_user(request):
     body = json.loads(request.body.decode('utf-8'))
