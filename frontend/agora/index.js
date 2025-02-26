@@ -137,24 +137,18 @@ const app = new Vue({
       },
   
       generateToken(channelName) {
-        console.log("🔹 Requesting Agora token for channel:", channelName);
-
         return axios.post(
           "/token/",
-          JSON.stringify({ channelName }),  // Explicitly convert to JSON
           {
-              headers: {
-                  "Content-Type": "application/json",  // Ensure JSON format
-                  "X-CSRFToken": CSRF_TOKEN,
-              },
-              withCredentials: true,
+            channelName,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": CSRF_TOKEN,
+            },
           }
-          ).then(response => {
-            console.log("✅ Token received:", response.data);
-            return response;
-          }).catch(error => {
-            console.error("🚨 Error fetching token:", error.response ? error.response.data : error);
-          });
+        );
       },
   
       /**
