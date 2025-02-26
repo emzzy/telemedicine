@@ -5,13 +5,13 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializer  import ( 
     UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, 
-    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, ResetPasswordSerializer)
-from django.http import Http404, HttpResponsePermanentRedirect
+    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer)
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from users.models import UserAccount
 from django.contrib import messages
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.sites.shortcuts import get_current_site
 from .utils import Util
 import logging
@@ -21,17 +21,13 @@ from drf_yasg import openapi
 from django.conf import settings
 from .renderers import UserRenderers
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
+from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import Util
 import os
-from django.core.exceptions import ObjectDoesNotExist
-
-
-class CustomRedirect(HttpResponsePermanentRedirect):
-    allowed_schemes = [os.environ.get('APP_SCHEME'), 'http', 'https']
+from django.utils.timezone import now
 
 
 class SelectedRole(APIView):
@@ -116,17 +112,20 @@ class LoginAPIView(APIView):
 
             user = authenticate(request, email=email, password=password)
 
-            if user:
+            if user is not None:
                 if user.is_patient or user.is_medical_professional:
                     dashboard_url = reverse('home') #'/patient-dashboard/'
                 else:
                     return Response({'error': "user has not been assigned a role"}, status=status.HTTP_400_BAD_REQUEST)
                 
+                # update last_login timestamp in the db, create a session
+                user.last_login = now()
+                user.save(update_fields=['last_login'])
+                login(request, user)
+
                 refresh = RefreshToken.for_user(user)
                 access_token = str(refresh.access_token)
                 refresh_token = str(refresh)
-
-                logging.info(f'User {user.email} logged in successfully')
 
                 return Response({
                     "message": "Login successful",
