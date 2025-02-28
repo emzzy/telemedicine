@@ -52,52 +52,6 @@ def pusher_auth(request):
     print("🔹 Authentication successful:", json.dumps(payload, indent=2))
     return JsonResponse(payload)
 
-# def generate_agora_token(request):
-#     try:
-#         print("🔹 Received token request")
-#         print("🔹 Request body:", request.body)
-
-#         # Extract Agora credentials
-#         appID = os.environ.get('AGORA_APP_ID')
-#         appCertificate = os.environ.get('AGORA_APP_CERTIFICATE')
-#         print(f"********Agora appID: {appID}********************************")
-
-#         if not appID or not appCertificate:
-#             print("❌ Missing Agora credentials")
-#             return JsonResponse({'error': 'Agora credentials not set'}, status=500)
-
-#         # Parse request body
-#         body = json.loads(request.body.decode('utf-8'))
-#         if 'channelName' not in body:
-#             print("❌ Missing channelName in request")
-#             return JsonResponse({'error': 'channelName is required'}, status=400)
-
-#         channelName = body['channelName']
-#         userAccount = request.user.first_name if request.user.is_authenticated else None
-#         if not userAccount:
-#             print("❌ User not authenticated")
-#             return JsonResponse({'error': 'User not authenticated'}, status=403)
-
-#         expireTimeInSeconds = 3600
-#         currentTimestamp = int(time.time())
-#         privilegeExpiredTs = currentTimestamp + expireTimeInSeconds
-
-#         print(f"🔹 Generating token for {userAccount} on channel {channelName}")
-
-#         token = RtcTokenBuilder.buildTokenWithAccount(
-#             appID, appCertificate, channelName, userAccount, Role_Attendee, privilegeExpiredTs
-#         )
-
-#         print("✅ Token generated successfully")
-#         return JsonResponse({'token': token, 'appID': appID})
-
-#     except json.JSONDecodeError:
-#         print("❌ Invalid JSON in request body")
-#         return JsonResponse({'error': 'Invalid JSON'}, status=400)
-#     except Exception as e:
-#         print(f"🚨 Unexpected error: {e}")
-#         return JsonResponse({'error': str(e)}, status=500)
-
 def generate_agora_token(request):
     appID = os.environ.get('AGORA_APP_ID')
     appCertificate = os.environ.get('AGORA_APP_CERTIFICATE')
