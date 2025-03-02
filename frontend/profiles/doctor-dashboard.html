@@ -1,2 +1,6 @@
-{% load static %}
-<h1>Welcome Dr </h1>
+{% if user.is_authenticated %}
+    <h1>Welcome Dr {% user.first_name %} </h1>
+    <button>Logout</button>
+{% else %}
+<h1>You are not authorised to view this content.</h1>
+{% endif %}
