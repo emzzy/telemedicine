@@ -1,2 +1,6 @@
-{% load static %}
-<h1>Welcome Patient </h1>
+
+{% if request.useer.is_authenticated %}
+    <h1>Welcome Patient </h1>
+{% else %}
+<h1>You are not authorised to view this content.</h1>
+{% endif %}
