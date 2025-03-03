@@ -126,7 +126,7 @@ class LoginAPIView(APIView):
                 refresh = RefreshToken.for_user(user)
                 access_token = str(refresh.access_token)
                 refresh_token = str(refresh)
-
+                
                 return Response({
                     "message": "Login successful",
                     "access_token": access_token,
