@@ -27,7 +27,7 @@ def user_logout(request):
     return render(request, 'logout.html', {})
 
 def role_selector(request, *args, **kwargs):
-    return render(request, 'role_selection.html')
+    return render(request, 'role_selection.html', {})
 
 # success page 
 def success(request, *args, **kwargs):
