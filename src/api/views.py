@@ -1,7 +1,7 @@
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializer  import ( 
     UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, 
@@ -28,6 +28,7 @@ from django.urls import reverse
 from .utils import Util
 import os
 from django.utils.timezone import now
+from django.views.decorators.csrf import csrf_exempt
 
 
 class SelectedRole(APIView):
@@ -104,6 +105,7 @@ class LoginAPIView(APIView):
         request_body=UserLoginSerializer,
         operation_description="User login"
     )
+    @csrf_exempt
     def post(self, request, *args, **kwargs):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -165,6 +167,7 @@ class LogoutAPIView(generics.GenericAPIView):
             400: "Bad Request (Invalid token)",
         }
     )
+    @csrf_exempt
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -330,7 +333,7 @@ class ListMedicalProfessionalView(APIView):
     
 class DeleteUserAccount(APIView):
     """ Delete user from db"""
-    permission_classes = [IsAdminUser, IsAuthenticated]
+    #permission_classes = [IsAdminUser, IsAuthenticated]
 
     def get_object(self, pk):
         try:
