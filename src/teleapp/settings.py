@@ -90,8 +90,6 @@ INSTALLED_APPS = [
     'agora'
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True # Not recommended for prod
-
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -262,3 +260,5 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+CORS_ALLOW_ALL_ORIGINS = True # Not recommended for prod
