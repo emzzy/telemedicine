@@ -88,7 +88,7 @@ class UserRegistrationView(APIView):
             Util.send_email(data)
 
             messages.success(request, "Account has been created successfully. Please Login")
-            request.session.pop('selected_role', None)
+            #request.session.pop('selected_role', None)
 
             return Response({"token": str(token), "User": serializer.data}, status=status.HTTP_201_CREATED)
         
@@ -108,36 +108,45 @@ class LoginAPIView(APIView):
     @csrf_exempt
     def post(self, request, *args, **kwargs):
         serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data.get('email')
-            password = serializer.validated_data.get('password')
 
-            user = authenticate(request, email=email, password=password)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        email = serializer.validated_data.get('email')
+        password = serializer.validated_data.get('password')
 
-            if user is not None:
-                if user.is_patient or user.is_medical_professional:
-                    dashboard_url = reverse('home') #'/patient-dashboard/'
-                else:
-                    return Response({'error': "user has not been assigned a role"}, status=status.HTTP_400_BAD_REQUEST)
-                
-                # update last_login timestamp in the db, create a session
-                user.last_login = now()
-                user.save(update_fields=['last_login'])
-                login(request, user)
+        user = authenticate(request, email=email, password=password)
 
-                refresh = RefreshToken.for_user(user)
-                access_token = str(refresh.access_token)
-                refresh_token = str(refresh)
-                
-                return Response({
-                    "message": "Login successful",
-                    "access_token": access_token,
-                    "refresh_token": refresh_token,
-                    "redirect_to": dashboard_url
-                }, status=status.HTTP_200_OK)
-                
+        if user is None:
             return Response({'error': 'Invalid login details'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+        # Debugging print statements
+        print(f"Authenticated User: {user}")
+        print(f"User is_patient: {user.is_patient}")
+        print(f"User is_medical_professional: {user.is_medical_professional}")
+
+        if user.is_patient:
+            dahsboard_url = reverse('/patient-dashboard/')
+        elif user.is_medical_professional:
+            dahsboard_url = reverse('medical-professional-dashboard')
+        else:
+            return Response({'error': 'user has not ben assigned a valid role'}, status=status.HTTP_403_FORBIDDEN)
+        # update last_login timestamp in the db, create a session
+        user.last_login = now()
+        user.save(update_fields=['last_login'])
+        login(request, user)
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+        
+        return Response({
+            "message": "Login successful",
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "redirect_to": dahsboard_url
+        }, status=status.HTTP_200_OK)       
 
 
 class LogoutAPIView(generics.GenericAPIView):
