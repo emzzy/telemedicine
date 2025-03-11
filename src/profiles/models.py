@@ -1,10 +1,11 @@
 from django.db import models
-from users.models import UserAccount
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class Patient(models.Model):
-    user = models.OneToOneField(UserAccount, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.TextField()
     age = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(120)], null=True, blank=True)
     emergency_contact = models.TextField(max_length=200, null=True, blank=True)
@@ -13,7 +14,7 @@ class Patient(models.Model):
 
 
 class MedicalProfessional(models.Model):
-    user = models.OneToOneField(UserAccount, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     medical_license = models.CharField(
         max_length=20,
