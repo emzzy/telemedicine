@@ -6,12 +6,17 @@ User = get_user_model()
 
 class Patient(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    location = models.TextField()
+    full_name = models.CharField(max_length=300)
+    location = models.TextField(max_length=100)
+    image = models.ImageField(default='default.jpg', upload_to='user_images')
+    verified = models.BooleanField(default=False)
     age = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(120)], null=True, blank=True)
     emergency_contact = models.TextField(max_length=200, null=True, blank=True)
     medical_information = models.FileField(upload_to='src/uploads/patient', null=True)
     #user_type = UserAccount.Role.PATIENT
 
+    def __str__(self):
+        return self.full_name
 
 class MedicalProfessional(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
