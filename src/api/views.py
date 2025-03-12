@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializer  import ( 
+from .serializer  import (
     UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, 
     RequestPasswordResetEmailSerializer, SetNewPasswordSerializer)
 from django.http import Http404
@@ -26,7 +26,6 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import Util
-import os
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 
@@ -45,7 +44,7 @@ class SelectedRole(APIView):
 
 class UserRegistrationView(APIView):
     permission_classes = [AllowAny]
-    renderer_classes = (UserRenderers,)
+    renderer_classes = (UserRenderers)
     
     def get(self, request, *args, **kwargs):
         """handles GET request to show role-specific signup data. Redirects to the select-role view if no role is in session"""
@@ -92,7 +91,7 @@ class UserRegistrationView(APIView):
 
             return Response({"token": str(token), "User": serializer.data}, status=status.HTTP_201_CREATED)
         
-        messages.error(request, "There was an error duing registration")
+        messages.error(request, "There was an error during registration")
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -146,7 +145,7 @@ class LoginAPIView(APIView):
             "access_token": access_token,
             "refresh_token": refresh_token,
             "redirect_to": dahsboard_url
-        }, status=status.HTTP_200_OK)       
+        }, status=status.HTTP_200_OK)
 
 
 class LogoutAPIView(generics.GenericAPIView):
