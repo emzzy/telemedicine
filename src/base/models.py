@@ -16,7 +16,7 @@ class Service(models.Model):
         return f'{self.name} - {self.cost}'
     
 
-class Appointments(models.Model):
+class Appointment(models.Model):
     STATUS = [
         ('Scheduled', 'Scheduled'),
         ('Completed', 'Completed'),
@@ -37,3 +37,40 @@ class Appointments(models.Model):
         return f'{self.patient.full_name} with {self.doctor.first_name}'
     
 
+class MedicalRecord(models.mode):
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    diagnosis = models.TextField()
+    treatment = models.TextField
+
+    def __str__(self):
+        return f'Medical record for {self.appointment.patient.full_name}'
+    
+
+class LabTest(models.Model):
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    test_name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    result = models.TextField(blank=True, null=True)
+
+
+class Prescription(models.Model):
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    medication = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'Prescription for {self.appointment.patient.full_name}'
+    
+
+class Billing(models.Model):
+    patient = models.ForeignKey(patient_model.Patient, on_delete=models.SET_NULL, null=True, blank=True, related_name='')
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name='billing', blank=True, null=True)
+    sub_total = models.DecimalField(max_digits=10, decimal_places=2)
+    tax = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_digits=120, choices=[('Paid', 'Paid'), ('Unpaid', 'Unpaid')])
+    billing_id = ShortUUIDField(Length=6, max_length=10, alphabet='1234567890')
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Billing for {self.patient.full_name} - Total: {self.total}'
+    
