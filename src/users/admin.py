@@ -1,13 +1,15 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
-from profiles.models import Patient, MedicalProfessional, UserAccount
-from .forms import UserAccountChangeForm, UserAccountCreationForm
+from patient.models import Patient
+from doctor.models import MedicalProfessional
+from users import models
+#from .forms import UserAccountChangeForm, UserAccountCreationForm
 
-#User = get_user_model()
+User = get_user_model()
 
 class UserAdminConfig(UserAdmin):
-    model = UserAccount
+    model = User
     search_fields = ('email', 'first_name', 'last_name')
     list_filter = ('is_active', 'is_staff', 'is_superuser')
     ordering = ('-date_joined',)
@@ -26,17 +28,8 @@ class UserAdminConfig(UserAdmin):
             'fields': ('email', 'first_name', 'last_name', 'password1', 'password2', 'is_active', 'is_staff')
         }),
     )
-    
-    # add_form = UserAccountCreationForm
-    # form = UserAccountChangeForm
-    # model = UserAccount
-    # search_fields = ('email', 'first_name', 'last_name', 'type')
-    # ordering = ('-email',)
-    # list_display = (
-    #     'email', 'first_name', 'last_name', 'phone_number', 'gender', 'date_of_birth', 
-    #     'location', 'date_joined', 'is_active', 'is_staff', 'user_type',
-    # )
 
-admin.site.register(UserAccount, UserAdminConfig)
+
+admin.site.register(User, UserAdminConfig)
 admin.site.register(Patient)
 admin.site.register(MedicalProfessional)
