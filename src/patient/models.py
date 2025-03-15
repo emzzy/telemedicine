@@ -36,4 +36,4 @@ class Notification(models.Model):
         verbose_name_plural = 'Notification'
 
         def __str__(self):
-            return f"{self.patient.first_name}\'s notification"
+            return f"{self.patient.full_name}\'s notification"
