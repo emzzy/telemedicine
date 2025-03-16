@@ -47,7 +47,7 @@ class LabTestAdmin(admin.ModelAdmin):
 
 
 class PrescriptionAdmin(admin.ModelAdmin):
-    list_display = ['appointment', 'medications']
+    list_display = ['appointment', 'medication']
 
 
 class BillingAdmin(admin.ModelAdmin):
