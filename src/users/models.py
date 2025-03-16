@@ -5,14 +5,7 @@ from django.utils.timezone import now
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
-    # class Role(models.TextChoices):
-    #     PATIENT = "PATIENT", "patient"
-    #     MEDICALPROFESSIONAL = "MEDICALPROFESSIONAL", "medicalprofessional"
-    #     ADMIN = "ADMIN", "admin"
-
-    # base_role = Role.ADMIN
-    # role = models.CharField(max_length=50, choices = Role.choices, default=base_role)
-    
+        
     email = models.EmailField(unique=True, max_length=255)
     first_name = models.CharField(max_length=120)
     last_name = models.CharField(max_length=120)
