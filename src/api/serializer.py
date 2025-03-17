@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import UserAccount
-from profiles.models import Patient, MedicalProfessional
+from doctor.models import MedicalProfessional
+from patient.models import Patient
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
