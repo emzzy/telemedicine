@@ -2,7 +2,7 @@ from django.contrib import admin
 from patient import models
 
 class PatientAdmin(admin.ModelAdmin):
-    list_display = ['user', 'first_name', 'email', 'mobile', 'gender', 'dob']
+    list_display = ['user', 'full_name', 'age']
 
 
 class NotificationAdmin(admin.ModelAdmin):
