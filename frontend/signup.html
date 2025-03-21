@@ -16,7 +16,7 @@
         <h2 class="text-center">Register</h2>
         <form id="registerForm" method="POST" action="{% url 'api-user-signup' %}">
             {% csrf_token %}
-            <input type="hidden" name="role" value="{{ request.session.selected_role }}">
+            <input type="hidden" name="role" value="{{ request.session.selected_role }}" />
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="firstName" class="form-label">First Name</label>
