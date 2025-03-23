@@ -1,0 +1,23 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Selection</title>
+</head>
+<body>
+    <h1>Select Your Role</h1>
+    <form method="POST" action="{% url 'api-select-role' %}">
+        {% csrf_token %}
+        <input type="hidden" name="role" value="patient">
+        <button type="submit">Sign up as Patient</button>
+    </form>
+    <form method="POST" action="{% url 'api-select-role' %}">
+        {% csrf_token %}
+        <input type="hidden" name="role" value="medical_professional">
+        <button type="submit">Sign up as Medical Professional</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> {% block head_title %} Sass Base {% endblock head_title %} </title>
+    
+    {% include 'base/css.html' %}
+
+</head>
+<body>
+
+    {% include 'nav/navbar.html' %}
+    {% include 'base/messages.html' with messages=messages %}
+    <h1> {{ page_title }} </h1>
+    
+    {% block content %}
+    
+    <p>content exclusive to base html </p>
+    
+    {% endblock content %}
+
+    {% include 'base/js.html' %}
+
+</body>
+</html>

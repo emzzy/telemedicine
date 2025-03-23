@@ -1,0 +1,57 @@
+###
+POST http://127.0.0.1:8000/api/user-signup/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "usersz@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "password": "securepassword",
+    "confirm_password": "securepassword",
+    "phone_number": "123456789",
+    "gender": "male",
+    "date_of_birth": "1990-01-01",
+    "location": "City Name",
+    "is_patient": true,
+    "is_medical_professional": false,
+    "role": "patient"
+}
+
+###
+GET http://127.0.0.1:8000/api/patients/2 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer 
+
+# {
+#     "title": "mr",
+#     "first_name": "house",
+#     "last_name": "dolittle",
+#     "email": "house@gmail.com",
+#     "phone_number": "0751426582",
+#     "gender": "male",
+#     "medical_license": "51352547889",
+#     "specialty": "doctor",
+#     "years_of_experience": 25,
+# }
+
+###
+POST http://127.0.0.1:8000/api/token/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "dera",
+    "password": "Manuel771442_"
+}
+
+###
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "dera", "password": "Manuel771442_"}' \
+  http://localhost:8000/api/token/
+
+###
+curl -X POST http://127.0.0.1:8000/token/ \
+     -H "Content-Type: application/json" \
+     -H "X-CSRFToken: your_csrf_token_here" \
+     -d '{"channelName": "test_channel"}'

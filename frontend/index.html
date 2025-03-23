@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Index</title>
+
+    <script src="https://kit.fontawesome.com/c1df782baf.js"></script>
+    <link rel="stylesheet" href="{% static 'css\style.css' %}">
+    <link rel="stylesheet" href="{% static 'css\bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'js\bootstrap.bundle.min.js' %}">
+</head>
+<body>
+    <header>
+        <div class="logo"> <img src="{% static 'images/doctor1.png' %}" alt=""> </div>
+        
+        <nav class="navbar">
+            <a href="#">Home</a>
+            <a href="#">Services</a>
+            <a href="#">About Us</a>
+            {% if request.user.is_authenticated %}
+                <a href="#">Dashboard</a>
+                <a href="{% url 'api-user-logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+    <div>
+        <section>
+            <p>Connecting you to Expert care in just a few clicks!<br>Get personalised care with just a tap<br>professionals at your fingertips
+                Your path to better health starts here</p>
+        <button> <a href="">Book Appointment</a> </button>
+        </section>
+        <section>
+            <img src="{% static 'images\doctor2.png' %}" alt="doctor">
+        </section>
+    </div>
+    <hr>
+    <br>
+    {% if request.user.is_authenticated %}
+    Welcome {{request.user.first_name}}
+    {% endif %}
+    <br>
+    The type of user is 
+    {% if request.user.is_patient %}
+        <h3>Patient</h3>
+    {% elif request.user.is_medical_professional %}
+        <h3>Medical Professional</h3>
+    {% else %}
+        <h3>Admin</h3>
+    {% endif %}
+    <br />
+    <br />
+    <script src="js/scripts.js"></script>
+</body>
+</html>
