@@ -11,5 +11,5 @@ class NotificationAdmin(admin.ModelAdmin):
     list_display = ['doctor', 'appointment', 'type', 'seen', 'date']
 
 
-admin.site.register(models.MedicalProfessional, DoctorAdmin)
+#admin.site.register(models.MedicalProfessional, DoctorAdmin)
 admin.site.register(models.Notification, NotificationAdmin)
