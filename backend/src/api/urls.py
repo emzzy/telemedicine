@@ -1,7 +1,13 @@
 from django.urls import path, include
 from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
+from  rest_framework.routers import DefaultRouter
+from doctor.views import views as doctor_views
+from patient.views import views as patient_views
 
+router = DefaultRouter()
+router.register(r'doctor', doctor_views)
+router.register(r'patient', patient_views)
 
 urlpatterns = [
     path('user-signup/', views.UserRegistrationView.as_view(), name='api-user-signup'),
