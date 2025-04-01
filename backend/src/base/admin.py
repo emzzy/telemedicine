@@ -30,6 +30,7 @@ class BillingInline(admin.TabularInline):
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ['name', 'cost']
     search_fields = ['name', 'description']
+    filter_horizontal = ['available_doctors']
 
 
 class AppointmentAdmin(admin.ModelAdmin):
