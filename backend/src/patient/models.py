@@ -5,8 +5,8 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 NOTIFICATION_TYPE = (
-    ("Appointment Scheduled", "Appointment Scheduled"),
-    ("Appointment Cancelled"), ("Appointment Cancelled"),
+    ('Appointment Scheduled', 'Appointment Scheduled'),
+    ('Appointment Cancelled', 'Appointment Cancelled'),
 )
 
 class Patient(models.Model):

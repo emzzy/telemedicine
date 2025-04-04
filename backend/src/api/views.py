@@ -43,7 +43,7 @@ class SelectedRole(APIView):
 
 class UserRegistrationView(APIView):
     permission_classes = [AllowAny]
-    renderer_classes = (UserRenderers)
+    renderer_classes = (UserRenderers,)
     
     def get(self, request, *args, **kwargs):
         """handles GET request to show role-specific signup data. Redirects to the select-role view if no role is in session"""
@@ -92,7 +92,7 @@ class UserRegistrationView(APIView):
         
         messages.error(request, "There was an error during registration")
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAPIView(APIView):

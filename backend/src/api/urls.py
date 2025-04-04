@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
-from base.views import service_detail
+#from base.views import service_detail
 #from  rest_framework.routers import DefaultRouter
 # from doctor.views import views as doctor_views
 # from patient.views import views as patient_views
@@ -34,6 +34,6 @@ urlpatterns = [
 
     # Services
     #path('service/add-service/', name='add-a-service'),
-    path('service/<service_id>/', service_detail, name='service_detail') 
+    #path('service/<service_id>/', service_detail, name='service_detail') 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -1,12 +1,13 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 User = get_user_model()
 
 NOTIFICATION_TYPE = (
-    ("New Appointment", "New Appointment"),
-    ("Appointment Cancelled"), ("Appointment Cancelled"),
+    ('New Appointment', 'New Appointment'),
+    ('Appointment Cancelled', 'Appointment Cancelled'),
 )
 
 class MedicalProfessional(models.Model):
@@ -27,7 +28,7 @@ class MedicalProfessional(models.Model):
     specialty = models.CharField(max_length=100, default="Emergency Responder", null=True, blank=True)
     years_of_experience = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
     professional_certificate = models.FileField(upload_to='', null=True, blank=True)
-    available_appointment_date = models.CharField(max_length=100, null=True, blank=True)
+    available_appointment_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     def __str__(self):
         return f'Dr. {self.user.first_name} {self.user.last_name}'
