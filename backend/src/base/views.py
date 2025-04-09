@@ -48,7 +48,7 @@ def book_appointment(request, service_id, doctor_id):
         billing.tax = appointment.service.cost * 20/100,
         billing.total = billing.sub_total + billing.tax
         billing.status = 'Unpaid'
-
+        
         return redirect('checkout', billing.billing_id)
     
     context = {
@@ -56,5 +56,5 @@ def book_appointment(request, service_id, doctor_id):
         'patient': patient,
         'doctor': doctor
     }
-    return render(request, 'book_appointment.html', context)
+    return render(request, 'base/book_appointment.html', context)
 
