@@ -2,8 +2,9 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from users import models as user_model
 
-User = get_user_model()
+#User = get_user_model()
 
 NOTIFICATION_TYPE = (
     ('New Appointment', 'New Appointment'),
@@ -11,7 +12,7 @@ NOTIFICATION_TYPE = (
 )
 
 class MedicalProfessional(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(user_model.UserAccount, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     image = models.FileField(upload_to='images', null=True, blank=True)
     bio = models.CharField(max_length=100, null=True, blank=True)

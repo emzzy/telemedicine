@@ -118,16 +118,15 @@ class LoginAPIView(APIView):
         if user is None:
             return Response({'error': 'Invalid login details'}, status=status.HTTP_400_BAD_REQUEST)
         
-
         # Debugging print statements
         print(f"Authenticated User: {user}")
         print(f"User is_patient: {user.is_patient}")
         print(f"User is_medical_professional: {user.is_medical_professional}")
 
         if user.is_patient:
-            dahsboard_url = reverse('/patient-dashboard/')
+            dashboard_url = reverse('home')
         elif user.is_medical_professional:
-            dahsboard_url = reverse('medical-professional-dashboard')
+            dashboard_url = reverse('home')
         else:
             return Response({'error': 'user has not ben assigned a valid role'}, status=status.HTTP_403_FORBIDDEN)
         # update last_login timestamp in the db, create a session
@@ -143,7 +142,7 @@ class LoginAPIView(APIView):
             "message": "Login successful",
             "access_token": access_token,
             "refresh_token": refresh_token,
-            "redirect_to": dahsboard_url
+            "redirect_to": dashboard_url
         }, status=status.HTTP_200_OK)
 
 

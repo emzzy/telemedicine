@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
-from patient.models import Patient
-from doctor.models import MedicalProfessional
-from users import models
-#from .forms import UserAccountChangeForm, UserAccountCreationForm
+# from patient.models import Patient
+# from doctor.models import MedicalProfessional
+# from users import models
+# #from .forms import UserAccountChangeForm, UserAccountCreationForm
 
 User = get_user_model()
 
@@ -31,5 +31,5 @@ class UserAdminConfig(UserAdmin):
 
 
 admin.site.register(User, UserAdminConfig)
-admin.site.register(Patient)
-admin.site.register(MedicalProfessional)
+#admin.site.register(Patient)
+#admin.site.register(MedicalProfessional)

@@ -1,8 +1,9 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.contrib.auth import get_user_model
+from users import models as user_model
 
-User = get_user_model()
+#User = get_user_model()
 
 NOTIFICATION_TYPE = (
     ('Appointment Scheduled', 'Appointment Scheduled'),
@@ -10,7 +11,7 @@ NOTIFICATION_TYPE = (
 )
 
 class Patient(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(user_model.UserAccount, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=300)
     image = models.FileField(upload_to='images', null=True, blank=True)
     location = models.TextField(max_length=100)

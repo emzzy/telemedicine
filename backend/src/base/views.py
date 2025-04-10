@@ -3,14 +3,19 @@ from base import models as base_models
 from django.contrib.auth.decorators import login_required
 from doctor import models as doctor_model
 from patient import models as patient_model
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from users import models as user_model
 
-# moved service listing to teleapp views
+User = get_user_model()
+# moved service listing to teleapp/views
 
 @login_required
 def book_appointment(request, service_id, doctor_id):
+    user = get_object_or_404(user_model.UserAccount, id=doctor_id)
     service = base_models.Service.objects.get(id=service_id)
-    doctor = doctor_model.MedicalProfessional.objects.get(id=doctor_id)
-    patient = patient_model.Patient.objects.get(id=service_id)
+    doctor = get_object_or_404(doctor_model.MedicalProfessional, user=user)
+    patient = get_object_or_404(patient_model.Patient, user=request.user.is_patient)
 
     if request.method == 'POST':
         first_name = request.POST.get('first_name')

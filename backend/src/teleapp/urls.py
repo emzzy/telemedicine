@@ -24,7 +24,9 @@ schema_view = get_schema_view(
 
 urlpatterns = [
    path("", home_view, name="home"),
+   path('service/<service_id>/', service_detail, name='service_detail'),
    path('agora/', include('agora.urls')),
+   path('base/', include('base.urls')),
    # ----- API ------
    path('api/', include('api.urls')),
    path('admin/', admin.site.urls),
@@ -39,8 +41,6 @@ urlpatterns = [
    path('patient-dashboard/', patient_dashboard, name='patient-dashboard'),
    path('medical-professional-dashboard/', med_pro_dashboard, name='medical-professional-dashboard'),
    path('silk/', include('silk.urls', namespace='silk')), # for api optimization during development
-
-   path('service/<service_id>/', service_detail, name='service_detail'),
    # ----- swagger-UI ----
    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
