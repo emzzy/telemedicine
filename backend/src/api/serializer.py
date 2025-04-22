@@ -27,6 +27,19 @@ class MedicalProfessionalSerializer(serializers.ModelSerializer):
             'title', 'medical_license', 'specialty', 'years_of_experience'
         ]
 
+class DoctorListSerializer(serializers.ModelSerializer):
+    #title = serializers.ImageField()
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+    location = serializers.CharField(source='user.location')
+    #image = serializers.ImageField()
+    
+    class Meta:
+        model = MedicalProfessional
+        fields = [
+            'title', 'first_name', 'last_name', 'location', 'image'
+        ]
+
 
 class UserAccountSerializer(serializers.ModelSerializer):
     patient = PatientSerializer(read_only=True)
