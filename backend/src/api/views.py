@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializer  import (
     UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, 
-    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer)
+    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, DoctorListSerializer)
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -47,7 +47,7 @@ class UserRegistrationView(APIView):
     
     def get(self, request, *args, **kwargs):
         """handles GET request to show role-specific signup data. Redirects to the select-role view if no role is in session"""
-        role = request.session.get('selected_role', None) or request.data.get('role')
+        role = request.session.get('userRole', None) or request.data.get('role')
         if not role:
             return redirect(reverse('select-role'))
         return Response({'message': f'Signing up as: {role}'}, status=status.HTTP_200_OK)
@@ -60,7 +60,7 @@ class UserRegistrationView(APIView):
     def post(self, request, *args, **kwargs):
         """handles POST request to register a user. Attaches the is_patient or is_medical_professional
         flag based on the selected role"""
-        role = request.session.get('selected_role', None) or request.data.get('role')
+        role = request.session.get('userRole', None) or request.data.get('role')
         if not role:
             return Response(
                 {'error': 'Role not specified. Please select a role first.'},
@@ -80,7 +80,7 @@ class UserRegistrationView(APIView):
             absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
             email_body = 'Hi '+user.first_name+' Use the link below to verify your email\n' + absurl
             data = {'email_body': email_body,
-                    'to_email': user.email, 
+                    'to_email': user.email,
                     'email_subject': 'Verify your email'
                 }
             Util.send_email(data)
@@ -336,7 +336,20 @@ class ListMedicalProfessionalView(APIView):
         is_med_pro = UserAccount.objects.filter(is_medical_professional=True).select_related('medicalprofessional')
         serializer = UserAccountSerializer(is_med_pro, many=True)
         return Response(serializer.data)
-    
+
+
+class ListDoctorsView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        """Returns list of doctors with selected fields"""
+        from doctor.models import MedicalProfessional
+        doctors = MedicalProfessional.objects.select_related('user').all()
+        serializer = DoctorListSerializer(doctors, many=True)
+        return Response(serializer.data)
+
+
+
 class DeleteUserAccount(APIView):
     """ Delete user from db"""
     #permission_classes = [IsAdminUser, IsAuthenticated]
