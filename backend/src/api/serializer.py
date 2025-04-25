@@ -18,6 +18,7 @@ class PatientSerializer(serializers.ModelSerializer):
             'location', 'age', 'emergency_contact', 'medical_information'
         ]
 
+
 class MedicalProfessionalSerializer(serializers.ModelSerializer):
     #password = serializers.CharField(write_only=True)
 
@@ -26,6 +27,7 @@ class MedicalProfessionalSerializer(serializers.ModelSerializer):
         fields = [
             'title', 'medical_license', 'specialty', 'years_of_experience'
         ]
+
 
 class DoctorListSerializer(serializers.ModelSerializer):
     #title = serializers.ImageField()
