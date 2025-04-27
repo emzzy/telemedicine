@@ -6,9 +6,12 @@ from patient import models as patient_model
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from users import models as user_model
+from rest_framework.views import APIView
 
 User = get_user_model()
-# moved service listing to teleapp/views
+class ServicesAPIView(APIView):
+    pass
+
 
 @login_required
 def book_appointment(request, service_id, doctor_id):
