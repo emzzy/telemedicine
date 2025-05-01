@@ -11,7 +11,6 @@ from rest_framework.exceptions import AuthenticationFailed
 
 class PatientSerializer(serializers.ModelSerializer):
     #password = serializers.CharField(write_only=True)
-
     class Meta:
         model = Patient
         fields = [
