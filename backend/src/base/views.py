@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from base import models as base_models
+from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
 from doctor import models as doctor_model
 from patient import models as patient_model
@@ -7,10 +8,33 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from users import models as user_model
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .serializers import ServicesListSerializer
+from django.shortcuts import get_object_or_404
+
 
 User = get_user_model()
 class ServicesAPIView(APIView):
     pass
+
+class ServicesListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        """Returns list of all available services"""
+        services = base_models.Service.objects.all()
+        serializer = ServicesListSerializer(services, many=True)
+        
+        return Response(serializer.data)
+
+class ServiceDetailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        service = get_object_or_404(base_models.Service, pk=pk)
+        #service = base_models.Service.objects.get(id=service_id)
+        serializer = ServicesListSerializer(service)
+        return Response(serializer.data)
 
 
 @login_required
