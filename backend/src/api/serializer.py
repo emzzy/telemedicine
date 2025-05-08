@@ -7,6 +7,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework.exceptions import AuthenticationFailed
+from doctor.serializer import MedicalProfessionalsSerializer
 
 
 class PatientSerializer(serializers.ModelSerializer):
@@ -18,27 +19,35 @@ class PatientSerializer(serializers.ModelSerializer):
         ]
 
 
-class MedicalProfessionalSerializer(serializers.ModelSerializer):
+class DoctorProfileSerializer(serializers.ModelSerializer):
     #password = serializers.CharField(write_only=True)
-
+    # image = serializers.ImageField(source='medicalprofessional.image')
+    # title = serializers.CharField(source='medicalprofessional.title')
+    # years_of_experience = serializers.CharField(source='medicalprofessional.years_of_experience')
+    medicalprofessional = MedicalProfessionalsSerializer(read_only=True)
+    
     class Meta:
-        model = MedicalProfessional
+        model = UserAccount
         fields = [
-            'title', 'medical_license', 'specialty', 'years_of_experience'
+            'id', 'email', 'first_name', 'last_name', 'password', 'phone_number', 'gender', 'date_of_birth', 'location',
+            'is_verified', 'medicalprofessional'
         ]
 
 
-class DoctorListSerializer(serializers.ModelSerializer):
+class ListDoctorsSerializer(serializers.ModelSerializer):
     #title = serializers.ImageField()
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
     location = serializers.CharField(source='user.location')
+    phone_number = serializers.CharField(source='user.phone_number')
+    email = serializers.EmailField(source='user.email')
     #image = serializers.ImageField()
+    available_appointment_date = serializers.DateTimeField()
     
     class Meta:
         model = MedicalProfessional
         fields = [
-            'title', 'first_name', 'last_name', 'location', 'image'
+            'id', 'title', 'first_name', 'last_name', 'email', 'location', 'phone_number', 'image', 'available_appointment_date'
         ]
 
 
