@@ -8,16 +8,19 @@ User = get_user_model()
 
 class Service(models.Model):
     """properties for each available service """
+    from users.models import UserAccount
+    from doctor.models import MedicalProfessional
     image = models.FileField(upload_to='images', null=True, blank=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2)
-    available_doctors = models.ManyToManyField(User, limit_choices_to={'is_medical_professional': True}, blank=True)
+    available_doctors = models.ManyToManyField(UserAccount, limit_choices_to={'is_medical_professional': True}, blank=True)
+    doctor_details = models.ManyToManyField(MedicalProfessional, blank=True)
 
     def get_doctors_by_location(self, patient_location):
         """returns a list of doctors in the same location as the patient"""
         return self.available_doctors.filter(location=patient_location)
-
+    
     def __str__(self):
         return f'{self.name} - {self.cost}'
 
