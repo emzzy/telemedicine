@@ -37,56 +37,61 @@ class ServiceDetailView(APIView):
         return Response(serializer.data)
 
 
-@login_required
-def book_appointment(request, service_id, doctor_id):
-    user = get_object_or_404(user_model.UserAccount, id=doctor_id)
-    service = base_models.Service.objects.get(id=service_id)
-    doctor = get_object_or_404(doctor_model.MedicalProfessional, user=user)
-    patient = get_object_or_404(patient_model.Patient, user=request.user.is_patient)
+class BookAppointment(APIView):
+    permission_classes = [IsAuthenticated]
 
-    if request.method == 'POST':
-        first_name = request.POST.get('first_name')
-        email = request.POST.get('email')
-        mobile = request.POST.get('mobile')
-        gender = request.POST.get('mobile')
-        address = request.POST.get('first_name')
-        dob = request.POST.get('dob')
-        issues = request.POST.get('issues')
-        symptoms = request.POST.get('symptoms')
+    def get(self, request, service_id, doctor_id):
+        pass
 
-        # Update patient bio data
-        patient.first_name = first_name
-        patient.email = email
-        patient.mobile = mobile
-        patient.gender = gender
-        patient.address = address
-        patient.dob = dob
-        patient.save()
+    def post(self, request, service_id, doctor_id):
+        user = get_object_or_404(user_model.UserAccount, id=doctor_id)
+        service = base_models.Service.objects.get(id=service_id)
+        doctor = get_object_or_404(doctor_model.MedicalProfessional, user=user)
+        patient = get_object_or_404(patient_model.Patient, user=request.user.is_patient)
+
+        if request.method == 'POST':
+            full_name = request.POST.get('full_name')
+            email = request.POST.get('email')
+            mobile = request.POST.get('mobile')
+            gender = request.POST.get('mobile')
+            address = request.POST.get('first_name')
+            date_of_birth = request.POST.get('dob')
+            issues = request.POST.get('issues')
+            symptoms = request.POST.get('symptoms')
+            
+            # Update patient bio data
+            patient.full_name = full_name
+            patient.email = email
+            patient.mobile = mobile
+            patient.gender = gender
+            patient.address = address
+            patient.date_of_birth = date_of_birth
+            patient.save()
+            
+            # Appointment obj
+            appointment = base_models.Appointment.objects.create(
+                service = service,
+                doctor=doctor,
+                patient=patient,
+                appointment_date=doctor.available_appointment_date,
+                issues=issues,
+                symptoms=symptoms
+            )
+            # Billing object
+            billing = base_models.Billing()
+            billing.patient = patient,
+            billing.appointment = appointment,
+            billing.sub_total = appointment.service.cost,
+            billing.tax = appointment.service.cost * 20/100,
+            billing.total = billing.sub_total + billing.tax
+            billing.status = 'Unpaid'
+            
+            return redirect('checkout', billing.billing_id)
         
-        # Appointment obj
-        appointment = base_models.Appointment.objects.create(
-            service = service,
-            doctor=doctor,
-            patient=patient,
-            new_appointment_date=doctor.available_appointment_date,
-            issues=issues,
-            symptoms=symptoms
-        )
-        # Billing object
-        billing = base_models.Billing()
-        billing.patient = patient,
-        billing.appointment = appointment,
-        billing.sub_total = appointment.service.cost,
-        billing.tax = appointment.service.cost * 20/100,
-        billing.total = billing.sub_total + billing.tax
-        billing.status = 'Unpaid'
-        
-        return redirect('checkout', billing.billing_id)
-    
-    context = {
-        'service': service,
-        'patient': patient,
-        'doctor': doctor
-    }
-    return render(request, 'base/book_appointment.html', context)
+        context = {
+            'service': service,
+            'patient': patient,
+            'doctor': doctor
+        }
+        return render(request, 'base/book_appointment.html', context)
 
