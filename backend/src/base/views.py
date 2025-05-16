@@ -41,20 +41,41 @@ class ServiceDetailView(APIView):
 
 class BookAppointment(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def post(self, request, service_id, doctor_id):
-        user = get_object_or_404(user_model.UserAccount, id=doctor_id)
+        user_doctor = get_object_or_404(user_model.UserAccount, id=doctor_id)
         service = get_object_or_404(base_models.Service, id=service_id)
-        doctor = get_object_or_404(doctor_model.MedicalProfessional, user=user)
+        doctor = get_object_or_404(doctor_model.MedicalProfessional, user=user_doctor)
         patient = get_object_or_404(patient_model.Patient, user=request.user)
+        user = request.user
         
-        data = request.data.copy()
-        data['service'] = service.id
-        data['doctor'] = doctor.id
-        data['patient'] = patient.id
-        data['appointment_date'] = doctor.available_appointment_date
+        # Update patient information if provided
+        if 'full_name' in request.data:
+            patient.full_name = request.data['full_name']
+        if 'gender' in request.data:
+            patient.gender = request.data['gender']
+        if 'address' in request.data:
+            patient.address = request.data['address']
+        if 'date_of_birth' in request.data:
+            patient.date_of_birth = request.data['data_of_birth']
+        patient.save()
 
-        queryset = base_models.Appointment.objects.all()
+        # Update user information if provided
+        if 'email' in request.data:
+            user.email = request.data['email']
+        if 'mobile' in request.data:
+            user.mobile = request.data['phone_number']
+        user.save()
+        
+        # Create appointment data
+        data = {
+            'service': service.id,
+            'doctor': doctor.id,
+            'patient': patient.id,
+            'issues': request.data.get('issues', ''),
+            'symptoms': request.data.get('symptoms', '')
+        }
+
         serializer = BookAppointmentSerializer(data=data)
         if serializer.is_valid():
             appointment = serializer.save()
@@ -73,3 +94,12 @@ class BookAppointment(APIView):
                 'billing_id': billing.billing_id
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+class CheckoutView(APIView):
+    def get(self, request, billing_id):
+        billing = get_object_or_404(base_models.Billing, id=billing_id)
+        
+        return Response({
+            'billing': billing,
+        }, status=status.HTTP_200_OK)
