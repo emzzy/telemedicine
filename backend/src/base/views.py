@@ -47,11 +47,14 @@ class BookAppointment(APIView):
         service = get_object_or_404(base_models.Service, id=service_id)
         doctor = get_object_or_404(doctor_model.MedicalProfessional, user=user_doctor)
         patient = get_object_or_404(patient_model.Patient, user=request.user)
+        user_patient = get_object_or_404(user_model.UserAccount, user=request.user)
         user = request.user
         
         # Update patient information if provided
-        if 'full_name' in request.data:
-            patient.full_name = request.data['full_name']
+        if 'first_name' in request.data:
+            user_patient.first_name = request.data['first_name']
+        if 'last_name' in request.data:
+            user_patient.last_name = request.data['last_name']
         if 'gender' in request.data:
             patient.gender = request.data['gender']
         if 'address' in request.data:
@@ -72,6 +75,7 @@ class BookAppointment(APIView):
             'service': service.id,
             'doctor': doctor.id,
             'patient': patient.id,
+            'appointment_date': doctor.available_appointment_date,
             'issues': request.data.get('issues', ''),
             'symptoms': request.data.get('symptoms', '')
         }
