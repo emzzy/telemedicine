@@ -15,17 +15,13 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = [
-            'location', 'age', 'emergency_contact', 'medical_information'
+            'full_name', 'location', 'image', 'verified', 'age', 'emergency_contact', 'medical_information', 'blood_group'
         ]
 
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
-    #password = serializers.CharField(write_only=True)
-    # image = serializers.ImageField(source='medicalprofessional.image')
-    # title = serializers.CharField(source='medicalprofessional.title')
-    # years_of_experience = serializers.CharField(source='medicalprofessional.years_of_experience')
     medicalprofessional = MedicalProfessionalsSerializer(read_only=True)
-    
+        
     class Meta:
         model = UserAccount
         fields = [

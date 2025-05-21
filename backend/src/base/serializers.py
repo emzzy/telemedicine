@@ -26,7 +26,7 @@ class BookAppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = [
-            'service', 'doctor', 'patient', 'appointment_date', 'issues', 'symptoms'
+            'service', 'doctor', 'patient', 'appointment_date', 'issues', 'symptoms', 'status', 'appointment_id'
         ]
 
 
