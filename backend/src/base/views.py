@@ -13,6 +13,7 @@ from .serializers import ServicesListSerializer
 from django.shortcuts import get_object_or_404
 from .serializers import BookAppointmentSerializer
 from rest_framework import status
+from decimal import Decimal
 
 
 User = get_user_model()
@@ -46,41 +47,39 @@ class BookAppointment(APIView):
         user_doctor = get_object_or_404(user_model.UserAccount, id=doctor_id)
         service = get_object_or_404(base_models.Service, id=service_id)
         doctor = get_object_or_404(doctor_model.MedicalProfessional, user=user_doctor)
-        patient = get_object_or_404(patient_model.Patient, user=request.user)
-        user_patient = get_object_or_404(user_model.UserAccount, user=request.user)
-        user = request.user
+        # get patient
+        user_patient = request.user
+        patient = get_object_or_404(patient_model.Patient, user=user_patient)
         
+        update_patient_data = [
+            'first_name', 'last_name', 'email', 'phone_number', 'gender', 'date_of_birth', 'location'
+        ]
+        for field in update_patient_data:
+            if field in request.data:
+                setattr(user_patient, field, request.data[field])
+        user_patient.save()
+
         # Update patient information if provided
-        if 'first_name' in request.data:
-            user_patient.first_name = request.data['first_name']
-        if 'last_name' in request.data:
-            user_patient.last_name = request.data['last_name']
         if 'gender' in request.data:
             patient.gender = request.data['gender']
         if 'address' in request.data:
             patient.address = request.data['address']
         if 'date_of_birth' in request.data:
-            patient.date_of_birth = request.data['data_of_birth']
+            patient.date_of_birth = request.data['date_of_birth']
         patient.save()
 
-        # Update user information if provided
-        if 'email' in request.data:
-            user.email = request.data['email']
-        if 'mobile' in request.data:
-            user.mobile = request.data['phone_number']
-        user.save()
-        
         # Create appointment data
-        data = {
+        appointment_data = {
             'service': service.id,
             'doctor': doctor.id,
             'patient': patient.id,
             'appointment_date': doctor.available_appointment_date,
             'issues': request.data.get('issues', ''),
-            'symptoms': request.data.get('symptoms', '')
+            'symptoms': request.data.get('symptoms', ''),
+            'status': 'Scheduled'
         }
 
-        serializer = BookAppointmentSerializer(data=data)
+        serializer = BookAppointmentSerializer(data=appointment_data)
         if serializer.is_valid():
             appointment = serializer.save()
             
@@ -89,18 +88,23 @@ class BookAppointment(APIView):
                 patient=patient,
                 appointment=appointment,
                 sub_total=service.cost,
-                tax=round(service.cost * 0.20, 2),
-                total=round(service.cost * 1.20, 2),
+                tax=round(service.cost * Decimal('0.20'), 2),
+                total=round(service.cost * Decimal('1.20'), 2),
                 status='Unpaid'
-            )            
+            )
+            print(request.data)
             return Response({
+                'data': serializer.data,
                 'appointment': serializer.data,
-                'billing_id': billing.billing_id
+                'billing_id': billing.billing_id,
+                'message': 'Appointment scheduled successfully!'
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class CheckoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, billing_id):
         billing = get_object_or_404(base_models.Billing, id=billing_id)
         

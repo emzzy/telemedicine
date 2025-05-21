@@ -37,12 +37,12 @@ class Appointment(models.Model):
     patient = models.ForeignKey(patient_model.Patient, on_delete=models.SET_NULL, null=True, blank=True, related_name='patient_appointment_notification')
     appointment_date = models.DateTimeField(null=True, blank=True)
     issues = models.TextField(blank=True, null=True)
-    symptoms = models.TextField(blank=True, null=True)
+    symptoms = models.TextField(blank=True, null=True) 
     appointment_id = ShortUUIDField(length=6, max_length=10, alphabet='1234567890')
     status = models.CharField(max_length=120, choices=STATUS)
 
     def __str__(self):
-        return f'{self.patient.full_name} with {self.doctor.user.first_name}'
+        return f'{self.patient.user.first_name} with {self.doctor.user.first_name}'
     
 
 class MedicalRecord(models.Model):
