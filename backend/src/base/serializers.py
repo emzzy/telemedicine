@@ -30,9 +30,13 @@ class BookAppointmentSerializer(serializers.ModelSerializer):
         ]
 
 
-class AppointmentSerializer(serializers.ModelSerializer):
+class BillingSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Appointment
+        model = Billing
+        fields = [
+            'patient', 'appointment', 'sub_total', 'tax', 'total', 'status', 'billing_id', 'date'
+        ]
+
 
 
 class MedicalRecordSerializer(serializers.ModelSerializer):
@@ -47,9 +51,3 @@ class LabtestSerializer(serializers.ModelSerializer):
 class PrescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prescription
-
-
-class BillingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Billing
-    
