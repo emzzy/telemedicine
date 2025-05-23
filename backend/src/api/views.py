@@ -3,9 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializer  import (
+from api.serializer  import (
     UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, 
-    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, DoctorListSerializer)
+    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, ListDoctorsSerializer, DoctorProfileSerializer)
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -329,12 +329,12 @@ class ListPatientView(APIView):
         return Response(serializer.data)
 
 class ListMedicalProfessionalView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         """Returns all medical professsionals in db"""
-        is_med_pro = UserAccount.objects.filter(is_medical_professional=True).select_related('medicalprofessional')
-        serializer = UserAccountSerializer(is_med_pro, many=True)
+        queryset = UserAccount.objects.filter(is_medical_professional=True).select_related('medicalprofessional')
+        serializer = DoctorProfileSerializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -345,9 +345,8 @@ class ListDoctorsView(APIView):
         """Returns list of doctors with selected fields"""
         from doctor.models import MedicalProfessional
         doctors = MedicalProfessional.objects.select_related('user').all()
-        serializer = DoctorListSerializer(doctors, many=True)
+        serializer = ListDoctorsSerializer(doctors, many=True)
         return Response(serializer.data)
-
 
 
 class DeleteUserAccount(APIView):
