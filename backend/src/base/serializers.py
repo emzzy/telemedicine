@@ -31,12 +31,12 @@ class BookAppointmentSerializer(serializers.ModelSerializer):
 
 
 class BillingSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Billing
         fields = [
             'patient', 'appointment', 'sub_total', 'tax', 'total', 'status', 'billing_id', 'date'
         ]
-
 
 
 class MedicalRecordSerializer(serializers.ModelSerializer):
