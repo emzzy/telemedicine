@@ -43,6 +43,15 @@ PUSHER_CLUSTER = config("PUSHER_CLUSTER")
 AGORA_APP_ID = config("AGORA_APP_ID")
 AGORA_APP_CERTIFICATE = config("AGORA_APP_CERTIFICATE")
 
+#Stripe
+STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+
+#paypal
+PAYPAL_CLIENT_ID = config("PAYPAL_CLIENT_ID")
+PAYPAL_SECRET_KEY = config("PAYPAL_CLIENT_ID")
+
+
 MANAGERS=[]
 ADMINS=[]
 if all([ADMIN_USER_NAME, ADMIN_USER_EMAIL]):
@@ -278,12 +287,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # DRF Auth
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     ],
     'DEFAULT_PERMISSION_CLASSES':[
-        'rest_framework.permissions.IsAuthenticated', # Restrict access to authenticated users by default
+        'rest_framework.permissions.AllowAny', # Restrict access to authenticated users by default
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
@@ -363,3 +372,4 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success"
     }
 }
+
