@@ -9,11 +9,11 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import ServicesListSerializer
+from base.serializers import ServicesListSerializer, BookAppointmentSerializer, BillingSerializer
 from django.shortcuts import get_object_or_404
-from .serializers import BookAppointmentSerializer
 from rest_framework import status
 from decimal import Decimal
+from django.conf import settings
 
 
 User = get_user_model()
@@ -62,8 +62,8 @@ class BookAppointment(APIView):
         # Update patient information if provided
         if 'gender' in request.data:
             patient.gender = request.data['gender']
-        if 'address' in request.data:
-            patient.address = request.data['address']
+        if 'location' in request.data:
+            patient.location = request.data['location']
         if 'date_of_birth' in request.data:
             patient.date_of_birth = request.data['date_of_birth']
         patient.save()
@@ -106,8 +106,11 @@ class CheckoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, billing_id):
-        billing = get_object_or_404(base_models.Billing, id=billing_id)
+        billing = get_object_or_404(base_models.Billing, billing_id=billing_id)
+        serializer = BillingSerializer(billing)
         
         return Response({
-            'billing': billing,
+            'data': serializer.data,
+            'stripe_public_key': settings.STRIPE_PUBLISHABLE_KEY,
+            "paypal_client_id": settings.PAYPAL_CLIENT_ID
         }, status=status.HTTP_200_OK)
