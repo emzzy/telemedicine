@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
+import stripe.error
+import stripe.webhook
 from doctor import models as doctor_model
 from patient import models as patient_model
 from base import models as base_models
@@ -14,11 +15,15 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from decimal import Decimal
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, JsonResponse
+import stripe
+
 
 
 User = get_user_model()
-class ServicesAPIView(APIView):
-    pass
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 class ServicesListView(APIView):
     permission_classes = [AllowAny]
@@ -114,3 +119,78 @@ class CheckoutView(APIView):
             'stripe_public_key': settings.STRIPE_PUBLISHABLE_KEY,
             "paypal_client_id": settings.PAYPAL_CLIENT_ID
         }, status=status.HTTP_200_OK)
+
+
+class CreateStripeCheckoutSession(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, billing_id, *args, **kwargs):
+        billing = get_object_or_404(base_models.Billing, billing_id=billing_id)
+
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                customer_email=billing.patient.user.email,
+                payment_method_types=['card'],
+                line_items=[{
+                    'price_data': {
+                        'currency': 'gbp',
+                        'product_data': {
+                            'name': f'Appointment with Dr.{billing.appointment.doctor.user.first_name} for {billing.patient.user.first_name}',
+                        },
+                        'unit_amount': int(billing.total * 100),
+                    },
+                    'quantity': 1,
+                }],
+                mode='payment',
+                metadata={
+                    'billing_id': billing.billing_id,
+                },
+                success_url=f'{settings.SITE_URL}/payment-success?session_id={{CHECKOUT_SESSION_ID}}',
+                cancel_url=f'{settings.SITE_URL}/payment-cancelled',
+            )
+            return Response({'url': checkout_session.url})
+        
+        except Exception as e:
+            return Response({
+                'message': 'something went wrong when creating stripe session',
+                'error': str(e)
+            }, status=500)
+
+@csrf_exempt
+def stripe_verify_payment(request, session_id):
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        billing_id = session['metadata'].get('billing_id')
+        billing = base_models.Billing.objects.get(billing_id=billing_id)        
+        
+        if session.payment_status == 'paid':
+            if billing.status == 'Unpaid':
+                billing.status = 'Paid'
+                billing.save()
+                billing.appointment.status = 'Completed'
+                billing.save()
+
+                #notify doctor and patient on completion
+                doctor_model.Notification.objects.create(
+                    doctor=billing.appointment.doctor,
+                    appointment=billing.appointment,
+                    type='New Appointment'
+                )
+                patient_model.Notification.objects.create(
+                    patient=billing.appointment.patient,
+                    appointment=billing.appointment,
+                    type='Appointment Scheduled'
+                )
+            return JsonResponse({'status': 'success', 'message': 'Payment verified!'})
+        
+        return JsonResponse({'status': 'unpaid', 'message': 'Payment not completed'})
+    except base_models.Billing.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Billing record not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    
+
+def payment_status(request, billing_id):
+    billing = get_object_or_404(base_models.Billing, billing_id=billing_id)
+    payment_status = request.get('payment_status')
+    
