@@ -79,6 +79,7 @@ slippers==0.6.2
 social-auth-app-django==5.4.3
 social-auth-core==4.5.6
 sqlparse==0.5.2
+stripe==12.1.0
 tablib==3.8.0
 tqdm==4.67.1
 typeguard==2.13.3
