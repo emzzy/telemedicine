@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from .models import Service, Appointment, MedicalRecord, LabTest, Prescription, Billing
+from .models import Service, Appointment, Billing
 from doctor.serializer import MedicalProfessionalsSerializer
-from api.serializer import PatientSerializer, UserAccountSerializer, DoctorProfileSerializer
+from api.serializer import DoctorProfileSerializer
+import datetime
 
 
 class ServicesListSerializer(serializers.ModelSerializer):
@@ -37,17 +38,4 @@ class BillingSerializer(serializers.ModelSerializer):
         fields = [
             'patient', 'appointment', 'sub_total', 'tax', 'total', 'status', 'billing_id', 'date'
         ]
-
-
-class MedicalRecordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MedicalRecord
-
-
-class LabtestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LabTest
-
-class PrescriptionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Prescription
+    
