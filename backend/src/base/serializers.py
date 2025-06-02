@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Service, Appointment, Billing
-from doctor.serializer import MedicalProfessionalsSerializer
+from base.models import Service, Appointment, Billing
+from shared.serializers import MedicalProfessionalsSerializer
 from api.serializer import DoctorProfileSerializer
 import datetime
 
@@ -27,7 +27,7 @@ class BookAppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = [
-            'service', 'doctor', 'patient', 'appointment_date', 'issues', 'symptoms', 'status', 'appointment_id'
+            'id', 'service', 'doctor', 'patient', 'appointment_date', 'issues', 'symptoms', 'status', 'appointment_id'
         ]
 
 
@@ -38,4 +38,3 @@ class BillingSerializer(serializers.ModelSerializer):
         fields = [
             'patient', 'appointment', 'sub_total', 'tax', 'total', 'status', 'billing_id', 'date'
         ]
-    

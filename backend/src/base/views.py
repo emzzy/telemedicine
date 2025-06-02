@@ -1,3 +1,4 @@
+import requests
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
 import stripe.error
@@ -168,7 +169,7 @@ def stripe_verify_payment(request, session_id):
                 billing.status = 'Paid'
                 billing.save()
                 billing.appointment.status = 'Completed'
-                billing.save()
+                billing.appointment.save()
 
                 #notify doctor and patient on completion
                 doctor_model.Notification.objects.create(
@@ -188,9 +189,69 @@ def stripe_verify_payment(request, session_id):
         return JsonResponse({'status': 'error', 'message': 'Billing record not found'}, status=404)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    
 
-def payment_status(request, billing_id):
-    billing = get_object_or_404(base_models.Billing, billing_id=billing_id)
-    payment_status = request.get('payment_status')
+
+def get_paypal_access_token():
+    token_url = 'https://api.sandbox.paypal.com/v1/oauth2/token'
+    data = {'grant_type': 'client_credentials'}
+    auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET_KEY)
+
+    response = requests.post(token_url, data=data, auth=auth)
+
+    if response.status_code == 200:
+        print('Access Token: ', response.json()['access_token'])
+        return response.json()['access_token']
+    else:
+        raise Exception(f'Failed to get access token from Paypal. Status code: {response.status_code}')
+
+
+def paypal_payment_verify(request, billing_id):
+    transaction_id = request.GET.get('transaction_id')
+    if not transaction_id:
+        return JsonResponse({'error': 'Transaction ID is required'}, status=400)
     
+    try:
+        billing = base_models.Billing.objects.get(billing_id=billing_id)
+    except base_models.Billing.DoesNotExist:
+        return JsonResponse({'error': 'Billing not found'}, status=404)
+    
+    try:
+        access_token = get_paypal_access_token
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+    paypal_api_url = f'https://api-m.sandbox.paypal.com/v2/checkout/orders/{transaction_id}'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    response = requests.get(paypal_api_url, headers=headers)
+
+    if response.status_code == 200:
+        paypal_order_data = response.json()
+        paypal_payment_status = paypal_order_data.get('status')
+
+        if paypal_payment_status == 'COMPLETED':
+            if billing.status == 'Unpaid':
+                billing.status = 'Paid'
+                billing.save()
+                billing.appointment.status = 'Completed'
+                billing.appointment.save()
+
+                #notify doctor and patient on completion
+                doctor_model.Notification.objects.create(
+                    doctor=billing.appointment.doctor,
+                    appointment=billing.appointment,
+                    type='New Appointment'
+                )
+                patient_model.Notification.objects.create(
+                    patient=billing.appointment.patient,
+                    appointment=billing.appointment,
+                    type='Appointment Scheduled'
+                )
+            return JsonResponse({'status': 'success', 'message': 'Payment verified!'})
+        else:
+            return JsonResponse({'status': 'failure', 'message': 'Payment not completed!'}, status=400)
+    else:
+        return JsonResponse({'error': 'Failure to verify payment with Paypal!'}, status=500)
