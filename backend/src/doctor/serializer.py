@@ -1,16 +1,23 @@
 from rest_framework import serializers
-from .models import MedicalProfessional
+from doctor.models import Notification
+from base.models import Appointment
 
-class MedicalProfessionalsSerializer(serializers.ModelSerializer):
+
+
+class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MedicalProfessional
-        fields = [
-            'title', 
-            'image', 
-            'bio', 
-            'medical_license', 
-            'specialty', 
-            'years_of_experience',
-            'professional_certificate', 
-            'available_appointment_date'
-        ]
+        model = Notification
+        fields = ['id', 'type', 'seen', 'date', 'appointment']
+
+
+class DashboardSerializer(serializers.Serializer):
+    from shared.serializers import MedicalProfessionalsSerializer
+    from base.serializers import BookAppointmentSerializer
+    
+    doctor = MedicalProfessionalsSerializer()
+    appointments = BookAppointmentSerializer(many=True)
+    notifications = NotificationSerializer(many=True)
+    class Meta:
+        model = Appointment
+        fields = ['doctor', 'patient', 'appointment_date', 'issues', 'symptoms', 'appointment_id']
+

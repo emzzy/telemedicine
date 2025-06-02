@@ -40,7 +40,7 @@ class Notification(models.Model):
     type = models.CharField(max_length=100, choices=NOTIFICATION_TYPE)
     seen = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
         verbose_name_plural = 'Notification'
 

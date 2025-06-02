@@ -13,10 +13,10 @@ NOTIFICATION_TYPE = (
 class Patient(models.Model):
     user = models.OneToOneField(user_model.UserAccount, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=300)
-    image = models.FileField(upload_to='images', null=True, blank=True)
-    location = models.TextField(max_length=100)
+    # image = models.FileField(upload_to='images', null=True, blank=True)
+    #location = models.TextField(max_length=100)
     image = models.ImageField(default='default.jpg', upload_to='user_images')
-    verified = models.BooleanField(default=False)
+    # verified = models.BooleanField(default=False)
     age = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(120)], null=True, blank=True)
     emergency_contact = models.TextField(max_length=200, null=True, blank=True)
     medical_information = models.FileField(upload_to='src/uploads/patient', null=True)

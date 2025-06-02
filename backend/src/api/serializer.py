@@ -7,7 +7,6 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework.exceptions import AuthenticationFailed
-from doctor.serializer import MedicalProfessionalsSerializer
 
 
 class PatientSerializer(serializers.ModelSerializer):
@@ -20,6 +19,7 @@ class PatientSerializer(serializers.ModelSerializer):
 
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
+    from shared.serializers import MedicalProfessionalsSerializer
     medicalprofessional = MedicalProfessionalsSerializer(read_only=True)
         
     class Meta:
@@ -45,19 +45,6 @@ class ListDoctorsSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'first_name', 'last_name', 'email', 'location', 'phone_number', 'image', 'available_appointment_date'
         ]
-
-
-class UserAccountSerializer(serializers.ModelSerializer):
-    #patient = PatientSerializer(read_only=True)
-    #medical_professional = MedicalProfessionalSerializer(read_only=True)
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = UserAccount
-        fields = (
-            'id', 'email', 'first_name', 'last_name', 'password', 'phone_number', 'gender', 'date_of_birth', 'location',
-            'is_patient', 'is_medical_professional'
-        )
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
