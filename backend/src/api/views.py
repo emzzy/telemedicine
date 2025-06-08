@@ -4,8 +4,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from api.serializer  import (
-    UserAccountSerializer, UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, 
-    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, ListDoctorsSerializer, DoctorProfileSerializer)
+    UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, 
+    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, ListDoctorsSerializer, DoctorProfileSerializer
+    )
+from shared.serializers import UserAccountSerializer
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
