@@ -3,7 +3,6 @@ from doctor.models import Notification
 from base.models import Appointment
 
 
-
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
@@ -17,6 +16,7 @@ class DashboardSerializer(serializers.Serializer):
     doctor = MedicalProfessionalsSerializer()
     appointments = BookAppointmentSerializer(many=True)
     notifications = NotificationSerializer(many=True)
+
     class Meta:
         model = Appointment
         fields = ['doctor', 'patient', 'appointment_date', 'issues', 'symptoms', 'appointment_id']

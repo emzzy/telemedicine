@@ -3,6 +3,8 @@ from base.models import Service, Appointment, Billing
 from shared.serializers import MedicalProfessionalsSerializer
 from api.serializer import DoctorProfileSerializer
 import datetime
+from api.serializer import PatientSerializer
+
 
 
 class ServicesListSerializer(serializers.ModelSerializer):
@@ -23,6 +25,7 @@ class ServicesListSerializer(serializers.ModelSerializer):
 class BookAppointmentSerializer(serializers.ModelSerializer):
     issues = serializers.CharField(required=False, allow_blank=True)
     symptoms = serializers.CharField(required=False, allow_blank=True)
+    patient = PatientSerializer()
 
     class Meta:
         model = Appointment

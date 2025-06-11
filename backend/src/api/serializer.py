@@ -14,7 +14,7 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = [
-            'full_name', 'location', 'image', 'verified', 'age', 'emergency_contact', 'medical_information', 'blood_group'
+            'user', 'full_name', 'image', 'age', 'emergency_contact', 'medical_information', 'blood_group'
         ]
 
 

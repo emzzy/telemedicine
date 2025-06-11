@@ -16,7 +16,7 @@ def dashboard(request):
     except MedicalProfessional.DoesNotExist:
         return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
     
-    appointments = base_models.Appointment.objects.filter(doctor=doctor)
+    appointments = base_models.Appointment.objects.filter(doctor=doctor).select_related('patient__user')
     notification = Notification.objects.filter(doctor=doctor)
     
     data = {
