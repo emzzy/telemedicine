@@ -9,11 +9,7 @@ this_dir = pathlib.Path(__file__).resolve().parent
 
 
 def home_view(request, *args, **kwargs):
-    services = base_models.Service.objects.all()
-    context = {
-        'services': services
-    }
-    return render(request, 'index.html', context)
+    return render(request, 'index.html')
 
 @login_required
 def user_only_view(request, *args, **kwargs):
