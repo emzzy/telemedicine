@@ -48,7 +48,7 @@ class Appointment(models.Model):
 class MedicalRecord(models.Model):
     appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
     diagnosis = models.TextField()
-    treatment = models.TextField
+    treatment = models.TextField(null=True)
 
     def __str__(self):
         return f'Medical record for {self.appointment.patient.full_name}'

@@ -98,7 +98,6 @@ class BookAppointment(APIView):
                 total=round(service.cost * Decimal('1.20'), 2),
                 status='Unpaid'
             )
-            print(request.data)
             return Response({
                 'data': serializer.data,
                 'appointment': serializer.data,
