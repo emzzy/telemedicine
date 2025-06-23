@@ -20,8 +20,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 import stripe
 
-
-
 User = get_user_model()
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
