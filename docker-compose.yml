@@ -16,13 +16,13 @@ services:
 
   django-web:
     build:
-      context: ./backend
+      context: ./backend/src
       dockerfile: Dockerfile
-    container_name: django-docker
+    container_name: telemed-container
     ports:
       - '8000:8000'
     volumes:
-      - ./backend:/app/
+      - ./backend/src:/app/
     depends_on:
       - db
     environment:
@@ -37,3 +37,5 @@ services:
       DATABASE_PORT: ${DATABASE_PORT}
     env_file:
       - .env
+volumes:
+  postgres_data:

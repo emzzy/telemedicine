@@ -1,4 +1,4 @@
-FROM python:3.13-alpine AS builder
+FROM python:3.13-slim 
 
 RUN mkdir /app
 WORKDIR /app
@@ -12,15 +12,15 @@ ENV PYTHONUNBUFFERED=1
 RUN pip install --upgrade pip
 
 # build pyscopg2-binary from source -- add required dependencies
-RUN apk update && apk add --no-cache \
-        gcc \
-        musl-dev \
-        libffi-dev \
+RUN apt-get update && apt-get install -y \
+        build-essential \
+        libpq-dev \
         python3-dev \
-        postgresql-dev \
-        bash \
-        && pip install --upgrade pip
-        
+        gcc \
+        curl \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt /app/
 
 RUN pip install --no-cache-dir -r requirements.txt
