@@ -1,48 +1,39 @@
- version: '3.9'
+version: '3.9'
 
- services:
+services:
   db:
-    image: postgres:14-alpine
+    image: postgres:16.9-bullseye
     ports:
       - '5432:5432'
-
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
-
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
     volumes:
-      - ./data/db:/var/lib/postgresql/data/
-  
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
 
-    ports:
-      - '3000:3000'
-
-    volumes:
-      - ./frontend:/app/frontend
-
-    depends_on:
-      - backend
-
-  backend:
+  django-web:
     build:
       context: ./backend
       dockerfile: Dockerfile
-
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
-
+    container_name: django-docker
     ports:
       - '8000:8000'
-
     volumes:
-      - ./backend:/app/backend
-
+      - ./backend:/app/
     depends_on:
       - db
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: ${DEBUG}
+      DATABASE_ENGINE: ${DATABASE_ENGINE}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+    env_file:
+      - .env
