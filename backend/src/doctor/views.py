@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from .serializer import DashboardSerializer, ViewAppointmentSerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from base.serializers import MedicalRecordSerializer, LabTestSerializer
+from base.serializers import MedicalRecordSerializer, LabTestSerializer, PresicriptionSerilizer
 
 
 @api_view(['GET'])
@@ -117,8 +117,50 @@ def add_lab_test(request, appointment_id):
     appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
     
     serializer = LabTestSerializer(data=request.data)
+    
     if serializer.is_valid():
         serializer.save(appointment=appointment)
         return Response({'message': 'Lab Test added successfully.'}, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes(IsAuthenticated)
+def edit_lab_test(request, appointment_id, lab_test_id):
+    doctor = request.user.medicalprofessional
+    appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
+    lab_test = get_object_or_404(base_models.LabTest, id=lab_test_id, appointment=appointment)
+
+    if 'test_name' in request.data:
+        lab_test.test_name = request.data['test_name']
+    if 'description' in request.data:
+        lab_test.description = request.data['description']
+    if 'result' in request.data:
+        lab_test.result = request.data['result']
+    lab_test.save()
+
+    return Response({'message': 'Lab result saved successsfully'})
+
+
+@api_view(['GET'])
+@permission_classes(IsAuthenticated)
+def get_lab_tests(request, appointment_id, lab_test_id):
+    doctor = request.user.medicalprofessional
+    appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
+    lab_test = get_object_or_404(base_models.LabTest, id=lab_test_id, appointment=appointment)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_prescription(request, appointment_id):
+    doctor = request.medicalprofessional
+    appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
+    
+    serializer = PresicriptionSerilizer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save(appointment=appointment)
+        return Response({'message': 'Prescription added successfully'})
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
