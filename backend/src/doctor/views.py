@@ -6,7 +6,8 @@ from rest_framework.decorators import api_view, permission_classes
 from .serializer import DashboardSerializer, ViewAppointmentSerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from base.serializers import MedicalRecordSerializer, LabTestSerializer, PresicriptionSerilizer
+from base.serializers import MedicalRecordSerializer, LabTestSerializer, PresicriptionSerilizer, BillingSerializer
+from doctor.models import Notification
 
 
 @api_view(['GET'])
@@ -154,7 +155,7 @@ def get_lab_tests(request, appointment_id, lab_test_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_prescription(request, appointment_id):
-    doctor = request.medicalprofessional
+    doctor = request.user.medicalprofessional
     appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
     
     serializer = PresicriptionSerilizer(data=request.data)
@@ -164,3 +165,41 @@ def add_prescription(request, appointment_id):
         return Response({'message': 'Prescription added successfully'})
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def payments(request):
+    doctor = request.user.medicalprofessional
+    payments = base_models.Billing.objects.filter(appointment__doctor=doctor, status='Paid')
+    #data = {payments}
+    serializer = BillingSerializer(payments, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def notifications(request):
+    from doctor.serializer import NotificationSerializer
+
+    doctor = request.user.medicalprofessional
+    notifications = Notification.objects.filter(doctor=doctor, seen=False)
+
+    serializer = NotificationSerializer(notifications, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def mark_notification_seen(request, id):
+    from doctor.serializer import NotificationSerializer
+
+    try:
+        doctor = request.user.medicalprofessional
+        notification = Notification.objects.filter(doctor=doctor, id=id)
+        notification.seen = True
+        notification.save()
+        return Response({'message': 'Notification marked as seen'}, status=status.HTTP_200_OK)
+    except Notification.DoesNotExist:
+        return Response({'error': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    return Response()

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from doctor.models import Notification
-from base.models import Appointment, LabTest, MedicalRecord
+from base.models import Appointment, LabTest, MedicalRecord, Billing
 from shared.serializers import MedicalProfessionalsSerializer
 from base.serializers import BookAppointmentSerializer, MedicalRecordSerializer, LabTestSerializer, PresicriptionSerilizer
 
@@ -8,7 +8,7 @@ from base.serializers import BookAppointmentSerializer, MedicalRecordSerializer,
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'type', 'seen', 'date', 'appointment']
+        fields = ['id', 'type', 'seen', 'date', 'appointment_id']
 
 
 class DashboardSerializer(serializers.Serializer):
@@ -26,3 +26,10 @@ class ViewAppointmentSerializer(serializers.Serializer):
     medical_records = MedicalRecordSerializer(many=True)
     lab_tests = LabTestSerializer(many=True)
     prescription = PresicriptionSerilizer(many=True)
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Billing
+        fields = ['__all__']
