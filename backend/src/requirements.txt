@@ -53,7 +53,6 @@ pillow==11.1.0
 proglog==0.1.10
 psycopg==3.2.3
 psycopg-binary==3.2.3
-psycopg2==2.9.10
 psycopg2-binary==2.9.10
 pusher==3.3.3
 pyasn1==0.6.1
