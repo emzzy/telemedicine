@@ -5,6 +5,8 @@ from shared.serializers import MedicalProfessionalsSerializer
 from base.serializers import BookAppointmentSerializer, MedicalRecordSerializer, LabTestSerializer, PresicriptionSerilizer
 
 
+
+
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
@@ -29,7 +31,35 @@ class ViewAppointmentSerializer(serializers.Serializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Billing
         fields = ['__all__']
+
+
+class DoctorProfileSerializer(serializers.ModelSerializer):
+    medicalprofessional = MedicalProfessionalsSerializer()
+
+    class Meta:
+        from users.models import UserAccount
+
+        model = UserAccount
+        fields = [
+            'id', 'email', 'first_name', 'last_name', 'password', 'phone_number', 'gender', 'date_of_birth', 'location',
+            'is_verified', 'medicalprofessional'
+        ]
+    
+    def update(self, instance, validated_data):
+        from .models import MedicalProfessional
+
+        medicalprofessional_data = validated_data.pop('medicalprofessional', {})
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        MedicalProfessional.objects.update_or_create(
+            user=instance,
+            defaults=medicalprofessional_data
+        )
+        
+        return instance

@@ -16,7 +16,7 @@ class ServicesListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'description', 'cost', 'doctor_count', 'image', 'available_doctors', 'medicalprofessional'
         ]
-
+    
     def get_doctor_count(self, obj):
         return obj.available_doctors.count()
 
