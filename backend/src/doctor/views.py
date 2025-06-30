@@ -3,11 +3,11 @@ from doctor.models import MedicalProfessional, Notification
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .serializer import DashboardSerializer, ViewAppointmentSerializer
+from .serializer import DashboardSerializer, ViewAppointmentSerializer, DoctorProfileSerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from base.serializers import MedicalRecordSerializer, LabTestSerializer, PresicriptionSerilizer, BillingSerializer
-from doctor.models import Notification
+from rest_framework.generics import RetrieveUpdateAPIView
 
 
 @api_view(['GET'])
@@ -190,16 +190,22 @@ def notifications(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-def mark_notification_seen(request, id):
-    from doctor.serializer import NotificationSerializer
-
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def mark_notification_as_seen(request, id):
     try:
         doctor = request.user.medicalprofessional
-        notification = Notification.objects.filter(doctor=doctor, id=id)
+        notification = Notification.objects.get(doctor=doctor, id=id)
         notification.seen = True
         notification.save()
         return Response({'message': 'Notification marked as seen'}, status=status.HTTP_200_OK)
     except Notification.DoesNotExist:
         return Response({'error': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    return Response()
+
+class DoctorProfileView(RetrieveUpdateAPIView):
+    serializer_class = DoctorProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
