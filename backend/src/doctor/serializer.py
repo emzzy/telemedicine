@@ -5,8 +5,6 @@ from shared.serializers import MedicalProfessionalsSerializer
 from base.serializers import BookAppointmentSerializer, MedicalRecordSerializer, LabTestSerializer, PresicriptionSerilizer
 
 
-
-
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
@@ -41,7 +39,7 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         from users.models import UserAccount
-
+        
         model = UserAccount
         fields = [
             'id', 'email', 'first_name', 'last_name', 'password', 'phone_number', 'gender', 'date_of_birth', 'location',

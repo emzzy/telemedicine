@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from doctor.models import MedicalProfessional
 from users.models import UserAccount
-
+from patient.models import Patient
 
 
 class UserAccountSerializer(serializers.ModelSerializer):
@@ -26,3 +26,13 @@ class MedicalProfessionalsSerializer(serializers.ModelSerializer):
             'id', 'user', 'title', 'image', 'bio', 'medical_license', 'specialty', 'years_of_experience',
             'professional_certificate', 'available_appointment_date'
     ]
+        
+
+class PatientModelSerializer(serializers.ModelSerializer):
+    user = UserAccountSerializer()
+    
+    class Meta:
+        model = Patient
+        fields = [
+            'user', 'full_name', 'image', 'age', 'emergency_contact', 'medical_information', 'blood_group'
+        ]
