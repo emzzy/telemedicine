@@ -8,7 +8,10 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from base.serializers import MedicalRecordSerializer, LabTestSerializer, PresicriptionSerilizer, BillingSerializer
 from rest_framework.generics import RetrieveUpdateAPIView
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 
+User = get_user_model()
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -20,7 +23,7 @@ def dashboard(request):
         return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
     
     appointments = base_models.Appointment.objects.filter(doctor=doctor).select_related('patient__user')
-    notification = Notification.objects.filter(doctor=doctor)
+    notification = Notification.objects.filter(doctor=doctor, seen=False)
     
     data = {
         'doctor': doctor,
@@ -203,9 +206,25 @@ def mark_notification_as_seen(request, id):
         return Response({'error': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-class DoctorProfileView(RetrieveUpdateAPIView):
-    serializer_class = DoctorProfileSerializer
-    permission_classes = [IsAuthenticated]
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def doctor_profile(request):
+    from users.models import UserAccount
+    try:
+        doctor = request.user.medicalprofessional
+    except ObjectDoesNotExist:
+        return Response({'error': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    serializer = DoctorProfileSerializer(data=doctor)
+    
+    return Response(serializer.data)
 
-    def get_object(self):
-        return self.request.user
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_doctor_profile(request):
+    try:
+        user_doctor = request.user.medicalprofessional
+    except ObjectDoesNotExist:
+        return Response({'error': 'Doctor does not exist'})
+    
+    doctor = get_object_or_404(MedicalProfessional, user=user_doctor)

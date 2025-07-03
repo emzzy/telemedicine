@@ -51,6 +51,12 @@ STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 PAYPAL_CLIENT_ID = config("PAYPAL_CLIENT_ID")
 PAYPAL_SECRET_KEY = config("PAYPAL_CLIENT_ID")
 
+# AWS_ACCESS_KEY_ID = config()
+# AWS_SECRET_ACCESS_KEY = config()
+# AWS_STORAGE_BUCKET_NAME = config()
+# AWS_S3_REGION_NAME = config()
+# AWS_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
 SITE_URL='http://localhost:5173'
 
 MANAGERS=[]
@@ -102,7 +108,8 @@ INSTALLED_APPS = [
     'base',
     'silk',
     'corsheaders',
-    'agora'
+    'agora',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -243,6 +250,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_URL = "/static/"
+#STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.S3.AMAZON.AWS.COM'
+
 STATICFILES_DIRS = [
     BASE_DIR / 'frontend' / 'static',
     BASE_DIR / 'frontend' / 'agora'
@@ -254,7 +263,7 @@ STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
         'OPTIONS': {
-
+        
         },
     },
 
