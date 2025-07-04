@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db import models
 from patient.models import Patient, Notification
 from base import models as base_models
@@ -18,7 +18,7 @@ def patient_dashboard(request):
     try:
         patient = request.user.patient
     except Patient.DoesNotExist:
-        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': 'Patient profile not found.'}, status=status.HTTP_404_NOT_FOUND)
     
     appointments = base_models.Appointment.objects.filter(patient=patient)
     notifications = patient_models.Notification.objects.filter(patient=patient, seen=False)
@@ -33,3 +33,18 @@ def patient_dashboard(request):
     serializer = PatientDashboardSerializer(data)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def appointment_detail(request, appointment_id):
+    try:
+        patient = request.user.patient
+    except Patient.DoesNotExist:
+        return Response({'message': 'Patient profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+    appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, patient=patient)
+    medical_records = get_object_or_404(base_models.MedicalRecord, appointment=appointment)
+    lab_tests = get_object_or_404(base_models.LabTest, appointment=appointment)
+    prescriptions = get_object_or_404(base_models.Prescription, appointment=appointment)
+
+    
+    

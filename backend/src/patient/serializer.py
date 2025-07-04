@@ -21,3 +21,8 @@ class PatientDashboardSerializer(serializers.Serializer):
         fields = [
             'service', 'doctor', 'appointments', 'issues', 'symptoms', 'appointment_date', 'total_spent', 'status'
         ]
+
+class PatientAppointmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = base_models.Appointment
+        fields = ['__all__']
