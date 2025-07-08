@@ -3,6 +3,7 @@ from .models import Patient, Notification
 from base import models as base_models
 from base import serializers as base_serializers
 from shared.serializers import PatientModelSerializer
+from base import serializers as base_serializers
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,17 +13,17 @@ class NotificationSerializer(serializers.ModelSerializer):
         ]
 
 
-class PatientDashboardSerializer(serializers.Serializer):
-    patient = PatientModelSerializer()
-    notifications = NotificationSerializer(many=True)
-    
+class PatientAppointmentSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = base_models.Appointment
         fields = [
-            'service', 'doctor', 'appointments', 'issues', 'symptoms', 'appointment_date', 'total_spent', 'status'
+            'service', 'doctor', 'patient', 'appointment_date', 'issues', 'symptoms', 'appointment_id', 'status'
         ]
 
-class PatientAppointmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = base_models.Appointment
-        fields = ['__all__']
+
+class PatientDashboardSerializer(serializers.Serializer):
+    patient = PatientModelSerializer()
+    appointments = PatientAppointmentSerializer(many=True)
+    notifications = NotificationSerializer(many=True)
+    total_spent = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
