@@ -5,6 +5,7 @@ from base import serializers as base_serializers
 from shared.serializers import PatientModelSerializer
 from base import serializers as base_serializers
 
+
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
@@ -14,7 +15,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 
 class PatientAppointmentSerializer(serializers.ModelSerializer):
-
+    doctor = serializers.StringRelatedField()
     class Meta:
         model = base_models.Appointment
         fields = [
@@ -27,3 +28,10 @@ class PatientDashboardSerializer(serializers.Serializer):
     appointments = PatientAppointmentSerializer(many=True)
     notifications = NotificationSerializer(many=True)
     total_spent = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+
+
+class AppointmentDetailSerializer(serializers.Serializer):
+    appointment = PatientAppointmentSerializer()
+    medical_records = base_serializers.MedicalRecordSerializer(many=True)
+    lab_tests = base_serializers.LabTestSerializer(many=True)
+    prescription = base_serializers.PresicriptionSerilizer(many=True)
