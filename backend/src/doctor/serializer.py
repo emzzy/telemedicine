@@ -58,6 +58,38 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
         MedicalProfessional.objects.update_or_create(
             user=instance,
             defaults=medicalprofessional_data
-        )
+        )        
+        return instance
+
+
+class UpdateDoctorProfileSerializer(serializers.ModelSerializer):    
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+    email = serializers.CharField(source='user.email')
+    phone_number = serializers.CharField(source='user.phone_number')
+    gender = serializers.CharField(source='user.gender')
+    date_of_birth = serializers.CharField(source='user.date_of_birth')
+    location = serializers.CharField(source='user.location')
+
+    class Meta:
+        from doctor.models import MedicalProfessional
+
+        model = MedicalProfessional
+        fields = [
+            'title', 'bio', 'specialty', 'years_of_experience', 'medical_license', 'available_appointment_date', 'image',
+            'professional_certificate', 'first_name', 'last_name', 'email', 'phone_number', 'gender', 'date_of_birth', 'location'
+        ]
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
         
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        user = instance.user
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+        user.save()
+
         return instance

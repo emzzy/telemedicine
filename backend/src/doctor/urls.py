@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     dashboard, appointment_detail, cancel_appointment, complete_appointment, add_medical_record, add_lab_test, payments, notifications,
-    mark_notification_as_seen, doctor_profile
+    mark_notification_as_seen, doctor_profile, update_doctor_profile
 )
 
 
@@ -19,5 +19,6 @@ urlpatterns = [
     path('payments/', payments, name='payments'),
     path('notifications/', notifications, name='payments'),
     path('notifications/<int:id>/seen/', mark_notification_as_seen, name='mark-notification-seen'),
-    path('profile/', doctor_profile, name='doctor-profile')
+    path('profile/', doctor_profile, name='doctor-profile'),
+    path('update-profile/', update_doctor_profile, name='update-profile')
 ]

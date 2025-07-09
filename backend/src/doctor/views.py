@@ -3,11 +3,10 @@ from doctor.models import MedicalProfessional, Notification
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .serializer import DashboardSerializer, ViewAppointmentSerializer, DoctorProfileSerializer
+from .serializer import DashboardSerializer, ViewAppointmentSerializer, DoctorProfileSerializer, UpdateDoctorProfileSerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from base.serializers import MedicalRecordSerializer, LabTestSerializer, PresicriptionSerilizer, BillingSerializer
-from rest_framework.generics import RetrieveUpdateAPIView
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from .permissions import IsDoctor
@@ -243,7 +242,6 @@ def mark_notification_as_seen(request, id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsDoctor])
 def doctor_profile(request):
-    from users.models import UserAccount
     try:
         doctor = request.user.medicalprofessional
     except ObjectDoesNotExist:
@@ -257,8 +255,12 @@ def doctor_profile(request):
 @permission_classes([IsAuthenticated, IsDoctor])
 def update_doctor_profile(request):
     try:
-        user_doctor = request.user.medicalprofessional
+        doctor = request.user.medicalprofessional
     except ObjectDoesNotExist:
-        return Response({'error': 'Doctor does not exist'})
+        return Response({'error': 'Doctor does not exist'}, status=status.HTTP_400_BAD_REQUEST)
     
-    doctor = get_object_or_404(MedicalProfessional, user=user_doctor)
+    serializer = UpdateDoctorProfileSerializer(doctor, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
