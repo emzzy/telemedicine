@@ -30,10 +30,11 @@ class MedicalProfessional(models.Model):
     years_of_experience = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
     professional_certificate = models.FileField(upload_to='', null=True, blank=True)
     available_appointment_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
-
+    
     def __str__(self):
         return f'Dr. {self.user.first_name} {self.user.last_name}'
-    
+
+
 class Notification(models.Model):
     doctor = models.ForeignKey(MedicalProfessional, on_delete=models.SET_NULL, null=True, blank=True)
     appointment = models.ForeignKey('base.Appointment', on_delete=models.CASCADE, null=True, blank=True, related_name='doctors_appointment_notification')

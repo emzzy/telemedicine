@@ -10,11 +10,12 @@ from base.serializers import MedicalRecordSerializer, LabTestSerializer, Presicr
 from rest_framework.generics import RetrieveUpdateAPIView
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
+from .permissions import IsDoctor
 
 User = get_user_model()
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def dashboard(request):
     try:
         #doctor = MedicalProfessional.user.objects.get(user=request.user)
@@ -36,9 +37,13 @@ def dashboard(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def appointment_detail(request, appointment_id):
-    doctor = request.user.medicalprofessional
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
     appointment = base_models.Appointment.objects.get(appointment_id=appointment_id, doctor=doctor)
     medical_records = base_models.MedicalRecord.objects.filter(appointment=appointment)
     lab_tests = base_models.LabTest.objects.filter(appointment=appointment)
@@ -54,14 +59,14 @@ def appointment_detail(request, appointment_id):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def cancel_appointment(request, appointment_id):
-    doctor = request.user.medicalprofessional
-    appointment = get_object_or_404(
-        base_models.Appointment,
-        appointment_id=appointment_id,
-        doctor=doctor
-    )
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
     if appointment.status in ['Completed', 'Cancelled']:
         return Response({'response': 'Appointment cannot be cancelled'}, status=status.HTTP_400_BAD_REQUEST)
     appointment.status = 'Cancelled'
@@ -71,9 +76,13 @@ def cancel_appointment(request, appointment_id):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def complete_appointment(request, appointment_id):
-    doctor = request.user.medicalprofessional
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
     appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id,doctor=doctor)
     if appointment.status == 'Completed':
         return Response({'response': 'Appointment already completed.'}, status=status.HTTP_200_OK)
@@ -84,11 +93,14 @@ def complete_appointment(request, appointment_id):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def add_medical_record(request, appointment_id):
-    doctor = request.user.medicalprofessional
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)    
+    
     appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
-
     serializer = MedicalRecordSerializer(data=request.data)
 
     if serializer.is_valid():
@@ -99,12 +111,15 @@ def add_medical_record(request, appointment_id):
 
 
 @api_view(['POST'])
-@permission_classes(IsAuthenticated)
+@permission_classes([IsAuthenticated, IsDoctor])
 def edit_medical_record(request, appointment_id, medical_report_id):
-    doctor = request.user.medicalprofessional
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
     appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
     medical_report = get_object_or_404(base_models.MedicalRecord, id=medical_report_id, appointment=appointment)
-    
     if 'diagnosis' in request.data:
         medical_report.diagnosis = request.data['diagnosis']
     if 'treatment' in request.data:
@@ -117,11 +132,13 @@ def edit_medical_record(request, appointment_id, medical_report_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_lab_test(request, appointment_id):
-    doctor = request.user.medicalprofessional
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
     appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
-    
     serializer = LabTestSerializer(data=request.data)
-    
     if serializer.is_valid():
         serializer.save(appointment=appointment)
         return Response({'message': 'Lab Test added successfully.'}, status=status.HTTP_201_CREATED)
@@ -130,9 +147,13 @@ def add_lab_test(request, appointment_id):
 
 
 @api_view(['POST'])
-@permission_classes(IsAuthenticated)
+@permission_classes([IsAuthenticated, IsDoctor])
 def edit_lab_test(request, appointment_id, lab_test_id):
-    doctor = request.user.medicalprofessional
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
     appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
     lab_test = get_object_or_404(base_models.LabTest, id=lab_test_id, appointment=appointment)
 
@@ -148,19 +169,26 @@ def edit_lab_test(request, appointment_id, lab_test_id):
 
 
 @api_view(['GET'])
-@permission_classes(IsAuthenticated)
+@permission_classes([IsAuthenticated, IsDoctor])
 def get_lab_tests(request, appointment_id, lab_test_id):
-    doctor = request.user.medicalprofessional
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
     appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
     lab_test = get_object_or_404(base_models.LabTest, id=lab_test_id, appointment=appointment)
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def add_prescription(request, appointment_id):
-    doctor = request.user.medicalprofessional
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
     appointment = get_object_or_404(base_models.Appointment, appointment_id=appointment_id, doctor=doctor)
-    
     serializer = PresicriptionSerilizer(data=request.data)
 
     if serializer.is_valid():
@@ -171,30 +199,36 @@ def add_prescription(request, appointment_id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def payments(request):
-    doctor = request.user.medicalprofessional
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
     payments = base_models.Billing.objects.filter(appointment__doctor=doctor, status='Paid')
-    #data = {payments}
     serializer = BillingSerializer(payments, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def notifications(request):
     from doctor.serializer import NotificationSerializer
 
-    doctor = request.user.medicalprofessional
-    notifications = Notification.objects.filter(doctor=doctor, seen=False)
+    try:
+        doctor = request.user.medicalprofessional
+    except MedicalProfessional.DoesNotExist:
+        return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
 
+    notifications = Notification.objects.filter(doctor=doctor, seen=False)
     serializer = NotificationSerializer(notifications, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def mark_notification_as_seen(request, id):
     try:
         doctor = request.user.medicalprofessional
@@ -207,7 +241,7 @@ def mark_notification_as_seen(request, id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def doctor_profile(request):
     from users.models import UserAccount
     try:
@@ -220,7 +254,7 @@ def doctor_profile(request):
 
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsDoctor])
 def update_doctor_profile(request):
     try:
         user_doctor = request.user.medicalprofessional
