@@ -7,6 +7,8 @@ from base import serializers as base_serializers
 
 
 class NotificationSerializer(serializers.ModelSerializer):
+    patient = serializers.StringRelatedField()
+    
     class Meta:
         model = Notification
         fields = [

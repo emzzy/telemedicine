@@ -104,3 +104,33 @@ def payments(request):
     serializer = base_serializers.BillingSerializer(payments, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsPatient])
+def notification(request):
+    from patient.serializer import NotificationSerializer
+    try:
+        patient = request.user.patient
+    except Patient.DoesNotExist:
+        return Response({'message': 'Patient profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    notifications = Notification.objects.filter(patient=patient, seen=False)
+    serializer = NotificationSerializer(notifications, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsPatient])
+def mark_notification_as_seen(request, id):
+    try:
+        patient = request.user.patient
+        notification = Notification.objects.get(patient=patient, id=id)
+        notification.seen = True
+        notification.save()
+    
+        return Response({'meessage': 'Notification has been marked as seen'}, status=status.HTTP_200_OK)
+    except Notification.DoesNotExist:
+        return Response({'error': 'Notification not found'}, status=status.HTTP_400_BAD_REQUEST)
+    
