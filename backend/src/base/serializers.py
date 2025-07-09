@@ -34,7 +34,7 @@ class BookAppointmentSerializer(serializers.ModelSerializer):
 
 
 class BillingSerializer(serializers.ModelSerializer):
-    
+    patient = serializers.StringRelatedField()
     class Meta:
         model = Billing
         fields = [

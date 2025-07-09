@@ -43,7 +43,7 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f'{self.patient.user.first_name} with {self.doctor.user.first_name}'
-    
+
 
 class MedicalRecord(models.Model):
     appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
@@ -81,4 +81,3 @@ class Billing(models.Model):
 
     def __str__(self):
         return f'Billing for {self.patient.full_name} - Total: {self.total}'
-    
