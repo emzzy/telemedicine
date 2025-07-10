@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from .serializer import PatientDashboardSerializer, AppointmentDetailSerializer
+from .serializer import PatientDashboardSerializer, AppointmentDetailSerializer, PatientProfileSerializer
 from .permissions import IsPatient
 
 User = get_user_model()
@@ -134,3 +134,24 @@ def mark_notification_as_seen(request, id):
     except Notification.DoesNotExist:
         return Response({'error': 'Notification not found'}, status=status.HTTP_400_BAD_REQUEST)
     
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsPatient])
+def patient_profile_data(request):
+    try:
+        patient = request.user.patient
+    except Patient.DoesNotExist:
+        return Response({'error': 'Patient profile not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = PatientProfileSerializer(instance={'patient': patient})
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def edit_profile(request):
+    try:
+        patient = request.user.patient
+    except Patient.DoesNotExist:
+        return Response({'error': 'Patient profile not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    formatted_next_available_appointment_date = patient.next_available_appointment_date.strftime()
