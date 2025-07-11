@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from .serializer import PatientDashboardSerializer, AppointmentDetailSerializer, PatientProfileSerializer
+from .serializer import PatientDashboardSerializer, AppointmentDetailSerializer, PatientProfileSerializer, UpdatePatientProfileSerializer
 from .permissions import IsPatient
 
 User = get_user_model()
@@ -148,10 +148,15 @@ def patient_profile_data(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-def edit_profile(request):
+def update_profile_data(request):
     try:
         patient = request.user.patient
     except Patient.DoesNotExist:
         return Response({'error': 'Patient profile not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    serializer = UpdatePatientProfileSerializer(patient, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()    
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
-    formatted_next_available_appointment_date = patient.next_available_appointment_date.strftime()
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

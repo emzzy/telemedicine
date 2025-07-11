@@ -10,4 +10,5 @@ urlpatterns = [
     path('notifications/', notification, name='notifications'),
     path('notification/<id>/seen/', mark_notification_as_seen, name='mark-notification-as-seen'),
     path('profile/', patient_profile_data, name='patient-profile-data'),
+    path('update-profile/', patient_profile_data, name='update-profile-data'),
 ]

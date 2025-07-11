@@ -5,7 +5,6 @@ from django.utils.timezone import now
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
-        
     email = models.EmailField(unique=True, max_length=255)
     first_name = models.CharField(max_length=120)
     last_name = models.CharField(max_length=120)
@@ -14,7 +13,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField(null=True, blank=True)
     location = models.TextField(max_length=255, null=True, blank=True)
     date_joined = models.DateField(default=now)
-
+    
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
