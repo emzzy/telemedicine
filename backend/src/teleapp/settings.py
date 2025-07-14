@@ -15,6 +15,7 @@ import os
 import environ
 from datetime import timedelta
 from django.contrib.messages import constants as messages
+import json
 
 env = environ.Env()
 environ.Env.read_env()
@@ -50,12 +51,6 @@ STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 #paypal
 PAYPAL_CLIENT_ID = config("PAYPAL_CLIENT_ID")
 PAYPAL_SECRET_KEY = config("PAYPAL_CLIENT_ID")
-
-# AWS_ACCESS_KEY_ID = config()
-# AWS_SECRET_ACCESS_KEY = config()
-# AWS_STORAGE_BUCKET_NAME = config()
-# AWS_S3_REGION_NAME = config()
-# AWS_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
 SITE_URL='http://localhost:5173'
 
@@ -250,13 +245,29 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_URL = "/static/"
-#STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.S3.AMAZON.AWS.COM'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'frontend' / 'static',
-    BASE_DIR / 'frontend' / 'agora'
+    os.path.join(BASE_DIR, 'media')
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+# AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+# AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='eu-west-2')
+# AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN')
+# AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+# AWS_DEFAULT_ACL = None
+
+# AWS_LOCATION = config('AWS_LOCATION')
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static')
+# ]
+# DEFAULT_FILE_STORAGE =  'storages.backends.s3.boto3.S3Boto3Storage'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+# STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+
 
 # compression and caching support for Whitenoise
 STORAGES = {
@@ -274,7 +285,7 @@ STORAGES = {
 # File uploads
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
+# MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
 #LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
