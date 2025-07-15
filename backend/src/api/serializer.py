@@ -21,7 +21,7 @@ class PatientSerializer(serializers.ModelSerializer):
 class DoctorProfileSerializer(serializers.ModelSerializer):
     from shared.serializers import MedicalProfessionalsSerializer
     medicalprofessional = MedicalProfessionalsSerializer(read_only=True)
-        
+    
     class Meta:
         model = UserAccount
         fields = [

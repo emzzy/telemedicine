@@ -27,6 +27,7 @@ urlpatterns = [
     path('users/medical-professionals/', views.ListMedicalProfessionalView.as_view(), name='is-medical-professional'), # returns only med prof from table
     path('users/all-doctors/', views.ListDoctorsView.as_view(), name='list-doctors'),
     path('users/delete-user/<int:pk>', views.DeleteUserAccount.as_view(), name='delete-user'),
+    path('get-user/', views.GetCurrentUser.as_view(), name='get-user'),
 
     # Patients
     
