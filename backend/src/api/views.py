@@ -369,9 +369,8 @@ class DeleteUserAccount(APIView):
 
 class GetCurrentUser(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request):
         user = request.user
         serializer = UserAccountSerializer(user)
-        print(user.last_name)
-        return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
