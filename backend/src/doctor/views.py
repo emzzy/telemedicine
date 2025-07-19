@@ -18,7 +18,7 @@ User = get_user_model()
 def dashboard(request):
     try:
         #doctor = MedicalProfessional.user.objects.get(user=request.user)
-        doctor = request.user.medicalprofessional
+        doctor = request.user.doctor_profile
     except MedicalProfessional.DoesNotExist:
         return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
     
@@ -198,10 +198,10 @@ def add_prescription(request, appointment_id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsDoctor])
+@permission_classes([IsAuthenticated])
 def payments(request):
     try:
-        doctor = request.user.medicalprofessional
+        doctor = request.user.doctor_profile
     except MedicalProfessional.DoesNotExist:
         return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -217,7 +217,7 @@ def notifications(request):
     from doctor.serializer import NotificationSerializer
 
     try:
-        doctor = request.user.medicalprofessional
+        doctor = request.user.doctor_profile
     except MedicalProfessional.DoesNotExist:
         return Response({'message': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
 
