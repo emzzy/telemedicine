@@ -36,7 +36,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
     medicalprofessional = MedicalProfessionalsSerializer()
-
+    
     class Meta:
         from users.models import UserAccount
         
@@ -58,7 +58,7 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
         MedicalProfessional.objects.update_or_create(
             user=instance,
             defaults=medicalprofessional_data
-        )        
+        )
         return instance
 
 
@@ -82,11 +82,11 @@ class UpdateDoctorProfileSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
-        
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-
+        
         user = instance.user
         for attr, value in user_data.items():
             setattr(user, attr, value)

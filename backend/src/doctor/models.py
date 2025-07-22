@@ -11,10 +11,15 @@ NOTIFICATION_TYPE = (
     ('Appointment Cancelled', 'Appointment Cancelled'),
 )
 
+def medicalprofessional_image_path(instance, filename):
+    return f'medicalprofessional/{instance.user.id}/images/{filename}'
+
+
 class MedicalProfessional(models.Model):
-    user = models.OneToOneField(user_model.UserAccount, on_delete=models.CASCADE)
+    user = models.OneToOneField(user_model.UserAccount, on_delete=models.CASCADE, related_name='medicalprofessional')
     title = models.CharField(max_length=50)
-    image = models.FileField(upload_to='images', null=True, blank=True)
+    image = models.ImageField(upload_to=medicalprofessional_image_path, null=True, blank=True)
+    image_caption = models.CharField(max_length=100, default='profile picture')
     bio = models.CharField(max_length=100, null=True, blank=True)
     medical_license = models.CharField(
         max_length=20,
