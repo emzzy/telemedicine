@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from api.serializer  import (
-    UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, 
+    UserRegistrationSerializer, UserLoginSerializer, EmailVerificationSerializer, UserLogoutSerializer, GetCurrentUserSerializer,
     RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, ListDoctorsSerializer, DoctorProfileSerializer
     )
 from shared.serializers import UserAccountSerializer
@@ -372,5 +372,5 @@ class GetCurrentUser(APIView):
     
     def get(self, request):
         user = request.user
-        serializer = UserAccountSerializer(user)
+        serializer = GetCurrentUserSerializer(user)
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
