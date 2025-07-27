@@ -18,16 +18,16 @@ class PatientSerializer(serializers.ModelSerializer):
         ]
 
 
-class DoctorProfileSerializer(serializers.ModelSerializer):
+class DoctorProfileSerializer(serializers.Serializer):
     from shared.serializers import MedicalProfessionalsSerializer
     medicalprofessional = MedicalProfessionalsSerializer(read_only=True)
     
-    class Meta:
-        model = UserAccount
-        fields = [
-            'id', 'email', 'first_name', 'last_name', 'password', 'phone_number', 'gender', 'date_of_birth', 'location',
-            'is_verified', 'medicalprofessional'
-        ]
+    # class Meta:
+    #     model = UserAccount
+    #     fields = [
+    #         'id', 'email', 'first_name', 'last_name', 'password', 'phone_number', 'gender', 'date_of_birth', 'location',
+    #         'is_verified', 'medicalprofessional'
+    #     ]
 
 
 class ListDoctorsSerializer(serializers.ModelSerializer):
@@ -169,3 +169,16 @@ class SetNewPasswordSerializer(serializers.Serializer):
             return {'user': user}
         except Exception as e:
             raise AuthenticationFailed('The reset link is invalid', 401)
+
+
+class GetCurrentUserSerializer(serializers.ModelSerializer):
+    from shared.serializers import MedicalProfessionalsSerializer, PatientModelSerializer
+    patient_profile = PatientModelSerializer(read_only=True)
+    medicalprofessional = MedicalProfessionalsSerializer(read_only=True)
+
+    class Meta:
+        model = UserAccount
+        fields = [
+            'id', 'first_name', 'last_name', 'phone_number', 'gender', 'date_of_birth', 'location', 'date_joined', 'is_active', 'is_admin',
+            'is_staff', 'is_superuser', 'is_verified', 'is_patient', 'is_medical_professional', 'patient_profile', 'medicalprofessional'
+        ]
