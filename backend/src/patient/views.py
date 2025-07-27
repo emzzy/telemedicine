@@ -43,7 +43,7 @@ def appointment_detail(request, appointment_id):
     except Patient.DoesNotExist:
         return Response({'message': 'Patient profile not found.'}, status=status.HTTP_404_NOT_FOUND)
     
-    appointment = base_models.Appointment.objects.get(appointment_id=appointment_id, patient=patient)
+    appointment = base_models.Appointment.objects.select_related('patient', 'doctor').get(appointment_id=appointment_id, patient=patient)
     medical_records = base_models.MedicalRecord.objects.filter(appointment=appointment)
     lab_tests = base_models.LabTest.objects.filter(appointment=appointment)
     prescriptions = base_models.Prescription.objects.filter(appointment=appointment)
@@ -148,6 +148,8 @@ def patient_profile_data(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated, IsPatient])
 def update_profile_data(request):
     try:
         patient = request.user.patient

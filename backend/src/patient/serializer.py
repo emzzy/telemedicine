@@ -18,6 +18,9 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 class PatientAppointmentSerializer(serializers.ModelSerializer):
     doctor = serializers.StringRelatedField()
+    patient = serializers.StringRelatedField()
+    service = serializers.StringRelatedField()
+
     class Meta:
         model = base_models.Appointment
         fields = [
