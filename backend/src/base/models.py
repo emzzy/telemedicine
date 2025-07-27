@@ -10,6 +10,7 @@ class Service(models.Model):
     """properties for each available service """
     from users.models import UserAccount
     from doctor.models import MedicalProfessional
+
     image = models.FileField(upload_to='images', null=True, blank=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -22,7 +23,7 @@ class Service(models.Model):
         return self.available_doctors.filter(location=patient_location)
     
     def __str__(self):
-        return f'{self.name} - {self.cost}'
+        return f'{self.name}'
 
 
 class Appointment(models.Model):
