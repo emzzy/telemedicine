@@ -32,9 +32,13 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER", cast=str, default=None)
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str, default=None)
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True) # use EMAIL_PORT 587 for TLS
 EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False) # use MAIL_PORT 465 for SSL
+
 # 500 errors
-ADMIN_USER_NAME=config("ADMIN_USER_NAME", default="Admin user")
+# Default Admin account
 ADMIN_USER_EMAIL=config("ADMIN_USER_EMAIL", default=None)
+ADMIN_USER_PASSWORD=config("ADMIN_USER_PASSWORD", default=None)
+ADMIN_USER_FIRSTNAME=config("ADMIN_USER_FIRSTNAME", default=None)
+ADMIN_USER_LASTNAME=config("ADMIN_USER_LASTNAME", default=None)
 
 # agora settings
 PUSHER_APP_ID = config("PUSHER_APP_ID")
@@ -56,10 +60,10 @@ SITE_URL='http://localhost:5173'
 
 MANAGERS=[]
 ADMINS=[]
-if all([ADMIN_USER_NAME, ADMIN_USER_EMAIL]):
+if all([ADMIN_USER_FIRSTNAME, ADMIN_USER_EMAIL]):
     # 500 errors are emailed to these users
     ADMINS +=[
-        (f"{ADMIN_USER_NAME}", f"{ADMIN_USER_EMAIL}")
+        (f"{ADMIN_USER_FIRSTNAME}", f"{ADMIN_USER_EMAIL}")
     ]
     MANAGERS=ADMINS
 
@@ -116,7 +120,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'silk.middleware.SilkyMiddleware',
+    # 'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'teleapp.urls'
@@ -393,4 +397,3 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success"
     }
 }
-
