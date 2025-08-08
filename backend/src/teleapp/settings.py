@@ -111,7 +111,6 @@ INSTALLED_APPS = [
     'storages',
     'celery',
     'whitenoise.runserver_nostatic',
-    'chatapp',
     'chat_room'
 ]
 

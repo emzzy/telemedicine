@@ -27,6 +27,7 @@ urlpatterns = [
    path('service/<service_id>/', service_detail, name='service_detail'),
    path('agora/', include('agora.urls')),
    path('base/', include('base.urls')),
+   path('chat_rooms/', include('chat_room.urls')),
    # ----- API ------
    path('api/', include('api.urls')),
    path('doctor/', include('doctor.urls')),
