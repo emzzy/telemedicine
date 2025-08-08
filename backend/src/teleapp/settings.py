@@ -88,6 +88,7 @@ if DEBUG:
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -99,7 +100,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
-    # my apps
     'api',
     'users',
     'doctor',
@@ -108,7 +108,11 @@ INSTALLED_APPS = [
     'silk',
     'corsheaders',
     'agora',
-    'storages'
+    'storages',
+    'celery',
+    'whitenoise.runserver_nostatic',
+    'chatapp',
+    'chat_room'
 ]
 
 MIDDLEWARE = [
@@ -145,8 +149,26 @@ TEMPLATES = [
 ]
 
 #TEMPLATES[0]['OPTIONS']['debug'] = True
-
+ASGI_APPLICATION = 'teleapp.wsgi.application'
 WSGI_APPLICATION = 'teleapp.wsgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
+
+
+# Modify these security settings for webhook compatibility
+CSRF_COOKIE_SECURE = False if DEBUG else True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
+
+# Add this to allow missing Referer header
+CSRF_TRUSTED_ORIGINS_ONLY = False
+CSRF_REFERER_REQUIRED = False 
 
 DJOSER = {
     'USER_ID_FIELD': 'email'
