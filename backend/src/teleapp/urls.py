@@ -4,7 +4,6 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import home_view, user_register_view, user_login, role_selector, patient_dashboard, med_pro_dashboard, user_logout, service_detail
-
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
