@@ -87,7 +87,7 @@ def complete_appointment(request, appointment_id):
         return Response({'error': 'Appointment cannot be completed'}, status=status.HTTP_400_BAD_REQUEST)
     appointment.status = 'Completed'
     appointment.save()
-
+    
     return Response({'response': 'Appointment completed successfully'}, status=status.HTTP_200_OK)
 
 
