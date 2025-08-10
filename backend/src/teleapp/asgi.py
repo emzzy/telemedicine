@@ -6,14 +6,15 @@ from django.core.asgi import get_asgi_application
 import chat_room.routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'teleapp.settings')
+django_asgi_app = get_asgi_application()
 
-application = ProtocolTypeRouter(
-    {
-        'http': get_asgi_application(),
-        'websocket': AuthMiddlewareStack(
+application = ProtocolTypeRouter({
+    'http': django_asgi_app,
+    'websocket': AllowedHostsOriginValidator(
+        AuthMiddlewareStack(
             URLRouter(
                 chat_room.routing.websocket_urlpatterns
             )
         )
-    }
-)
+    ),
+})

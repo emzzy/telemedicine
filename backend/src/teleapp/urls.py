@@ -42,7 +42,7 @@ urlpatterns = [
    path('select-role/', role_selector, name='select-role'),
    path('patient-dashboard/', patient_dashboard, name='patient-dashboard'),
    path('medical-professional-dashboard/', med_pro_dashboard, name='medical-professional-dashboard'),
-   path('silk/', include('silk.urls', namespace='silk')), # for api optimization during development
+   #path('silk/', include('silk.urls', namespace='silk')), # for api optimization during development
    # ----- swagger-UI ----
    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
