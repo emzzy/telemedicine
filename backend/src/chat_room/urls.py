@@ -1,9 +1,10 @@
 from django.urls import path
-from . import views
+from .views import *
 
 
 urlpatterns = [
-    path('rooms/', views.RoomListCreateView.as_view(), name='room-list'),
-    path('rooms/<slug:slug>/', views.RoomDetailView.as_view(), name='room-detail'),
-    path('rooms/<slug:room_slug>/messages/', views.MessageListView.as_view(), name='room-messages'),
+    path('users/', UserListView.as_view(), name='user-list'),
+    path('conversations/', ConversationListCreateView.as_view(), name='conversations_list'),
+    path('conversations/<int:conversation_id>/messages/', MessageListCreateView.as_view(), name='message_list_create'),
+    path('conversations/<int:conversation_id>/messages/<int:pk>/', MessageRetrieveDestroyView.as_view(), name='message_detail_destroy'),
 ]
