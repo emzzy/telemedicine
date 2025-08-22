@@ -83,6 +83,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         #User = get_user-model()
+        # User = self.get_user_model()
         query_string = self.scope['query_string'].decode('utf-8')
         params = parse_qs(query_string)
         token = params.get('token', [None])[0] # retrieve token
@@ -112,7 +113,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-        user_data = await self.get_user_data(self.User)
+        user_data = await self.get_user_data(self.user)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -175,24 +176,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if event_type == 'typing':
             try:
                 user_data = await self.get_user_data(self.scope['user'])
-                receiver_id = text_data_json.get('receiver_id')
+                receiver_id = text_data_json.get('receiver')
 
                 if receiver_id is not None:
                     if isinstance(receiver_id, (str, int, float)):
                         receiver_id = int(receiver_id)
 
                         if receiver_id != self.scope['user'].id:
-                            print(f'{user_id['username']} is typing for Receiver: {receiver_id}')
+                            print(f'{user_data['username']} is typing for Receiver: {receiver_id}')
                             await self.channel_layer.group_send(
                                 self.room_group_name,
                                 {
                                     'type': 'typing',
                                     'user': user_data,
-                                    'receiver_id': receiver_id,
+                                    'receiver': receiver_id,
                                 }
                             )
                         else:
-                            print(f'{user_id['first_name']} is typing for themselves')
+                            print(f'User is typing for themselves')
                     else:
                         print(f'Invalid receiver ID: {type(receiver_id)}')
                 else:
@@ -228,10 +229,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def online_status(self, event):
         await self.send(text_data=json.dumps(event))
 
-    @sync_to_async
-    def get_user_model(self):
-        from django.contrib.auth import get_user_model
-        return get_user_model()
+    # @sync_to_async
+    # def get_user_model(self):
+    #     from django.contrib.auth import get_user_model
+    #     return get_user_model()
 
     @sync_to_async
     def get_user(self, user_id):
@@ -256,9 +257,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def save_message(self, conversation, user, content):
         from .models import Message
-        message = Message.objects.create(
+        return Message.objects.create(
             conversation=conversation,
             sender=user,
             content=content
         )
-        return message
+        
