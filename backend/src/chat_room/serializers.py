@@ -37,8 +37,8 @@ class MessageSerializer(serializers.ModelSerializer):
         model = Message
         fields = ('id', 'conversation', 'sender', 'content', 'timestamp', 'participants')
 
-        def get_participants(self, obj):
-            return UserListSerializer(obj.conversation.participants.all(), many=True).data
+    def get_participants(self, obj):
+        return UserListSerializer(obj.conversation.participants.all(), many=True).data
 
 class CreateMessageSerializer(serializers.ModelSerializer):
     class Meta:
