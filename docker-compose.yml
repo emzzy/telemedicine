@@ -30,6 +30,7 @@ services:
     env_file:
       - .env
 
+
   django-web:
     build:
       context: ./backend/src
@@ -42,6 +43,7 @@ services:
       - ./backend/src:/app/
     depends_on:
       - db
+      - django-migration
       - redis
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
@@ -57,6 +59,12 @@ services:
       REDIS_PORT: ${REDIS_PORT}
     env_file:
       - .env
-
+  django-migration:
+    build:
+      context: ./backend/src
+      dockerfile: Dockerfile
+    command: > 
+      sh -c 'python manage.py makemigrations &&
+              python manage.py migrate'
 volumes:
   postgres_data:
