@@ -1,6 +1,22 @@
 version: '3.9'
 
 services:
+  redis: 
+    image: redis:7.4.3-alpine
+    container_name: redis_seerver
+    restart: always
+    ports:
+      - '6379:6379'
+
+  redisinsight: 
+    image: redis/redisinsight:2.68
+    container_name: redis_insight
+    depends_on:
+      - redis
+    ports:
+      - '5540:5540'
+    restart: always
+
   db:
     image: postgres:16.9-bullseye
     ports:
@@ -21,21 +37,26 @@ services:
     container_name: telemed-container
     ports:
       - '8000:8000'
+    command: daphne -b 0.0.0.0 -p 8000 teleapp.asgi:application
     volumes:
       - ./backend/src:/app/
     depends_on:
       - db
+      - redis
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DEBUG: ${DEBUG}
       DATABASE_ENGINE: ${DATABASE_ENGINE}
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
-
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
+      REDIS_URL: ${REDIS_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     env_file:
       - .env
+
 volumes:
   postgres_data:
