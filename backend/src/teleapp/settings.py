@@ -98,7 +98,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'agora',
     'storages',
-    #'celery',
+    'celery',
     'whitenoise.runserver_nostatic',
     'chat_room'
 ]
@@ -145,7 +145,8 @@ CHANNEL_LAYERS = {
         #'BACKEND': 'channels.layers.InMemoryChannelLayer',
         'BACKEND': 'channels_redis.core.RedisChannelLayer', # For Redis
         'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
+            #'hosts': [('127.0.0.1', 6379)],
+            'hosts': [config('REDIS_HOST'), config('REDIS_PORT')]
         }
     }
 }
