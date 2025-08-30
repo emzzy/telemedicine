@@ -2,6 +2,8 @@ from django.db import models
 from users.models import UserAccount
 from django.db.models import Prefetch
 
+from django_cryptography.fields import encrypt
+
 
 class ConversationManager(models.Manager):
     def get_queryset(self):
@@ -21,7 +23,7 @@ class Conversation(models.Model):
 class Message(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages', null=True, blank=True)
     sender = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
-    content = models.TextField()
+    content = encrypt(models.TextField())
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
