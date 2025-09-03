@@ -24,7 +24,6 @@ schema_view = get_schema_view(
 urlpatterns = [
    path("", home_view, name="home"),
    path('service/<service_id>/', service_detail, name='service_detail'),
-   path('agora/', include('agora.urls')),
    path('base/', include('base.urls')),
    path('chat/', include('chat_room.urls')),
    # ----- API ------

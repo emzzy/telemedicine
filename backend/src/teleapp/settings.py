@@ -96,7 +96,7 @@ INSTALLED_APPS = [
     'base',
     #'silk',
     'corsheaders',
-    'agora',
+    # 'agora',
     'storages',
     'celery',
     'whitenoise.runserver_nostatic',
