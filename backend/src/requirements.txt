@@ -1,5 +1,5 @@
 amqp==5.3.1
-asgiref==3.8.1
+asgiref==3.9.1
 attrs==25.1.0
 autobahn==24.4.2
 Automat==25.4.16
@@ -10,7 +10,8 @@ botocore==1.37.11
 celery==5.5.3
 certifi==2024.8.30
 cffi==1.17.1
-channels==4.2.0
+channels==4.3.1
+channels_redis==4.3.0
 charset-normalizer==3.4.0
 click==8.2.1
 click-didyoumean==0.3.1
@@ -27,9 +28,11 @@ diff-match-patch==20241021
 dj-database-url==2.3.0
 Django==5.0.9
 django-anymail==12.0
+django-appconf==1.1.0
 django-ckeditor-5==0.2.17
 django-cors-headers==4.6.0
 django-crispy-forms==2.3
+django-cryptography-5==2.0.3
 django-environ==0.11.2
 django-filter==24.3
 django-import-export==4.3.7
@@ -42,6 +45,7 @@ django-silk==5.3.2
 django-storages==1.14.5
 django-taggit==6.1.0
 djangorestframework==3.15.2
+djangorestframework-api-key==3.1.0
 djangorestframework-simplejwt==5.3.1
 drf-spectacular==0.28.0
 drf-yasg==1.21.8
@@ -60,6 +64,7 @@ jsonschema-specifications==2024.10.1
 kombu==5.5.4
 Markdown==3.7
 marshmallow==3.26.1
+msgpack==1.1.1
 ndg-httpsclient==0.5.1
 numpy==2.2.3
 oauthlib==3.2.2

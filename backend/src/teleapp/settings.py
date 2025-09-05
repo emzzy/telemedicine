@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg',
     'rest_framework',
+    'rest_framework_api_key',
     'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
     'api',
@@ -96,7 +97,6 @@ INSTALLED_APPS = [
     'base',
     #'silk',
     'corsheaders',
-    # 'agora',
     'storages',
     'celery',
     'whitenoise.runserver_nostatic',
@@ -333,6 +333,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES':[
         'rest_framework.permissions.AllowAny', # Restrict access to authenticated users by default
+        'rest_framework_api_key.permissions.HasAPIKey',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
