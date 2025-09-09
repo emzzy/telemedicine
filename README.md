@@ -22,7 +22,7 @@ Prerequisites
 run pip install requirements.txt
 ## Installation
 1. Clone the repo 
-    git clone [https://](https://github.com/emzzy/telemedicine.git)
+    git clone https://github.com/emzzy/telemedicine.git
     cd telemedicine
 2. Create and activate a virtual environemnt
     python -m venv venv
