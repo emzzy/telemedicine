@@ -44,3 +44,37 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'users_useraccount'
+
+
+class Contract(models.Model):
+    CONTRACT_TYPE = (
+        ('Daily'), ('Daily'),
+        ('Yearly'), ('Yearly'),
+        ('Monthly'), ('Monthly'),
+        ('One-time'), ('One-time'),
+    )
+    ALLOWED_ACTIONS = (
+        ('Yes'), ('Yes'),
+        ('No'), ('No'),
+        ('With consent'), ('With consent'),
+        ('Do not specify'), ('Do not specify'),
+    )
+    
+
+    property = models.OneToOneField("property.Model", verbose_name=_(""), on_delete=models.CASCADE)
+    start_date = models.DateField(default=timezone.now, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    contract_type = models.CharField(max_length=50, choices=CONTRACT_TYPE)
+    end_date = models.DateField(default=timezone.now, null=True, blank=True)
+    
+    is_pet_allowed = models.CharField(max_length=50, choices=ALLOWED_ACTIONS null=True, blank=True)
+    is_smoking_allowed = models.CharField(max_length=50, choices=ALLOWED_ACTIONS null=True, blank=True)
+    is_business_allowed = models.CharField(max_length=50, choices=ALLOWED_ACTIONS null=True, blank=True)
+    is_improvement_allowed = models.CharField(max_length=50, choices=ALLOWED_ACTIONS null=True, blank=True)
+
+    additional_clause = models.TextField(blank=True, null=True)
+    rent = models.IntegerField()
+
+
+
+
