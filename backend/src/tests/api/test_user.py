@@ -3,6 +3,21 @@ from rest_framework.test import APIClient
 
 client = APIClient()
 
+payload = dict(
+        first_name='john',
+        last_name='doe',
+        email='johndoe@email.com',
+        password='securepassword',
+        confirm_password='securepassword',
+        phone_number='0123456789',
+        gender='other',
+        date_of_birth='1980-10-03',
+        location='Anywhere',
+        role='patient'
+    )
+
+gagag = 
+
 @pytest.mark.django_db
 def test_register_user():
     
@@ -11,18 +26,16 @@ def test_register_user():
         last_name='doe',
         email='johndoe@email.com',
         password='securepassword',
-        phone_number='phone_number',
-        gender='gender',
-        date_of_birth='date_of_birth',
-        location='location',
+        confirm_password='securepassword',
+        phone_number='0100025452',
+        gender='male',
+        date_of_birth='1990-01-50',
+        location='anywhere',
         role='patient'
-
     )
 
     response = client.post('/api/user/signup/', payload)
 
-    print(f'status code: {response.status_code}')
-    print(f'status code: {response.data}')
     data = response.data
 
     assert data['email'] == payload['email']
@@ -34,3 +47,33 @@ def test_register_user():
     assert data['date_of_birth'] == payload['date_of_birth']
     assert data['location'] == payload['location']
     #assert 'password' not in data
+
+
+@pytest.mark.django_db
+def test_user_login():
+
+    payload = dict(
+        first_name='john',
+        last_name='doe',
+        email='johndoe@email.com',
+        password='securepassword',
+        confirm_password='securepassword',
+        phone_number='0123456789',
+        gender='other',
+        date_of_birth='1980-10-03',
+        location='Anywhere',
+        role='patient'
+    )
+
+    client.post('/api/user/signup/', payload)
+
+    response = client.post('/api/user/login/', {'email': 'johndoe@email.com', 'password': 'securepassword'}, format='json')
+    
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_login_user_fail():
+    response = client.post("/api/user/login/", {'email': "johndoe@email.com", 'password': "securepassword"}, format='json')
+
+    assert response.status_code == 403
