@@ -119,11 +119,6 @@ class LoginAPIView(APIView):
 
         if user is None:
             return Response({'error': 'Invalid login details'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Debugging print statements
-        print(f"Authenticated User: {user}")
-        print(f"User is_patient: {user.is_patient}")
-        print(f"User is_medical_professional: {user.is_medical_professional}")
 
         if user.is_patient:
             dashboard_url = reverse('home')
