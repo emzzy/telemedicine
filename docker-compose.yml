@@ -1,6 +1,7 @@
 version: '3.9'
 
 services:
+
   redis: 
     image: redis:7.4.3-alpine
     container_name: redis_seerver
@@ -30,7 +31,6 @@ services:
     env_file:
       - .env
 
-
   django-web:
     build:
       context: ./backend/src
@@ -38,7 +38,7 @@ services:
     container_name: telemed-container
     ports:
       - '8000:8000'
-    command: daphne -b 0.0.0.0 -p 8000 teleapp.asgi:application
+    command: daphne -b 0.0.0.0 -p 8000 teleapp.asgi:application --timeout=5 --threads=10
     volumes:
       - ./backend/src:/app/
     depends_on:
@@ -59,6 +59,7 @@ services:
       REDIS_PORT: ${REDIS_PORT}
     env_file:
       - .env
+
   django-migration:
     build:
       context: ./backend/src
@@ -66,5 +67,14 @@ services:
     command: > 
       sh -c 'python manage.py makemigrations &&
               python manage.py migrate'
+
+  nginx:
+    build: ./backend/src/nginx
+    ports:
+      - 80:80
+    image: nginx:latest
+    links: 
+      - django-web
+
 volumes:
   postgres_data:
