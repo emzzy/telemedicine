@@ -74,6 +74,9 @@ if DEBUG:
         "localhost",
         "http://localhost:5173/"
     ]
+else:
+    ALLOWED_HOSTS += ['www.hazel.ng', 'hazel.ng', '*']
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -99,7 +102,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'storages',
     'celery',
-    'whitenoise.runserver_nostatic',
+    # 'whitenoise.runserver_nostatic',
     'chat_room'
 ]
 
@@ -140,6 +143,10 @@ TEMPLATES = [
 ASGI_APPLICATION = 'teleapp.asgi.application'
 WSGI_APPLICATION = 'teleapp.wsgi.application'
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
+
 CHANNEL_LAYERS = {
     'default': {
         #'BACKEND': 'channels.layers.InMemoryChannelLayer',
@@ -151,7 +158,6 @@ CHANNEL_LAYERS = {
     }
 }
 
-
 # Modify these security settings for webhook compatibility
 CSRF_COOKIE_SECURE = False if DEBUG else True
 CSRF_COOKIE_HTTPONLY = False
@@ -160,8 +166,8 @@ CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
 # Add this to allow missing Referer header
-CSRF_TRUSTED_ORIGINS_ONLY = False
-CSRF_REFERER_REQUIRED = False 
+CSRF_TRUSTED_ORIGINS = ['https://www.hazel.ng', 'https://hazel.ng']
+CSRF_REFERER_REQUIRED = False
 
 DJOSER = {
     'USER_ID_FIELD': 'email'
@@ -177,7 +183,7 @@ DATABASES = {
         'USER': config("DATABASE_USER"),
         'PASSWORD': config("DATABASE_PASSWORD"),
         'HOST': config("DATABASE_HOST"),
-        'PORT': config("DATABASE_PORT"),
+        'PORT': '5432',
     }
 }
 
@@ -263,48 +269,48 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_URL = "/static/"
+#STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'frontend' / 'static',
-    os.path.join(BASE_DIR, 'media')
+    # BASE_DIR / 'frontend' / 'static',
+    BASE_DIR / 'static',
+    #os.path.join(BASE_DIR, 'media')
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles' # for prod
 
-# AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-# AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-# AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-# AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='eu-west-2')
-# AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN')
-# AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
-# AWS_DEFAULT_ACL = None
+# AWS Config
 
-# AWS_LOCATION = config('AWS_LOCATION')
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'static')
-# ]
-# DEFAULT_FILE_STORAGE =  'storages.backends.s3.boto3.S3Boto3Storage'
-# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
-# STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='eu-west-2')
+AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN')
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
 
+# Admin styling adjustment
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+
+#STORAGES =  {'staticfiles': {'BACKEND': 'storages.backends.s3boto3.S3StaticStorage'}}
 
 # compression and caching support for Whitenoise
 STORAGES = {
     'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        "BACKEND": "storages.backends.s3.S3Storage",
+        #'BACKEND': 'django.core.files.storage.FileSystemStorage',
         'OPTIONS': {
-        
         },
     },
 
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        'BACKEND': 'storages.backends.s3boto3.S3StaticStorage',
+        # "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
 # File uploads
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-# MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+#MEDIA_URL = '/media/'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
 #LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
