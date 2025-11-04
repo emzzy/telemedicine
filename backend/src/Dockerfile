@@ -1,4 +1,5 @@
-FROM python:3.13-slim 
+ARG BUILDTPLATFORM=linux/amd64
+FROM --platform=${BUILDTPLATFORM} python:3.13-slim AS base
 
 RUN mkdir /app
 WORKDIR /app
@@ -26,5 +27,5 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
-CMD daphne -b 0.0.0.0 -p 8000 teleapp.asgi:application
-# CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
+
+CMD ["daphne", "-b",  "0.0.0.0", "-p", "8000", "teleapp.asgi:application"]
