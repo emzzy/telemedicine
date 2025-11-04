@@ -48,3 +48,8 @@ I was inspired by the lack of emergency medical assistance in rural and developi
     python manage.py makemigrations
     python manage.py migrate
     ```
+5. Using Docker(optional)
+    ```py
+        docker-compose build
+        docker-compose up -d
+    ```
