@@ -88,7 +88,6 @@ class UserRegistrationView(APIView):
             Util.send_email(data)
 
             messages.success(request, "Account has been created successfully. Please Login")
-            #request.session.pop('selected_role', None)
 
             return Response({"token": str(token), "User": serializer.data}, status=status.HTTP_201_CREATED)
         
@@ -126,7 +125,7 @@ class LoginAPIView(APIView):
             dashboard_url = reverse('home')
         else:
             return Response({'error': 'user has not ben assigned a valid role'}, status=status.HTTP_403_FORBIDDEN)
-        # update last_login timestamp in the db, create a session
+
         user.last_login = now()
         user.save(update_fields=['last_login'])
         login(request, user)
@@ -144,7 +143,6 @@ class LoginAPIView(APIView):
 
 
 class LogoutAPIView(generics.GenericAPIView):
-    """Logout view"""
     serializer_class = UserLogoutSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -180,7 +178,6 @@ class LogoutAPIView(generics.GenericAPIView):
 
 
 class VerifyEmail(APIView):
-    """Email verification"""
     serializer_class = EmailVerificationSerializer
     token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 
@@ -201,7 +198,6 @@ class VerifyEmail(APIView):
 
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
-    """password reset request via email"""
     permission_classes = [permissions.AllowAny]
     serializer_class = RequestPasswordResetEmailSerializer
 
@@ -211,14 +207,13 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
         
         email = request.data.get('email', '')
 
-        try: # checks if the email user exists
+        try:
             user = UserAccount.objects.get(email=email)
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
 
         except UserAccount.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # generate a password reset token and encodes the user id
         token = PasswordResetTokenGenerator().make_token(user) #changes assigned token after password reset to prevent reuse by another user
         
         #current_site = get_current_site(request=request).domain # parsed request as data from UserRegistraation view
@@ -239,7 +234,6 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
 
 
 class PasswordTokenCheckAPI(generics.GenericAPIView):
-    """This view takes user request and validates the password reset token"""
     serializer_class = SetNewPasswordSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -250,13 +244,11 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
             id = smart_str(urlsafe_base64_decode(uidb64))
             user = UserAccount.objects.get(id=id)
             
-            # check if user does not reuse reset link more than once
             if not PasswordResetTokenGenerator().check_token(user, token):
-                if redirect_url and len(redirect_url) > 3: # check if redirect url is present
+                if redirect_url and len(redirect_url) > 3:
                     return redirect(f'{redirect_url}?token_valid=False')
                 return redirect( '/?token_valid=False')
             
-            # if token is valid, redirect to url with 
             if redirect_url and len(redirect_url) > 3:
                 return redirect(
                     redirect_url+ f'?token_valid=True&message=Credentials Valid&uidb64={uidb64}&token={token}'
@@ -271,13 +263,6 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                 {'error': 'Token is invalid, please request a new one'}, status=status.HTTP_400_BAD_REQUEST
             )
 
-            # try:
-            #     if not PasswordResetTokenGenerator().check_token(user):
-            #         return CustomRedirect(redirect_url+'?token_valid=False')
-            
-            # except UnboundLocalError as e:
-            #     return Response({'error': 'Token is not valid, please request a new one'}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class SetNewPassword(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
@@ -290,7 +275,6 @@ class SetNewPassword(generics.GenericAPIView):
 
 
 class ListUsersAPIView(generics.ListCreateAPIView):
-    """Display list of users in db"""
     queryset = UserAccount.objects.all()
     serializer_class = UserAccountSerializer
     permission_classes = [IsAuthenticated]
@@ -311,7 +295,7 @@ class GetUserView(APIView):
         responses={200: "Success", 401: "Unauthorized"}
     )
     def get(self, request, pk):
-        """Get one user from database"""
+        
         users = get_object_or_404(UserAccount, pk=pk)
         serializer = UserAccountSerializer(users)
         return Response(serializer.data)
@@ -320,7 +304,6 @@ class ListPatientView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """returns all patients in db"""
         patients = UserAccount.objects.filter(is_patient=True).select_related('patient')
         serializer = UserAccountSerializer(patients, many=True)
         return Response(serializer.data)
@@ -329,7 +312,6 @@ class ListMedicalProfessionalView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        """Returns all medical professsionals in db"""
         queryset = UserAccount.objects.filter(is_medical_professional=True).select_related('medicalprofessional')
         serializer = DoctorProfileSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -339,7 +321,6 @@ class ListDoctorsView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        """Returns list of doctors with selected fields"""
         from doctor.models import MedicalProfessional
         doctors = MedicalProfessional.objects.select_related('user').all()
         serializer = ListDoctorsSerializer(doctors, many=True)
@@ -347,7 +328,6 @@ class ListDoctorsView(APIView):
 
 
 class DeleteUserAccount(APIView):
-    """ Delete user from db"""
     #permission_classes = [IsAdminUser, IsAuthenticated]
 
     def get_object(self, pk):
