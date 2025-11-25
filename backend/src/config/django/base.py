@@ -1,23 +1,21 @@
 from decouple import config
-from pathlib import Path
 import os
 from datetime import timedelta
 from django.contrib.messages import constants as messages
-import json
 from django.core.management.utils import get_random_secret_key
 from config.env import BASE_DIR, env
 
 env.read_env(os.path.join(BASE_DIR, '.env'))
+env.read_env(os.path.join(BASE_DIR, '.env.dev'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 #BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent # cfe
 
-
 # Email Config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config("EMAIL_HOST", cast=str, default="smtp.gmail.com")
-EMAIL_PORT = config("EMAIL_PORT", cast=str, default='587') # Recommended
-EMAIL_HOST_USER = config("EMAIL_HOST_USER", cast=str, default=None)
+EMAIL_HOST = env("EMAIL_HOST", cast=str)
+EMAIL_PORT = env("EMAIL_PORT", cast=str) # Recommended
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str, default=None)
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str, default=None)
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True) # use EMAIL_PORT 587 for TLS
 EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False) # use MAIL_PORT 465 for SSL
@@ -56,7 +54,7 @@ if all([ADMIN_USER_FIRSTNAME, ADMIN_USER_EMAIL]):
 SECRET_KEY = env("DJANGO_SECRET_KEY", default=get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DJANGO_DEBUG", default=True)
+DEBUG = env.bool("DJANGO_DEBUG")
 
 ALLOWED_HOSTS = ["*"]
 
@@ -131,12 +129,10 @@ TEMPLATES = [
     },
 ]
 
-#TEMPLATES[0]['OPTIONS']['debug'] = True
 ASGI_APPLICATION = 'config.asgi.application'
 WSGI_APPLICATION = 'config.wsgi.application'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 
 
 CHANNEL_LAYERS = {
@@ -145,7 +141,17 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer', # For Redis
         'CONFIG': {
             #'hosts': [('127.0.0.1', 6379)],
-            'hosts': [config('REDIS_HOST'), config('REDIS_PORT')]
+            'hosts': [env('REDIS_HOST'), env('REDIS_PORT')]
+        }
+    }
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }
@@ -161,36 +167,32 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 CSRF_TRUSTED_ORIGINS = ['https://www.hazel.ng', 'https://hazel.ng']
 CSRF_REFERER_REQUIRED = False
 
-DJOSER = {
-    'USER_ID_FIELD': 'email'
-}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': config("DATABASE_ENGINE"),
-        'NAME': config("DATABASE_NAME"),
-        'USER': config("DATABASE_USER"),
-        'PASSWORD': config("DATABASE_PASSWORD"),
-        'HOST': config("DATABASE_HOST"),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env("DATABASE_NAME"),
+        'USER': env("DATABASE_USER"),
+        'PASSWORD': env("DATABASE_PASSWORD"),
+        'HOST': env("DATABASE_HOST"),
         'PORT': '5432',
     }
 }
 
-CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int, default=300)
-DATABASE_URL = config("DATABASE_URL", default=None)
+CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int)
+DATABASE_URL = config("DATABASE_URL")
 
-if DATABASE_URL is not None:
-    import dj_database_url
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_health_checks=True,
-            conn_max_age=30,
-        )
-    }
+# if DATABASE_URL is not None:
+#     import dj_database_url
+#     DATABASES = {
+#         'default': dj_database_url.config(
+#             conn_health_checks=True,
+#             conn_max_age=30,
+#         )
+#     }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
@@ -261,14 +263,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-#STATIC_URL = "/static/"
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
     # BASE_DIR / 'frontend' / 'static',
     BASE_DIR / 'static',
-    #os.path.join(BASE_DIR, 'media')
 ]
+
 STATIC_ROOT = BASE_DIR / 'staticfiles' # for prod
+
 
 # AWS Config
 
@@ -303,6 +306,11 @@ STORAGES = {
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #MEDIA_URL = '/media/'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+
+
+# Admin styling adjustment
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+
 
 #LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -364,7 +372,6 @@ SWAGGER_SETTINGS = {
     },
 }
 
-CORS_ALLOW_ALL_ORIGINS = True # Not recommended for prod
 
 JAZZMIN_SETTINGS = {
     "site_brand": "config",
@@ -411,3 +418,6 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success"
     }
 }
+
+from config.settings.celery import *
+from config.settings.file_storage import *
