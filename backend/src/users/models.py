@@ -20,14 +20,12 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     
-    # special permission which define the patient and medical professional
     is_patient = models.BooleanField(default=False)
     is_medical_professional = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
     
-    # defining the manager for UserAccount
     objects = UserAccountManager()
 
     def __str__(self):
