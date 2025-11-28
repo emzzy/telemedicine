@@ -1,13 +1,13 @@
 from django.contrib import admin
 from patient import models
+from djangoql.admin import DjangoQLSearchMixin
 
-class PatientAdmin(admin.ModelAdmin):
+
+admin.register(models.Patient)
+class PatientAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     list_display = ['user', 'full_name', 'age']
 
 
+@admin.register(models.Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ['patient', 'appointment', 'type', 'seen', 'date']
-
-
-admin.site.register(models.Patient, PatientAdmin)
-admin.site.register(models.Notification, NotificationAdmin)

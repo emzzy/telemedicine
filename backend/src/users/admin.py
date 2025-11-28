@@ -5,10 +5,12 @@ from django.contrib.auth.admin import UserAdmin
 # from doctor.models import MedicalProfessional
 # from users import models
 # #from .forms import UserAccountChangeForm, UserAccountCreationForm
+from djangoql.admin import DjangoQLSearchMixin
 
 User = get_user_model()
 
-class UserAdminConfig(UserAdmin):
+@admin.register(User)
+class UserAdminConfig(DjangoQLSearchMixin, UserAdmin):
     model = User
     search_fields = ('email', 'first_name', 'last_name')
     list_filter = ('is_active', 'is_staff', 'is_superuser')
@@ -28,8 +30,3 @@ class UserAdminConfig(UserAdmin):
             'fields': ('email', 'first_name', 'last_name', 'password1', 'password2', 'is_active', 'is_staff')
         }),
     )
-
-
-admin.site.register(User, UserAdminConfig)
-#admin.site.register(Patient)
-#admin.site.register(MedicalProfessional)

@@ -1,15 +1,15 @@
 from django.contrib import admin
 from doctor import models
 from users.models import UserAccount
+from djangoql.admin import DjangoQLSearchMixin
 
-#admin.site.unregister(models.MedicalProfessional)
 
-class DoctorAdmin(admin.ModelAdmin):
+@admin.register(models.MedicalProfessional)
+class DoctorAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     list_display = ('full_name', 'user', 'specialty', 'phone_number', 'years_of_experience')
     search_fields = ('user__phone_number', 'user__email', 'specialty')
 
     def full_name(self, obj):
-        """fetch first_name and last_name from the default model"""
         return f'{obj.user.first_name} {obj.user.last_name}'
     full_name.admin_order_field = 'user__first_name'
     full_name.short_description = 'Full Name'
@@ -27,9 +27,6 @@ class DoctorAdmin(admin.ModelAdmin):
     email.short_description = 'Email Address'
 
 
-class NotificationAdmin(admin.ModelAdmin):
+@admin.register(models.Notification)
+class NotificationAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     list_display = ['doctor', 'appointment', 'type', 'seen', 'date']
-
-
-admin.site.register(models.MedicalProfessional, DoctorAdmin)
-admin.site.register(models.Notification, NotificationAdmin)
