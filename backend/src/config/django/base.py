@@ -17,8 +17,8 @@ EMAIL_HOST = env("EMAIL_HOST", cast=str)
 EMAIL_PORT = env("EMAIL_PORT", cast=str) # Recommended
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str, default=None)
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str, default=None)
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True) # use EMAIL_PORT 587 for TLS
-EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False) # use MAIL_PORT 465 for SSL
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True)
+EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False) 
 
 # 500 errors
 # Default Admin account
@@ -54,18 +54,18 @@ if all([ADMIN_USER_FIRSTNAME, ADMIN_USER_EMAIL]):
 SECRET_KEY = env("DJANGO_SECRET_KEY", default=get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DJANGO_DEBUG")
+# DEBUG = env.bool("DJANGO_DEBUG")
 
 ALLOWED_HOSTS = ["*"]
 
-if DEBUG:
-    ALLOWED_HOSTS += [
-        "127.0.0.1",
-        "localhost",
-        "http://localhost:5173/"
-    ]
-else:
-    ALLOWED_HOSTS += ['www.hazel.ng', 'hazel.ng', '*']
+# if DEBUG:
+#     ALLOWED_HOSTS += [
+#         "127.0.0.1",
+#         "localhost",
+#         "http://localhost:5173/"
+#     ]
+# else:
+#     ALLOWED_HOSTS += ['www.hazel.ng', 'hazel.ng', '*']
 
 
 # Application definition
@@ -156,14 +156,14 @@ CACHES = {
     }
 }
 
-# Modify these security settings for webhook compatibility
-CSRF_COOKIE_SECURE = False if DEBUG else True
+# # Modify these security settings for webhook compatibility
+#CSRF_COOKIE_SECURE = False if DEBUG else True
 CSRF_COOKIE_HTTPONLY = False
 CSRF_USE_SESSIONS = False
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
-# Add this to allow missing Referer header
+# # Add this to allow missing Referer header
 CSRF_TRUSTED_ORIGINS = ['https://www.hazel.ng', 'https://hazel.ng']
 CSRF_REFERER_REQUIRED = False
 
@@ -171,19 +171,31 @@ CSRF_REFERER_REQUIRED = False
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env("DATABASE_NAME"),
-        'USER': env("DATABASE_USER"),
-        'PASSWORD': env("DATABASE_PASSWORD"),
-        'HOST': env("DATABASE_HOST"),
-        'PORT': '5432',
+if os.getenv('GITHUB_WORKFLOW'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'github-actions',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432'
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env("DATABASE_NAME"),
+            'USER': env("DATABASE_USER"),
+            'PASSWORD': env("DATABASE_PASSWORD"),
+            'HOST': env("DATABASE_HOST"),
+            'PORT': '5432',
+        }
+    }
 
-CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int)
-DATABASE_URL = config("DATABASE_URL")
+#CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int)
+# DATABASE_URL = config("DATABASE_URL")
 
 # if DATABASE_URL is not None:
 #     import dj_database_url
@@ -263,50 +275,35 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_URL = "/static/"
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    # BASE_DIR / 'frontend' / 'static',
+    #BASE_DIR / 'frontend' / 'static',
     BASE_DIR / 'static',
 ]
-
 STATIC_ROOT = BASE_DIR / 'staticfiles' # for prod
-
-
-# AWS Config
-
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='eu-west-2')
-AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN')
-STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
 
 # Admin styling adjustment
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
-#STORAGES =  {'staticfiles': {'BACKEND': 'storages.backends.s3boto3.S3StaticStorage'}}
-
 # compression and caching support for Whitenoise
 STORAGES = {
     'default': {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        #'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        #"BACKEND": "storages.backends.s3.S3Storage",
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
         'OPTIONS': {
         },
     },
 
     "staticfiles": {
-        'BACKEND': 'storages.backends.s3boto3.S3StaticStorage',
-        # "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        #'BACKEND': 'storages.backends.s3boto3.S3StaticStorage',
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
 # File uploads
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-#MEDIA_URL = '/media/'
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-
+MEDIA_URL = '/media/'
 
 # Admin styling adjustment
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
@@ -330,7 +327,6 @@ CRISPY_TEMPLATE_PACKS = 'bootstrap5'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# DRF Auth
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
