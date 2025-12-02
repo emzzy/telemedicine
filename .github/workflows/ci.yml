@@ -1,4 +1,4 @@
-name: CI workflow
+name: Django CI/CD workflow
 
 on:
   pull_request:
@@ -9,6 +9,18 @@ on:
       - master
 
 jobs:
+  health-check-job:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github-actions
+        ports:
+          - 5432:5432 
+
   build-and-test:
     name: Build and test app
     runs-on: ubuntu-latest
