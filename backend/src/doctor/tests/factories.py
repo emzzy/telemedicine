@@ -1,6 +1,8 @@
 import factory
 from faker import Faker
-from doctor.models import MedicalProfessional
+
+from base.tests.factories import AppointmentFactory
+from doctor.models import MedicalProfessional, Notification
 from django.contrib.auth import get_user_model
 from users.tests.factories import UserAccountFactory
 
@@ -21,3 +23,14 @@ class MedicalProfessionalFactory(factory.django.DjangoModelFactory):
     years_of_experience = fake.house_number()
     professional_certificate = fake.file_extension()
     available_appointment_date = fake.date_time_ad
+
+
+class NotificationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Notification
+
+    doctor = factory.Subfactory(MedicalProfessionalFactory)
+    appointment = factory.Subfactory(AppointmentFactory)
+    type = fake.name()
+    seen = fake.boolean()
+    date = fake.date_time()
