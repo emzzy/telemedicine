@@ -1,6 +1,7 @@
 import factory
 from faker import Faker
 
+from doctor.tests.factories import MedicalProfessionalFactory
 from patient.tests.factories import PatientFactory
 from users.tests.factories import UserAccountFactory
 from base import models
@@ -26,10 +27,10 @@ class AppointmentFactory(factory.django.DjangoModelFactory):
     service = factory.SubFactory(ServiceFactory)
     doctor = factory.SubFactory(MedicalProfessionalFactory)
     patient = factory.SubFactory(PatientFactory)
-    appointment_date = fake.date_time
+    appointment_date = fake.date_time()
     issues = fake.text()
     symptoms = fake.text()
-    appointment_id = fake
+    appointment_id = fake.toll_number()
     status = 'status'
 
 
@@ -68,5 +69,5 @@ class BillingFactory(factory.django.DjangoModelFactory):
     sub_total = fake.pricetag()
     tax = fake.pricetag()
     total = fake.pricetag()
-    status = fake.
+    status = 'status'
     billing_id = fake.land_number()
