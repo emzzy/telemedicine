@@ -1,11 +1,13 @@
 import factory
 from faker import Faker
 
+from base.models import Service
+
 fake = Faker()
 
 class ServiceFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'base.models.Service'
+        model = Service
     
     image = fake.image_url()
     name = 'Optometry'
