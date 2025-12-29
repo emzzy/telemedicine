@@ -10,5 +10,5 @@ class PrescriptionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Prescription
 
-    appointment = factory.SubFactory(AppointmentFactory) # pyright: ignore[reportPrivateImportUsage]
+    appointment = factory.SubFactory('base.tests.factories.appointment.AppointmentFactory') # pyright: ignore[reportPrivateImportUsage]
     medication = fake.text()

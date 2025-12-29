@@ -10,6 +10,6 @@ class MedicalRecordFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = MedicalRecord
     
-    appointment = factory.SubFactory(AppointmentFactory) # pyright: ignore[reportPrivateImportUsage]
+    appointment = factory.SubFactory('base.tests.factories.appointment.AppointmentFactory') # pyright: ignore[reportPrivateImportUsage]
     diagnosis = fake.texts()
     treatment = fake.texts()

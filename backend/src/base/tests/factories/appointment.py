@@ -1,19 +1,15 @@
 import factory
 from faker import Faker
 
-from base.tests.factories.service import ServiceFactory
 from base.models import Appointment
 
 fake = Faker()
 
 class AppointmentFactory(factory.django.DjangoModelFactory):
-    #from doctor.tests.factories import MedicalProfessionalFactory
-    #from patient.tests.factories import PatientFactory
-
     class Meta:
         model = Appointment
 
-    service = factory.SubFactory(ServiceFactory) # pyright: ignore[reportPrivateImportUsage]
+    service = factory.SubFactory('base.tests.factories.service.ServiceFactory') # pyright: ignore[reportPrivateImportUsage]
     doctor = factory.SubFactory('doctor.tests.factories.MedicalProfessionalFactory') # pyright: ignore[reportPrivateImportUsage]
     patient = factory.SubFactory('patient.tests.factories.PatientFactory') # pyright: ignore[reportPrivateImportUsage]
     appointment_date = fake.date_time()
