@@ -24,3 +24,8 @@ def test_email_is_unique(new_user1, user_account_factory):
 
     with pytest.raises(IntegrityError):
         user_account_factory(email=new_user1.email)
+
+# i. Email, password
+# email format 
+# email unique
+# password
