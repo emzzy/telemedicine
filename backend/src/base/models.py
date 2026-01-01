@@ -7,7 +7,6 @@ from patient import models as patient_model
 User = get_user_model()
 
 class Service(models.Model):
-    """properties for each available service """
     from users.models import UserAccount
     from doctor.models import MedicalProfessional
 
@@ -19,7 +18,6 @@ class Service(models.Model):
     doctor_details = models.ManyToManyField(MedicalProfessional, blank=True)
 
     def get_doctors_by_location(self, patient_location):
-        """returns a list of doctors in the same location as the patient"""
         return self.available_doctors.filter(location=patient_location)
     
     def __str__(self):
