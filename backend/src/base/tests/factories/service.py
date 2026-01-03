@@ -9,10 +9,10 @@ class ServiceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Service
     
-    image = fake.image_url()
-    name = 'Optometry'
-    description = fake.texts()
-    cost = fake.pricetag()
+    image = image = factory.django.ImageField(filename='service.jpg', width=100, height=100, color='red')
+    name = factory.Faker('word')
+    description = factory.Faker('text')
+    cost = factory.Faker('pydecimal', left_digits=3, right_digits=2, positive=True)
 
     @factory.post_generation # pyright: ignore[reportPrivateImportUsage]
     def available_doctors(self, create, extracted, **kwargs):
@@ -23,7 +23,6 @@ class ServiceFactory(factory.django.DjangoModelFactory):
                 self.available_doctors.add(doctor)
         else:
             from users.tests.factories import UserAccountFactory
-
             doctor = UserAccountFactory(is_medical_professional=True)
             self.available_doctors.add(doctor)
     
