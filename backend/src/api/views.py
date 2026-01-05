@@ -29,6 +29,8 @@ from django.urls import reverse
 from .utils import Util
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
 
 
 class SelectedRole(APIView):
@@ -95,16 +97,16 @@ class UserRegistrationView(APIView):
 
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
-
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
+    authentication_classes = []
 
     @swagger_auto_schema(
         request_body=UserLoginSerializer,
         operation_description="User login"
     )
-    @csrf_exempt
+    #@csrf_exempt
     def post(self, request, *args, **kwargs):
         serializer = UserLoginSerializer(data=request.data)
 
@@ -114,7 +116,8 @@ class LoginAPIView(APIView):
         email = serializer.validated_data.get('email')
         password = serializer.validated_data.get('password')
 
-        user = authenticate(request, email=email, password=password)
+        user = authenticate(email=email, password=password)
+        print(f'THE USER IS: {user}')
 
         if user is None:
             return Response({'error': 'Invalid login details'}, status=status.HTTP_400_BAD_REQUEST)
@@ -128,7 +131,7 @@ class LoginAPIView(APIView):
 
         user.last_login = now()
         user.save(update_fields=['last_login'])
-        login(request, user)
+        #login(request, user)
 
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
