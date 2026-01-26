@@ -19,6 +19,7 @@ click-plugins==1.1.1.2
 click-repl==0.3.0
 colorama==0.4.6
 constantly==23.10.4
+coverage==7.13.2
 crispy-bootstrap5==2024.10
 cryptography==44.0.0
 daphne==4.2.1
@@ -44,12 +45,15 @@ django-rest-passwordreset==1.5.0
 django-silk==5.3.2
 django-storages==1.14.5
 django-taggit==6.1.0
+djangoql==0.18.1
 djangorestframework==3.15.2
 djangorestframework-api-key==3.1.0
 djangorestframework-simplejwt==5.3.1
 drf-spectacular==0.28.0
 drf-yasg==1.21.8
 environs==14.1.1
+factory_boy==3.3.3
+Faker==39.0.0
 gprof2dot==2024.6.6
 gunicorn==23.0.0
 hyperlink==21.0.0
@@ -72,6 +76,7 @@ oauthlib==3.2.2
 packaging==24.2
 pillow==11.1.0
 pluggy==1.6.0
+ply==3.11
 proglog==0.1.10
 prompt_toolkit==3.0.51
 psycopg==3.2.3
@@ -88,7 +93,9 @@ PyJWT==2.10.1
 PyNaCl==1.5.0
 pyOpenSSL==25.0.0
 pytest==8.4.2
+pytest-cov==7.0.0
 pytest-django==4.11.1
+pytest-factoryboy==2.8.1
 python-dateutil==2.9.0.post0
 python-decouple==3.8
 python-dotenv==1.0.1
