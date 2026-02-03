@@ -35,11 +35,11 @@ I was inspired by the lack of emergency medical assistance in rural and developi
 2. Create and activate a virtual environemnt
     ```
     python -m venv venv
-    source venv/bin/activate
+    venv/Scripts/activate
     ```
 3. Install dependencies
     ```py 
-    pip install requirements.txt 
+    pip install requirements.txt
     ```
     
 4. Apply migrations
