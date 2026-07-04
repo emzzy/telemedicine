@@ -3,18 +3,21 @@ import os
 from datetime import timedelta
 from django.contrib.messages import constants as messages
 from django.core.management.utils import get_random_secret_key
-from config.env import BASE_DIR, env
+import environ
+from pathlib import Path
+import environ
+
+env = environ.Env()
+
+env.read_env()
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 env.read_env(os.path.join(BASE_DIR, '.env'))
-env.read_env(os.path.join(BASE_DIR, '.env.dev'))
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-#BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent # cfe
 
 # Email Config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env("EMAIL_HOST", cast=str)
-EMAIL_PORT = env("EMAIL_PORT", cast=str) # Recommended
+EMAIL_HOST = config("EMAIL_HOST", cast=str)
+EMAIL_PORT = config("EMAIL_PORT", cast=str) # Recommended
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str, default=None)
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str, default=None)
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True)
@@ -36,8 +39,6 @@ STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 PAYPAL_CLIENT_ID = config("PAYPAL_CLIENT_ID")
 PAYPAL_SECRET_KEY = config("PAYPAL_CLIENT_ID")
 
-SITE_URL='http://localhost:5173'
-
 MANAGERS=[]
 ADMINS=[]
 if all([ADMIN_USER_FIRSTNAME, ADMIN_USER_EMAIL]):
@@ -51,22 +52,7 @@ if all([ADMIN_USER_FIRSTNAME, ADMIN_USER_EMAIL]):
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("DJANGO_SECRET_KEY", default=get_random_secret_key())
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = env.bool("DJANGO_DEBUG")
-
-ALLOWED_HOSTS = ["*"]
-
-# if DEBUG:
-#     ALLOWED_HOSTS += [
-#         "127.0.0.1",
-#         "localhost",
-#         "http://localhost:5173/"
-#     ]
-# else:
-#     ALLOWED_HOSTS += ['www.hazel.ng', 'hazel.ng', '*']
-
+#SECRET_KEY = env("DJANGO_SECRET_KEY", default=get_random_secret_key())
 
 # Application definition
 INSTALLED_APPS = [
@@ -92,7 +78,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'storages',
     'celery',
-    # 'whitenoise.runserver_nostatic',
+    'whitenoise.runserver_nostatic',
     'chat_room'
 ]
 
@@ -114,8 +100,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'frontend',
-            #os.path.join(BASE_DIR, 'frontend')
+            BASE_DIR / '',
+            BASE_DIR / 'staticfiles'
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -123,10 +109,10 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
+                'django.contrib.messages.context_processors.messages'
+            ]
+        }
+    }
 ]
 
 ASGI_APPLICATION = 'config.asgi.application'
@@ -134,14 +120,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-
 CHANNEL_LAYERS = {
     'default': {
         #'BACKEND': 'channels.layers.InMemoryChannelLayer',
         'BACKEND': 'channels_redis.core.RedisChannelLayer', # For Redis
         'CONFIG': {
             #'hosts': [('127.0.0.1', 6379)],
-            'hosts': [env('REDIS_HOST'), env('REDIS_PORT')]
+            'hosts': [config('REDIS_HOST'), config('REDIS_PORT')]
         }
     }
 }
@@ -167,7 +152,6 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 CSRF_TRUSTED_ORIGINS = ['https://www.hazel.ng', 'https://hazel.ng']
 CSRF_REFERER_REQUIRED = False
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -175,29 +159,6 @@ AUTHENTICATION_BACKENDS = [
     'api.backends.EmailAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
-if os.getenv('GITHUB_WORKFLOW'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'github-actions',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            'HOST': 'localhost',
-            'PORT': '5432'
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env("DATABASE_NAME"),
-            'USER': env("DATABASE_USER"),
-            'PASSWORD': env("DATABASE_PASSWORD"),
-            'HOST': env("DATABASE_HOST"),
-            'PORT': '5432',
-        }
-    }
 
 #CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int)
 # DATABASE_URL = config("DATABASE_URL")
@@ -280,31 +241,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-    #BASE_DIR / 'frontend' / 'static',
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles' # for prod
+# STATICFILES_DIRS = [
+#     #BASE_DIR / 'frontend' / 'static',
+#     BASE_DIR / 'static',
+# ]
 
 # Admin styling adjustment
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
-
-# compression and caching support for Whitenoise
-STORAGES = {
-    'default': {
-        #"BACKEND": "storages.backends.s3.S3Storage",
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-        'OPTIONS': {
-        },
-    },
-
-    "staticfiles": {
-        #'BACKEND': 'storages.backends.s3boto3.S3StaticStorage',
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
 
 # File uploads
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -312,7 +257,6 @@ MEDIA_URL = '/media/'
 
 # Admin styling adjustment
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
-
 
 #LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -373,7 +317,6 @@ SWAGGER_SETTINGS = {
     },
 }
 
-
 JAZZMIN_SETTINGS = {
     "site_brand": "config",
     "copyright": "All rights reserved 2025",
@@ -420,5 +363,5 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-from config.settings.celery import *
+from config.celery import *
 from config.settings.file_storage import *
