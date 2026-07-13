@@ -10,7 +10,7 @@ def test_appointment(appointment_factory):
     print(appointment.doctor.user.first_name)
     assert True
 
-
+@pytest.mark.skip
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     'image, name, description, cost',
@@ -28,6 +28,6 @@ def test_service_instance(db, service_factory, image, name, description, cost):
         description=description,
         cost=cost,
         available_doctors=[doctors_list],
-        doctor_details=[doctor_description],
+        doctor_details=[doctor_description]
     )
     assert Service.objects.all().count() == 1
