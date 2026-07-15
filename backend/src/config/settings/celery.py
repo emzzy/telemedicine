@@ -1,4 +1,4 @@
-from settings.dev import env
+from settings.dev import os
 
 # tell celery about Redis - same URL as CACHES setting
-CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
