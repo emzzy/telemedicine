@@ -26,7 +26,5 @@ register(BillingFactory)
 
 @pytest.fixture
 def new_user1(db, user_account_factory):
-    user = user_account_factory.create()
-    print(UserAccount.objects.all().count())
+    user = user_account_factory.create(is_patient=True, is_active=True)
     return user
-
