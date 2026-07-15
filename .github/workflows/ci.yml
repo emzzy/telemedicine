@@ -31,3 +31,5 @@ jobs:
       working-directory: backend/src
       run: |
         pytest -s -v
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
