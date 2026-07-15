@@ -1,5 +1,4 @@
-from config.env import env
+from settings.dev import env
 
+# tell celery about Redis - same URL as CACHES setting
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_RESULT_EXTENDED = True

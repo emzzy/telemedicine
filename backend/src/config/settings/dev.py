@@ -1,8 +1,8 @@
 from .base import *
 
-DEBUG = True
+DEBUG = env("DEBUG")
 
-SECRET_KEY='django-insecure-a3*pv#(r*&tn5vjbj2@-ht@n18g@2-6op&73un1m3oz&55q)kq'
+SECRET_KEY = env("SECRET_KEY")
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -23,16 +23,16 @@ DATABASES = {
     }
 }
 
-STORAGES = {
-    'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-        'OPTIONS': {}
-    },
+# STORAGES = {
+#     'default': {
+#         'BACKEND': 'django.core.files.storage.FileSystemStorage',
+#         'OPTIONS': {}
+#     },
 
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    }
-}
+#     "staticfiles": {
+#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+#     }
+# }
 
 STATIC_URL = "static/"
 
@@ -42,6 +42,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'backend' / 'staticfiles'
 ]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 SITE_URL='http://localhost:5173'
 

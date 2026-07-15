@@ -8,36 +8,36 @@ from pathlib import Path
 import environ
 
 env = environ.Env()
-
 env.read_env()
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent
 
 env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Email Config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config("EMAIL_HOST", cast=str)
-EMAIL_PORT = config("EMAIL_PORT", cast=str) # Recommended
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str, default=None)
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str, default=None)
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True)
-EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False) 
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+EMAIL_USE_SSL = env("EMAIL_USE_SSL")
 
 # 500 errors
 # Default Admin account
-ADMIN_USER_EMAIL=config("ADMIN_USER_EMAIL", default=None)
-ADMIN_USER_PASSWORD=config("ADMIN_USER_PASSWORD", default=None)
-ADMIN_USER_FIRSTNAME=config("ADMIN_USER_FIRSTNAME", default=None)
-ADMIN_USER_LASTNAME=config("ADMIN_USER_LASTNAME", default=None)
+ADMIN_USER_EMAIL = env("ADMIN_USER_EMAIL")
+ADMIN_USER_PASSWORD = env("ADMIN_USER_PASSWORD")
+ADMIN_USER_FIRSTNAME = env("ADMIN_USER_FIRSTNAME")
+ADMIN_USER_LASTNAME = env("ADMIN_USER_LASTNAME")
 
 
 #Stripe
-STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
-STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
 
 #paypal
-PAYPAL_CLIENT_ID = config("PAYPAL_CLIENT_ID")
-PAYPAL_SECRET_KEY = config("PAYPAL_CLIENT_ID")
+PAYPAL_CLIENT_ID = env("PAYPAL_CLIENT_ID")
+PAYPAL_SECRET_KEY = env("PAYPAL_CLIENT_ID")
 
 MANAGERS=[]
 ADMINS=[]
@@ -47,12 +47,6 @@ if all([ADMIN_USER_FIRSTNAME, ADMIN_USER_EMAIL]):
         (f"{ADMIN_USER_FIRSTNAME}", f"{ADMIN_USER_EMAIL}")
     ]
     MANAGERS=ADMINS
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = env("DJANGO_SECRET_KEY", default=get_random_secret_key())
 
 # Application definition
 INSTALLED_APPS = [
@@ -126,7 +120,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer', # For Redis
         'CONFIG': {
             #'hosts': [('127.0.0.1', 6379)],
-            'hosts': [config('REDIS_HOST'), config('REDIS_PORT')]
+            'hosts': [env('REDIS_HOST'), env('REDIS_PORT')]
         }
     }
 }
@@ -141,36 +135,10 @@ CACHES = {
     }
 }
 
-# # Modify these security settings for webhook compatibility
-#CSRF_COOKIE_SECURE = False if DEBUG else True
-CSRF_COOKIE_HTTPONLY = False
-CSRF_USE_SESSIONS = False
-CSRF_COOKIE_NAME = 'csrftoken'
-CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
-
-# # Add this to allow missing Referer header
-CSRF_TRUSTED_ORIGINS = ['https://www.hazel.ng', 'https://hazel.ng']
-CSRF_REFERER_REQUIRED = False
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 AUTHENTICATION_BACKENDS = [
     'api.backends.EmailAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
-#CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int)
-# DATABASE_URL = config("DATABASE_URL")
-
-# if DATABASE_URL is not None:
-#     import dj_database_url
-#     DATABASES = {
-#         'default': dj_database_url.config(
-#             conn_health_checks=True,
-#             conn_max_age=30,
-#         )
-#     }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
@@ -242,11 +210,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_URL = 'static/'
-
-# STATICFILES_DIRS = [
-#     #BASE_DIR / 'frontend' / 'static',
-#     BASE_DIR / 'static',
-# ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Admin styling adjustment
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
