@@ -17,27 +17,27 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 # Email Config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-EMAIL_USE_TLS = env("EMAIL_USE_TLS")
-EMAIL_USE_SSL = env("EMAIL_USE_SSL")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL")
 
 # 500 errors
 # Default Admin account
-ADMIN_USER_EMAIL = env("ADMIN_USER_EMAIL")
-ADMIN_USER_PASSWORD = env("ADMIN_USER_PASSWORD")
-ADMIN_USER_FIRSTNAME = env("ADMIN_USER_FIRSTNAME")
-ADMIN_USER_LASTNAME = env("ADMIN_USER_LASTNAME")
+ADMIN_USER_EMAIL = os.getenv("ADMIN_USER_EMAIL")
+ADMIN_USER_PASSWORD = os.getenv("ADMIN_USER_PASSWORD")
+ADMIN_USER_FIRSTNAME = os.getenv("ADMIN_USER_FIRSTNAME")
+ADMIN_USER_LASTNAME = os.getenv("ADMIN_USER_LASTNAME")
 
 
 #Stripe
-STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY")
-STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 
 #paypal
-PAYPAL_CLIENT_ID = env("PAYPAL_CLIENT_ID")
-PAYPAL_SECRET_KEY = env("PAYPAL_CLIENT_ID")
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_ID")
 
 MANAGERS=[]
 ADMINS=[]
@@ -120,7 +120,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer', # For Redis
         'CONFIG': {
             #'hosts': [('127.0.0.1', 6379)],
-            'hosts': [env('REDIS_HOST'), env('REDIS_PORT')]
+            'hosts': [os.getenv('REDIS_HOST'), os.getenv('REDIS_PORT')]
         }
     }
 }

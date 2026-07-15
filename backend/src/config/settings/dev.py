@@ -1,8 +1,8 @@
 from .base import *
 
-DEBUG = env("DEBUG")
+DEBUG = os.getenv("DEBUG")
 
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 CORS_ALLOW_ALL_ORIGINS = True
 
