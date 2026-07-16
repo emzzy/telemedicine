@@ -1,4 +1,5 @@
 from .base import *
+from .dev import SECRET_KEY
 
 DATABASES = {
     "default": {
@@ -6,3 +7,5 @@ DATABASES = {
         "NAME": ":memory:"
     }
 }
+
+SECRET_KEY = SECRET_KEY
