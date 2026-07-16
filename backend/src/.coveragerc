@@ -1,0 +1,8 @@
+[run]
+source=base/,config/,doctor/,patient/,users/,shared/,chat_room/,
+omit=
+    *.venv
+    venv
+    */migrations/*
+    */tests/*
+    */__init__.py
