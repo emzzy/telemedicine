@@ -9,20 +9,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 ALLOWED_HOSTS = []
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
-        "ATOMIC_REQUESTS": False
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'teledb',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
-
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'teledb',
-    #     'USER': 'postgres',
-    #     'PASSWORD': '1234',
-    #     'HOST': 'localhost',
-    #     # 'PORT': '5432'
-    # }
 }
 
 # STORAGES = {

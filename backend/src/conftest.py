@@ -28,15 +28,15 @@ def new_user1(db, user_account_factory):
     user = user_account_factory.create(is_patient=True, is_active=True)
     return user
 
-@pytest.fixture(scope='session')
-def django_db_setup():
-    from django.conf import settings
+# @pytest.fixture(scope='session')
+# def django_db_setup():
+#     from django.conf import settings
 
-    settings.DATABASES['default'] = {
-        "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
-        "ATOMIC_REQUESTS": False
-        }
-    }
+#     settings.DATABASES['default'] = {
+#         "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": ":memory:",
+#         "ATOMIC_REQUESTS": False
+#         }
+#     }
 

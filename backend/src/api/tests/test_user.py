@@ -18,7 +18,7 @@ def test_user_signup(client, faker):
         'date_of_birth': faker.date_of_birth(minimum_age=18, maximum_age=90),
         'location': faker.city(),
         'role': 'medical_professional',
-    }    
+    }
     response = client.post('/api/user/signup/', payload, format='json')
     # print(response.status_code)
     # print(response.json())
@@ -62,5 +62,5 @@ def test_user_authentication_components(client):
         'password': 'password1234',
     }
     response = client.post('/api/user/login/', payload, content_type='application/json')
-
+    
     assert response.status_code == 200
