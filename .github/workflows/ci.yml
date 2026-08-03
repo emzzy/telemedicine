@@ -35,7 +35,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache dependency
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-
