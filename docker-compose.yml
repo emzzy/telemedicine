@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
 
   redis: 
@@ -46,7 +44,7 @@ services:
       - django-migration
       - redis
     environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      SECRET_KEY: ${SECRET_KEY}
       DEBUG: ${DEBUG}
       DATABASE_ENGINE: ${DATABASE_ENGINE}
       DATABASE_NAME: ${DATABASE_NAME}
