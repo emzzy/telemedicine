@@ -6,7 +6,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 DATABASES = {
     'default': {
@@ -35,8 +35,8 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     #BASE_DIR / 'frontend' / 'static',
     BASE_DIR / 'staticfiles',
-    BASE_DIR / 'static',
-    BASE_DIR / 'backend' / 'staticfiles'
+    #BASE_DIR / 'static',
+    #BASE_DIR / 'backend' / 'staticfiles'
 ]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 

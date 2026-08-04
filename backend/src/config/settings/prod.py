@@ -4,9 +4,7 @@ DEBUG = os.getenv("DEBUG")
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-ALLOWED_HOSTS = [
-    "123.0.1.8"
-]
+ALLOWED_HOSTS = []
 
 DATABASES = {
     'default': {
