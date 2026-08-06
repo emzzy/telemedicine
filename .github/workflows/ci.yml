@@ -65,4 +65,4 @@ jobs:
 
     - name: Build and publish image
       run: |
-        docker compose up --build --env-file .env -d
+        docker compose up --build -d
