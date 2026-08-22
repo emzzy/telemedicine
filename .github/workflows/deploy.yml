@@ -1,0 +1,14 @@
+name: Deploy
+
+on:
+    workflow_run:
+        workflows: ["test and build"]
+        types:
+            - completed
+
+jobs:
+    deploy:
+        runs-on: self-hosted
+        steps:
+        - name: Delete Old Container
+        
