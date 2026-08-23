@@ -10,5 +10,15 @@ jobs:
     deploy:
         runs-on: self-hosted
         steps:
-        - name: Delete Old Container
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentiala@v2
+          with: 
+            role-assume: arn:aws:iam::074124924163:role/push-to-ecr
+            aws-regions: us-east-1
+        - name: Push to ECR
+          id: ecr
+          uses: jwalton/gh-ecr-push@v2
+          with:
+            region: us-west-1
+            image: my-image:v1
         
