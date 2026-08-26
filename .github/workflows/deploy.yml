@@ -10,10 +10,10 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         steps:
-        - run: docker build --tag telmed-backend:v1 .
+        - run: docker compose up --build --tag telmed-backend:v1 .
         - name: Configure AWS Credentials
           uses: aws-actions/configure-aws-credentials@v2
-          with: 
+          with:
             role-to-assume: arn:aws:iam::074124924163:role/push-to-ecr
             aws-region: us-east-1
         - name: Push to ECR
@@ -24,5 +24,4 @@ jobs:
             secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             region: us-east-1
             local-image: telmed-backend:v1
-            image: my-image:v1, telmed-backend:latest
-  
+            image: telmed-backend:v1, telmed-backend:latest
