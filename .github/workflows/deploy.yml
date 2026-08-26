@@ -2,13 +2,13 @@ name: Deploy
 
 on:
     workflow_run:
-        workflows: ["test and build"]
-        types:
-            - completed
+      workflows: ["Test and build"]
+      types:
+        - completed
 
 jobs:
     deploy:
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         steps:
         - run: docker build --tag telmed-backend:v1 .
         - name: Configure AWS Credentials
