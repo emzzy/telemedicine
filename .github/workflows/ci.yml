@@ -70,7 +70,7 @@ jobs:
     needs: [package-job]
     steps:
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v3
       with:
         role-to-assume: arn:aws:iam::074124924163:role/push-to-ecr
         aws-region: us-east-1
