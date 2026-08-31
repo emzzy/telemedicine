@@ -63,7 +63,7 @@ jobs:
 
     - name: Build and publish image
       run: |
-        docker compose up --build -d telmed-backend:v1
+        docker compose up --build -d
   
   deploy:
     runs-on: ubuntu-latest
