@@ -17,6 +17,7 @@ env:
   REDIS_PORT: ${{ secrets.REDIS_PORT }}
   DEBUG: ${{ secrets.DEBUG }}
   DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   health-check-job:
