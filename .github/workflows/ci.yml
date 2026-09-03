@@ -37,7 +37,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache dependency
@@ -68,19 +68,30 @@ jobs:
   
   deploy:
     runs-on: ubuntu-latest
-    needs: [package-job]
+    needs: [package-job]    
+    permissions:
+      id-token: write
+      contents: read
     steps:
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v3
+      uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
       with:
-        role-to-assume: arn:aws:iam::074124924163:role/push-to-ecr
-        aws-region: us-east-1
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        role-to-assume: ${{ secrets.AWS_GITHUB_ROLE_ARN  }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Login Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
+
+    - name: Build, tag, and push image to ECR
+      id: build-image
+      env: 
+        
     - name: Push to ECR
       id: ecr
-      uses: jwalton/gh-ecr-push@v2
+      uses: aws-actions/
       with:
-        access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        region: us-east-1
+        
         local-image: telmed-backend:v1
         image: telmed-backend:v1, telmed-backend:latest
