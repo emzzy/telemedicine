@@ -31,6 +31,7 @@ services:
     build:
       context: ./backend/src
       dockerfile: Dockerfile
+    image: ${IMAGE_TAG:-latest}
     container_name: telemed-container
     ports:
       - '8000:8000'
