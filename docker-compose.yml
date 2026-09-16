@@ -31,7 +31,7 @@ services:
     build:
       context: ./backend/src
       dockerfile: Dockerfile
-    image: ${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY/${ECR_REPOSITORY}:${IMAGE_TAG}}
     container_name: telemed-container
     ports:
       - '8000:8000'
