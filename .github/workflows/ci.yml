@@ -19,6 +19,7 @@ env:
   DATABASE_ENGINE: ${{ secrets.DATABASE_ENGINE }}
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
@@ -93,8 +94,6 @@ jobs:
 
     - name: Tag and push image to ECR
       id: build-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
         docker compose -f push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
