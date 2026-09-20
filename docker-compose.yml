@@ -66,8 +66,8 @@ services:
     build: ./backend/src/nginx
     ports:
       - 80:80
-    image: nginx:latest
-    links: 
+    image: ${ECR_REPOSITORY}/${ECR_REGISTRY}:nginx
+    links:
       - django-web
 
 volumes:
