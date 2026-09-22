@@ -51,14 +51,14 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_PORT: ${DATABASE_PORT}
       REDIS_URL: ${REDIS_URL}
-      REDIS_HOST: ${REDIS_HOST}  
+      REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
 
   django-migration:
     build:
       context: ./backend/src
       dockerfile: Dockerfile
-    command: > 
+    command: >
       sh -c 'python manage.py makemigrations &&
               python manage.py migrate'
 
@@ -66,7 +66,7 @@ services:
     build: ./backend/src/nginx
     ports:
       - 80:80
-    image: ${ECR_REPOSITORY}/${ECR_REGISTRY}:nginx
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:nginx
     links:
       - django-web
 
