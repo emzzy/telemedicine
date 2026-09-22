@@ -66,9 +66,9 @@ services:
     build: 
       context: ./backend/src/nginx
       dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:nginx
     ports:
       - 80:80
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:nginx-service
     links:
       - django-web
 
