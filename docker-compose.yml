@@ -63,7 +63,9 @@ services:
               python manage.py migrate'
 
   nginx:
-    build: ./backend/src/nginx
+    build: 
+      context: ./backend/src/nginx
+      dockerfile: Dockerfile
     ports:
       - 80:80
     image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:nginx-service
