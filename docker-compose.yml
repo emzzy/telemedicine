@@ -34,7 +34,7 @@ services:
     image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
     container_name: telemed-container
     ports:
-      - '8000:8000'
+      - '80:8000'
     command: daphne -b 0.0.0.0 -p 8000 teleapp.asgi:application --timeout=5 --threads=10
     volumes:
       - ./backend/src:/app/
@@ -44,7 +44,7 @@ services:
       - redis
     environment:
       SECRET_KEY: ${SECRET_KEY}
-      DEBUG: ${DEBUG}
+      DEBUG: ${DEBUG} 
       DATABASE_ENGINE: ${DATABASE_ENGINE}
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}

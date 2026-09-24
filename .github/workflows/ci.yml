@@ -93,7 +93,7 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker compose up --build -d
-        docker compose images
+        docker compose config
         docker compose push
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
         aws ecr describe-images --repository-name ${ECR_REPOSITORY} --region ${{ secrets.AWS_REGION }}
