@@ -34,7 +34,7 @@ services:
     image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
     container_name: telemed-container
     ports:
-      - '80:8000'
+      - '81:8000'
     command: daphne -b 0.0.0.0 -p 8000 teleapp.asgi:application --timeout=5 --threads=10
     volumes:
       - ./backend/src:/app/
