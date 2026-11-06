@@ -35,7 +35,7 @@ services:
     container_name: telemed-container
     ports:
       - '81:8000'
-    command: daphne -b 0.0.0.0 -p 8000 teleapp.asgi:application --timeout=5 --threads=10
+    command: daphne -b 0.0.0.0 -p 8000 config.asgi:application --timeout=5 --threads=10
     volumes:
       - ./backend/src:/app/
     depends_on:
